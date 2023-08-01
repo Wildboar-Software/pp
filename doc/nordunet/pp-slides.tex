@@ -1,0 +1,281 @@
+% -*- LaTeX -* Although it's slitex really
+
+\documentstyle[blackandwhite,pagenumbers,small,oval,psfig,tgrind]{NRslides}
+
+\raggedright
+
+\begin{document}
+\title	{PP - X.400 for the masses?}
+
+\author{Julian P.~Onions\\
+jpo@cs.nott.ac.uk\\[.5in]
+X-Tel Services Ltd.\\
+Nottingham University\\
+Nottingham NG7 2RD\\
+ENGLAND}
+
+\date	{October 9, 1990}
+
+\maketitle
+
+\begin{bwslide}
+\ctitle	{CONTENTS}
+\begin{nrtc}
+\item	What is PP?
+
+\item	The PP Architecture
+
+\item	The PP Queue
+
+\item	Submission
+
+\item	Scheduling and Control
+
+\item	Channels
+
+\item	Status and Availability
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{What is PP}
+\begin{nrtc}
+\item	Basically, A Mail transfer system (MTA in the jargon).
+
+\item	Largely protocol independent, but deals with X.400
+	and existing mail formats.
+
+\item	Written by people at UCL and Nottingham
+
+\item	Design aims include:-
+	\begin{itemize}
+
+	\item	High performance/throughput
+	\item	Support for message conversion.
+	\item	Support for multi-media
+	\item	Clean interface for user interfaces.
+	\end{itemize}
+
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Why PP}
+\begin{nrtc}
+\item At the time there was no suitable alternative.
+
+\item Most implementations were in the ``toy'' category.
+
+\item Too expensive
+
+\item Only did X.400 - no gatewaying, or else added as an
+afterthought.
+
+\item Worked to minimal profiles.
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Some goals for PP}
+\begin{nrtc}
+\item	Scheduling of messages in an optimal way, such that many
+thousands of messages a day can be processed.
+
+\item	Robustness.
+
+\item	Support for RFC-822, X.400(84) and X.400(88) and others.
+
+\item	Reformatting between body part types in a general manner.
+
+\item	Provision of management, authorisation and monitoring tools.
+
+\item	Use of standardised services such as X.500.
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{The PP Architecture}
+\begin{nrtc}
+\item	PP is based on a system of cooperating processes.
+
+\item	Each process has a specific task to achieve.
+
+\item	Most of these processes are ``dumb''.
+
+\item	The ``intelligence'' of the system is provided by two processes.
+
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{The PP Architecture}
+
+\vskip .5in
+
+\diagram[p]{figure2}
+
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{The PP Queue}
+\begin{nrtc}
+\item	All messages are placed in a queue on disc.
+
+\item	For each message there are two components
+	\begin{itemize}
+	\item	A Control file holding all the envelope information.
+	\item	The Message structure holding the Message data.
+	\end{itemize}
+\item	The Control file is text encoded.
+
+\item	The Message is either a single file, or a directory hierarchy.
+
+\item	The Message may undergo a number of transformations whilst in
+	the queue
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Submission}
+\begin{nrtc}
+\item	The first intelligent process is {\em submit}.
+
+\item	All messages entering the queue pass through this process.
+
+\item	It validates the message in a number of ways:
+	\begin{itemize}
+	\item	Ensures the originator can be reached.
+	\item	Ensures the destination is known.
+	\item	Works out a conversion path from incoming format to outgoing.
+	\item	Applies access controls if required.
+	\end{itemize}
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Scheduling and Controlling}
+\begin{nrtc}
+\item	The other ``intelligent'' process is the queue manager, {\em qmgr}.
+
+\item	Keeps an in memory map of the queue.
+
+\item	Drives all channel programs using network IPC.
+
+\item	Makes all the scheduling decision about messages in the queue.
+
+\item	Sorts the queue  in ``optimal'' ways.
+
+\item	Allows connections to interrogate queue status
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Queue Monitoring}
+
+\vskip .5in
+
+\psfig{file=console.ps,height=6in}
+
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Channels}
+\begin{nrtc}
+\item	Channels in PP process messages.
+
+\item	May reformat a message by conversion e.g.
+	\begin{itemize}
+	\item	Mapping X.400 to RFC-822 message
+	\item	Converting Telex to Ascii
+	\end{itemize}
+\item	May attempt delivery e.g.
+	\begin{itemize}
+	\item	Drive the SMTP or X.400 protocols
+	\item	Deliver to users
+	\end{itemize}
+\item	May restructure the message
+	\begin{itemize}
+	\item	Convert a file into a directory hierarchy
+	\item	Convert multiple body parts into one
+	\end{itemize}
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{PP management}
+\begin{nrtc}
+\item The MTA console provides a good monitor of whats going on.
+\item All address that are handled are logged in a special log which
+an be processed to give statistics (and charging) information.
+\item Authorisation can be controlled by user, host, content-type size
+and route.
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Current Status}
+\begin{nrtc}
+\item	PP-5.0 was released on September 21st, 1990.
+
+\item	It is providing a real service at a number of universities and
+	will shortly be providing the UK WEP service.
+
+\item	PP is freely available for use and should be the backbone of
+	JANET as it transitions to X.400 protocols.
+
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Current Status}
+\begin{nrtc}
+\item PP-5.0 provides the following channels currently
+
+	\begin{itemize}
+	\item SMTP with DNS support
+	\item X.400 (1984)
+	\item UUCP mail
+	\item JNT grey book mail
+	\item Distribution list expansion and maintenance
+	\item RFC822 local delivery and delivery time processing
+	\item RFC822 and X.400 conversion
+	\item X-windows based management console
+	\item Message authorisation checking
+	\item X.400(1988) P1 protocol (beta test)
+	\item X.500 distribution lists (beta test)
+	\end{itemize}
+
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{What is planned for the future}
+\begin{nrtc}
+\item	Fax gateway to convert outgoing messages to faxes and vice
+versa.
+
+\item	More use of the X.500 directory, for routing and directory
+name lookup.
+
+\item	P7 Message store with remote access
+
+\item	Improvements in throughput and robustness
+
+\item	Some work on System Five portability and a DECNET channel by
+people outside the PP group. 
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Availability and Support}
+\begin{nrtc}
+\item	Source code is free by FTP/FTAM etc.
+\item	A distribution charge for a tape
+
+\item	Available by FTP/FTAM from ucl, psi and eunet.
+
+\item	Full support is also available if you require it from X-Tel.
+\end{nrtc}
+\end{bwslide}
+
+\end{document}

@@ -1,0 +1,7 @@
+totals:num<10k,vol<1M
+822-local-chan:age<1h
+822-local-mta:num<10
+internal-chan:age<20,vol<1M,num<100,last<10
+
+
+

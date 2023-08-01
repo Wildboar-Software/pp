@@ -1,0 +1,38 @@
+#! /bin/sh
+
+#
+# convert old style alias table to new style
+#
+
+sed 's/:[ 	]*/:/' $* |
+awk '
+BEGIN { OFS = " " }
+/^#/ || NF == 0	{ print; next }
+{
+	n = split ($1, parts, ":")
+	if (n != 2) {
+		print "Bad line ", $0, "at", $NR | "cat 1>&2"
+		next
+	}
+	key = parts[1]
+	val1 = parts[2]
+	$1 = ""
+	if (val1 == "alias")
+		printf "%s:%s %s\n", key, val1, $0
+	else if (val1 == "synonym")
+		printf "%s:%s %s\n", key, val1, $0
+	else if (val1 == "822")
+		printf "%s:alias %s 822\n", key, $0
+	else if (val1 == "x400")
+		printf "%s:alias %s x400\n", key, $0
+	else if (val1 == "822-synonym")
+		printf "%s:synonym %s 822\n", key, $0
+	else if (val1 == "x400-synonym")
+		printf "%s:synonym %s x400\n", key, $0
+	else if (val1 == "x400-alias")
+		printf "%s:alias %s\n", key, $0
+	else if (val1 == "822-synonym")
+		printf "%s:alias %s 822\n", key, $0
+	else print "Unknown key", val1, "at", NR | "cat 1>&2"
+}
+'

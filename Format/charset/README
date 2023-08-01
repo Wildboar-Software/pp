@@ -1,0 +1,16 @@
+********************************************************************************
+
+
+	This code needs to be geared for compatibility on all m/cs.
+	To use the code effectively you may wish to update the 
+	following files: 
+		Lib/charset/charset_conf.c
+		../../h/charset.h
+
+	For more information please read:
+		The PP Documentation Vol 1 
+		And the copyright and design documents.
+
+
+
+********************************************************************************

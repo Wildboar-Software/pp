@@ -1,0 +1,15 @@
+.PS 5
+Inb:	ellipse "Inbound" "Channel"
+	line <-> down right from Inb.se
+Submit:	ellipse	"Submit" with .nw at last line .end
+	line <-> up right from Submit.ne
+	ellipse "UA" with .sw at last line .end
+	line <-> down left from Submit.sw
+Qmgr:	ellipse "QMGR" with .ne at last line .end
+	line <-> down right from Qmgr.se
+Out:	ellipse "Outbound" "Channel" with .nw at last line .end
+	line <-> down right from Submit.se
+Que:	box "Queue" with .nw at last line .end + (0, boxht/4)
+	line <-> dashed from Qmgr.e to Que.w
+	line <-> from 3/4<Que.nw,Que.sw> to Out.ne
+.PE

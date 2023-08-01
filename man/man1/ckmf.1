@@ -1,0 +1,39 @@
+.TH CKMF 1
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man1/RCS/ckmf.1,v 6.0 1991/12/18 20:43:41 jpo Rel $
+.\"
+.\" $Log: ckmf.1,v $
+.\" Revision 6.0  1991/12/18  20:43:41  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+ckmf \- check users .mailfilter file
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+ckmf file
+.in -.5i
+.SH DESCRIPTION
+\fICkmf\fP checks that the given .mailfilter is free from syntax
+errors. This does not necessarily mean that the file will work, just
+that it should be interpreted ok. Run time errors may still occur.
+.PP
+It runs with a single argument, the file to check. It expects a
+message on the standard input to attempt to deliver. It will then
+print out what actions it would take. An empty message (a.k.a.
+/dev/null) may be given and the appropriate actons will be indicated.
+.PP
+It is \fBSTRONGLY\fP advised that you run this program after modifying
+your \&\fB.mailfilter\fP file to check that you haven't made mistakes
+in the syntax.
+.SH FILES
+.nf
+.ta \w'/usr/local/lib/mailfilter\0\0'u
+~/.mailfilter	The users mailfilter file
+/usr/local/lib/mailfilter	The system mailfilter file
+.fi
+.SH "SEE ALSO"
+\fIPP Manual \- Volume 3: User Manual\fP
+.SH BUGS
+Ought to check more (including the sanity of the user).

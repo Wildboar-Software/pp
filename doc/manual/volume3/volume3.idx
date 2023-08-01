@@ -1,0 +1,153 @@
+\indexentry{chkmf {}}{2}
+\indexentry{.mailfilter}{2}
+\indexentry{ckmail {}}{2}
+\indexentry{flagmail {}}{2}
+\indexentry{mail {}}{2}
+\indexentry{malias {}}{2}
+\indexentry{mlist {}}{2}
+\indexentry{ttyalert {}}{2}
+\indexentry{xalert {}}{2}
+\indexentry{resend {}}{2}
+\indexentry{strip\unhbox \voidb@x \kern .06em \vbox {\hrule width.3em}addr {}}{2}
+\indexentry{mailfilter{}}{2}
+\indexentry{.mailfilter}{2}
+\indexentry{.mailfilter}{3}
+\indexentry{.mailfilter}{3}
+\indexentry{.mailfilter}{3}
+\indexentry{.mailfilter}{3}
+\indexentry{.mailfilter}{3}
+\indexentry{.mailfilter}{3}
+\indexentry{file}{4}
+\indexentry{unixfile}{4}
+\indexentry{.mailfilter}{4}
+\indexentry{pipe}{4}
+\indexentry{delivered}{4}
+\indexentry{ignore}{4}
+\indexentry{822-local}{5}
+\indexentry{conditionals}{5}
+\indexentry{.mailfilter}{5}
+\indexentry{if}{5}
+\indexentry{else}{5}
+\indexentry{compound statement}{5}
+\indexentry{else if}{5}
+\indexentry{Boolean operators}{5}
+\indexentry{variables}{6}
+\indexentry{variables, system}{6}
+\indexentry{system variables}{6}
+\indexentry{822-local}{6}
+\indexentry{header fields}{6}
+\indexentry{delivered}{6}
+\indexentry{delivery states}{6}
+\indexentry{PATH}{6}
+\indexentry{regular expressions}{7}
+\indexentry{regexp {}}{7}
+\indexentry{.mailfilter}{7}
+\indexentry{.mailfilter}{7}
+\indexentry{exit}{7}
+\indexentry{.mailfilter}{7}
+\indexentry{print}{7}
+\indexentry{\#}{7}
+\indexentry{comment}{7}
+\indexentry{.mailfilter}{7}
+\indexentry{rcvstore {}}{7}
+\indexentry{.mailfilter}{8}
+\indexentry{checking .mailfilter}{8}
+\indexentry{.mailfilter}{8}
+\indexentry{.mailfilter}{8}
+\indexentry{ckmf}{9}
+\indexentry{flagmail}{9}
+\indexentry{xalert}{9}
+\indexentry{ttyalert}{9}
+\indexentry{flagmail}{9}
+\indexentry{xalert}{9}
+\indexentry{flagmail}{9}
+\indexentry{ttyalert}{9}
+\indexentry{printf {}}{10}
+\indexentry{body}{10}
+\indexentry{size}{10}
+\indexentry{.mailfilter}{10}
+\indexentry{extra}{10}
+\indexentry{From}{10}
+\indexentry{.mailfilter}{10}
+\indexentry{.mailfilter}{10}
+\indexentry{flagmail}{11}
+\indexentry{ttyalert}{11}
+\indexentry{flagmail}{11}
+\indexentry{xalert}{11}
+\indexentry{.alert}{11}
+\indexentry{xalert}{11}
+\indexentry{.alert}{11}
+\indexentry{xalert}{11}
+\indexentry{xalert}{11}
+\indexentry{ttybiff}{12}
+\indexentry{xalert}{12}
+\indexentry{xalert}{12}
+\indexentry{xalert}{12}
+\indexentry{Xalert}{12}
+\indexentry{flagmail}{12}
+\indexentry{ttybiff}{12}
+\indexentry{Flagmail}{12}
+\indexentry{xalert}{12}
+\indexentry{ttybiff}{12}
+\indexentry{flagmail}{12}
+\indexentry{.alert}{12}
+\indexentry{.alert}{12}
+\indexentry{ttyalert}{12}
+\indexentry{.alert}{12}
+\indexentry{flagmail}{12}
+\indexentry{flagmail}{12}
+\indexentry{xalert}{12}
+\indexentry{flagmail}{12}
+\indexentry{.alert}{12}
+\indexentry{.alert}{12}
+\indexentry{ttybiff}{13}
+\indexentry{ttyalert}{13}
+\indexentry{.mailfilter}{13}
+\indexentry{rcvtrip}{13}
+\indexentry{.mailfilter}{13}
+\indexentry{tripnote}{13}
+\indexentry{triplog}{14}
+\indexentry{ttripnote}{14}
+\indexentry{.signature}{14}
+\indexentry{resend}{14}
+\indexentry{strip\unhbox \voidb@x \kern .06em \vbox {\hrule width.3em}addr}{15}
+\indexentry{strip\unhbox \voidb@x \kern .06em \vbox {\hrule width.3em}addr}{15}
+\indexentry{flock}{15}
+\indexentry{flock}{15}
+\indexentry{mlist}{17}
+\indexentry{mlist}{17}
+\indexentry{mlist}{17}
+\indexentry{mlist}{17}
+\indexentry{mlist}{18}
+\indexentry{mlist}{18}
+\indexentry{mlist}{18}
+\indexentry{mlist}{18}
+\indexentry{mlist}{18}
+\indexentry{mlist}{18}
+\indexentry{mlist}{18}
+\indexentry{mlist}{18}
+\indexentry{malias}{19}
+\indexentry{malias}{19}
+\indexentry{mlist}{19}
+\indexentry{malias}{19}
+\indexentry{users}{19}
+\indexentry{dirlist}{19}
+\indexentry{aliases}{19}
+\indexentry{isoaliases}{19}
+\indexentry{ETCDIR}{19}
+\indexentry{dsaptailor}{19}
+\indexentry{ETCDIR}{19}
+\indexentry{dl}{22}
+\indexentry{.quipurc}{22}
+\indexentry{dsaptailor}{22}
+\indexentry{cron}{25}
+\indexentry{more}{25}
+\indexentry{/bin/mail}{26}
+\indexentry{checkmail}{26}
+\indexentry{checkmail}{26}
+\indexentry{checkmail}{26}
+\indexentry{checkmail}{26}
+\indexentry{checkmail}{26}
+\indexentry{checkmail}{26}
+\indexentry{checkmail}{26}
+\indexentry{\LaTeX {}}{28}

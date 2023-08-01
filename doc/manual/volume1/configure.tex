@@ -1,0 +1,1865 @@
+\chapter {Configuring PP}\label{tailoring}
+
+This chapter is principally concerned with the \file{tailor} file and
+how it is configured.  The \file{tailor} file contains the runtime MTA
+configuration information.  This chapter describes how to construct
+this information.
+
+The information in the \file{tailor} file may duplicate that in the
+\file{Make.defs} in some cases. In these cases, the \file{tailor} file
+settings will override the \file{Make.defs} settings. 
+
+There are four basic types of entries in the \file{tailor} file:
+\begin{itemize}
+\item	Variable entries.
+\item	Logging entries.
+\item	Table entries.
+\item	Channel entries.
+\end{itemize}
+The following sections describe how to construct these entries.
+Appendix~\ref{app:tailor} contains a complete example \file{tailor} file.
+
+Since the construction of the information is complex, it is {\em
+strongly } recommended to use \man ckconfig (8).
+\pgm{ckconfig} applies several sanity checks to the information
+contained in the \file{tailor} file and generally ensures that the
+information represents a logically correct configuration.
+\pgm{ckconfig} is described in Section~\ref{sect:ckconfig}.
+
+\section	{The General Syntax of Tailor File Entries}
+
+A comment starts with an unescaped hash (\#) and finishes at the end
+of the line.  Other lines are split into components separated by white
+space or commas (or both). A line may be extended onto the next line
+by starting that next line with some white space. A field may be
+enclosed by quotation marks (\verb+"<field>"+ or \verb|'field'|); this
+disables special characters such as field delimiters.
+
+\section	{Variable Tailor File Entries}\index{tailoring, variables}
+\label{variable-tai}
+
+Variable entries take the form of a keyword and its value, 
+separated by white
+space. Each key/value pair should be on a separate line and start in
+the first column. For example:
+\begin{quote}\small\begin{verbatim}
+cmddir   /usr/pp/cmds
+tbldir   /usr/pp/tables
+\end{verbatim}\end{quote}
+
+There are a finite number of tailoring variables that can be
+referenced in the \file{tailor} file.  These tailoring variables are
+divided into two types, mandatory tailoring variables and optional
+tailoring variables.  They are listed and described in the sections
+below.
+
+\subsection{Mandatory Tailoring Variables}\index{tailoring, simple}
+The following tailoring variables {\em must} be included in the
+\file{tailor} file:
+
+\begin{description}
+\item[\verb+loc\_dom\_mta+:]\index{loc\_dom\_mta}
+This is the full domain name of the local mta. 
+It is used for trapping routing loops and so should be globally unique.
+For example: \linebreak \verb+sheriff.cs.nott.ac.uk+. This is not
+recognised as a local address by default.
+
+\item[\verb+loc\_dom\_site+:]\index{loc\_dom\_site}
+This is the full domain name of the local site. This is used to reference the
+site, and may refer to a group of MTAs collectively. For example:
+\verb+cs.nott.ac.uk+. This variable should usually be present in the
+domain table and marked as local in the \file{domain} table to ensure
+that messages routed to this name are regarded as suitable for local
+delivery.
+
+\item[\verb+loc\_or+:]\index{loc\_or}
+This is the local O/R address defaults given in X.400 RFC~1148
+encoding form. It is used to fill in missing default components and
+for tracing fields. it is not recognised as the local X.400 domain by
+default, that must be marked in the \file{or} table.
+For example:
+\begin{quote}\begin{verbatim}
+"/OU=CS/O=NOTT/PRMD=UK.AC/ADMD= /C=GB/"
+\end{verbatim}\end{quote}
+\pgm{Note}: If the name contains spaces or other special characters, it must
+be quoted as above.
+
+\item[\verb+qmgrhost+:]\index{qmgrhost}
+This is the name of the machine on which the QMGR is running. For
+example, you could give the output of \man hostname (1) here. It is
+used as an index either into the ISODE \file{isoentities} file, or to
+search the X.500 directory for the application context. It is used by
+\pgm{submit} to contact the qmgr. \pgm{Submit} caches the result of
+the lookup in the file \file{qmgr-pa.cache} in the queue directory to
+speed up the resolution process. If this variable is changed or the
+details in the \file{isoentities} file or the X.500 directory are
+altrered, this file should be removed.
+
+\item[\verb+postmaster+:]\index{postmaster}
+This is the RFC~822 address of the local mail system administrator.
+Typically of the form: \verb+Postmaster <postmaster@cs.nott.ac.uk>+.
+
+
+\item[\verb+bodypart+:]\index{bodypart}\label{tai:bodypart}
+This is a list of bodyparts that are recognised by the system. This
+line may occur several times in the tailor file, each time appending
+its arguments to the list of body parts.
+
+\item[\verb+headertype+:]\index{headertype}
+This is a list of headers that are recognised by the system. This line
+like the above line may occur several times each time appending to the
+list.
+Note that the common \verb+hdr.+ prefix is omitted from these values.
+
+\item[\verb+pptsapd\_addr+:]\index{pptsapd\_addr}
+This is the address that the \pgm{pptsapd} listens on for incoming
+connections.  It is also used by the \pgm{qmgr} to call up the
+\pgm{pptsapd} to start a channel.  The default value is:
+\verb|Internet=localhost+20001|. This is suitable if you are an
+internet site, but not if you have just your own ethernet which is not
+connected to the internet. In this case a more suitable value might be
+\verb|LOCAL-ETHER=localhost+20001| or \verb|localHost=20001|. (See the
+ISODE manual for more details on defining address communities.)
+
+This indicates that processes can communicate with the \pgm{pptsapd}
+daemon via a TCP/IP connection to the local machine on Port 20001.
+The address could just as easily be a remote machine name specifying
+an X25 address or a real NSAP (e.g., \verb|Janet=0000210010297|).
+
+\end{description}
+
+\subsection{Optional Tailoring Variables}
+
+The tailoring variables in this section are less critical, having
+defaults that are normally suitable.
+
+\begin{description}
+\item[\verb+cmddir+:]\index{cmddir}
+This is a directory and is the default place to find all the main PP
+commands. It should be a fully qualified pathname, i.e., starting with
+a forward slash.
+
+\item[\verb+tbldir+:]\index{tbldir}
+This is the directory where all the table files are located and should
+be a fully qualified pathname; it is used by
+\verb+dbmbuild+\index{dbmbuild} to generate the hashed database and
+for address lookups when tables are defined in
+\verb+linear+\index{linear} mode.
+
+\item[\verb+quedir+:]\index{quedir}
+This is the base directory for the PP queue. It should be a fully
+qualified pathname.
+
+\item[\verb+logdir+:]\index{logdir}
+This is the directory where log files will be written in by default.
+
+
+\item[\verb+chandir+:]\index{chandir}
+This is the directory where the executable channel programs are found.
+It defaults to a directory called \file{chans} within the
+\file{cmddir}.  When defined, if it is a relative name, (i.e., not
+starting with a forward slash) then it will be assumed to be a
+subdirectory of the \file{cmddir}.
+
+\item[\verb+formdir+:]\index{formdir}
+This is the directory where the simple programs run by the
+\pgm{fcontrol} are found. Not usually tailored, it defaults to a
+directory called \file{format} within the \file{cmddir}.
+When it is defined, it is taken as
+relative to the \file{cmddir} unless a full pathname is given.
+
+\item[\verb+dbm+:]\index{dbm}
+This is the name of PP database. It is assumed to be
+relative to the \file{tbldir} directory unless a full pathname is
+given. The default is \file{ppdbm}. 
+
+\item[\verb+pplogin+:]\index{pplogin}
+This is the user id that most of the PP programs will run under. It
+defaults to \file{pp} and  should be a username found in the
+\file{/etc/passwd} file.
+
+%%% \item[\verb+mboxname+:]\index{mboxname, mailbox, maildrop}
+%%% This is the maildrop file used by the 822-local delivery channel for
+%%% delivering local messages into users' home directories.  The default
+%%% is \file{.mail}.
+%%% 
+%%% \item[\verb+mailfilter+:]\index{mailfilter}
+%%% This is the mailfilter file used by the 822-local delivery channel
+%%% (see {\em The PP Manual: Volume~3 -- Users Guide}).
+%%% The default is \file{.mailfilter}.
+%%% 
+%%% \item[\verb+sysmailfilter+:]\index{sysmailfilter}
+%%% This is the mailfilter file the 822-local delivery channel uses if the
+%%% user does not have one.
+%%% The default is \file{/usr/local/lib/mailfilter}.
+%%% 
+%%% \item[\verb+delim1+:]\index{delimiters}\index{mailbox}\index{maildrop}
+%%% \index{delim1}
+%%% This is the message delimiter appended to the maildrop file before
+%%% each message.  The default is \verb+"\001\001\001\001\012"+ i.e. four
+%%% control-A's and a newline. (Beware, the {\em C} syntax \verb+\n+
+%%% does not work (yet)).
+%%% 
+%%% \item[\verb+delim2+:]\index{delim2}
+%%% This is the message delimiter appended to the maildrop file after
+%%% each message.  The default is
+%%% \verb+"\001\001\001\001\012"+ i.e. four control-A's and a newline.
+
+\item[\verb+isode+:]\index{isode}
+This variable allows the tailoring of any ISODE parameter specified in
+the {\man isotailor (5)} file. However, the ISODE logging levels are
+better handled by the \verb+isodelogs+ tailor line.
+
+\item[\verb+authchannel+:]\index{authchannel}
+This gives the default policy for channel authorisation; it is in the
+form of a \file{channel-auth} record (see Section~\ref{sect:auth}).
+The default is
+\verb+block+.  This determines the policy for any inbound/outbound
+channel pairing not explicitly entered in the channel authorisation
+table \file{channel-auth}.
+
+\[\begin{tabular}{l p{0.7\textwidth}}
+Note:& This feature is deprecated and will be removed in future. To
+set a default authorisation policy, use a construct \verb|*->*| in the
+\file{auth.channel} table.
+\end{tabular}\]
+
+\item[\verb+authloglevel+:]\index{authloglevel}
+This sets the level of authorisation logging.  Three levels are defined:
+\verb|low|, \verb|medium| and \verb|high|. These levels are now little
+used and should probably not be set.
+
+\item[\verb+wrndfldir+:]\index{wrndfldir}
+This is a directory to hold warning message files which can be sent
+automatically to sender or recipients when authorisation fails or a
+message is delayed in delivery.  It may be a fully qualified pathname
+starting with \verb+"/"+, or else is taken relative to the table
+directory \file{tbldir}.
+
+The default is \verb+warnings+.
+
+\item[\verb+warninterval+:]\index{warninterval}
+This is the time in hours after which to send a warning to the sender
+of the message telling him or her that the message is stuck in the MTA.
+
+The default is 24 hours.
+
+\item[\verb+nwarnings+:]\index{nwarnings}
+This is the maximum number of warnings to send.
+
+The default is two warnings.
+
+\item[\verb+returntime+:]\index{returntime}
+This is the time in hours after which to expire an undelivered
+message.  By default, this time is doubled for low priority messages
+and halved for high priority messages. However, these other values can
+be overridden by specifying two other times in hours after the normal
+return time, the first of these being the return time for high
+priority messages and the second for low priority messages.
+
+The default normal time out is 72 hours, giving about a day for high
+priority messages and just less than a week for low priority messages.
+Messages that pass through the list channel are set to low priority.
+
+If you are expecting problems in delivery (e.g., around Christmas)
+then it may be worth increasing this to some larger value temporarily.
+
+\item[\verb+lockstyle+:]\index{lockstyle}
+This is the style of locking to be used when it is necessary to lock a file.
+It may be one of the following:
+
+\[\begin{tabular}{| l | l |}
+\hline
+	\multicolumn{1}{|c|}{\bf Value} &
+		\multicolumn{1}{|c|}{\bf Meaning} \\
+\hline\hline
+	\tt flock&	Use the \man flock (2) system call. \\
+	\tt fcntl&	Use the \man fcntl (2) system call. \\
+	\tt file&	Use lock files that are created and removed.\\
+	\tt lockf&	Use the \man lockf (3) library call. \\
+\hline
+\end{tabular}\]
+
+The default style is \verb+flock+ but may be changed if you have
+doubts about the interaction of \man flock (2) and nfs.
+This is a run time configuration variable, and it will depend on what
+platform you are running as to whether all the above will be
+supported. The file locking mechanism will always be available, though.
+
+\item[\verb+lockdir+:]\index{lockdir}
+If the ``\verb+file+'' style of locking is to be
+used, this is the directory to create the files in. It defaults to
+\file{/tmp} and should be cleaned out at reboot time. It is ignored
+otherwise.
+
+\item[\verb|maxloops|:]\index{maxloops}
+This is a number indicating the number of times a
+message may pass thorough this mta before being rejected. The default
+is 5.
+
+\item[\verb|maxhops|:]\index{maxhops}
+This is a number indicating the number of trace
+fields a message may contain. If it has more than this number, the
+message will be rejected as looping. The default is 25.
+
+\item[\verb|x400mta|:]\index{x400mta}
+This is the name of this MTA in the X.400 world. It
+defaults to the same as \verb|loc_dom_mta|. It may be tailored
+differently if your MTA goes by a different name in the X.400 world.
+It is only used for information, no use is made for any routing
+purposes. It should therefore be a string that users will understand.
+
+\item[\verb|submit\_addr|:]\index{submit\_addr}
+This is a list of comma-separated submit
+addresses. By default a user interface program or channel will
+directly invoke submit, but with this option it will call a submit
+daemon. The specification is 
+\begin{quote}\begin{verbatim}
+<hostname> [ ":"<port> ]
+\end{verbatim}\end{quote}
+The hostname is a TCP hostname, the port reference is either a number
+or a port reference found in the services database. In this mode,
+\pgm{submit} is usually run under \man inetd(8). See
+Section~\ref{sect:submit} on page~\pageref{sect:submit} for more
+details.  The port defaults to \verb|4001| if not given, for no very
+good reason. If it fails to contact \pgm{submit} it will attempt to do
+a fork/exec of it as ususal.
+
+\item[\verb|dap\_user|:]\index{dap\_user}
+This is an X.500 directory distinguished name
+used when PP binds to the directory. It is useful to use this in
+versions of ISODE greater than 6.8 to distinguish PP use of X.500 from
+other users. There is no default for this, if this variable is empty
+all directory binds will be anonymous.
+
+\item[\verb|dap\_passwd|:]\index{dap\_passwd}
+A password to be used in conjunction with
+the \verb|dap_user| variable in binding to the directory. It is not
+necessary to set this variable normally, unless the directory entries
+require an authenticated bind.
+
+\item[\verb|queuestruct|:]\index{queuestruct}
+This is a variable used to control the structure of the queue. This is
+only useful to change if you are expecting very large queues ($>$~2000
+messages in the queue at one time.) It takes two numbers. The first
+number specifies the fan out of the queue. With a value of
+\verb|100|, messages will be put in 100 sub-directories of the main
+queue file. This cuts down the searching of the main directory but is
+only useful for very large queues. The second optional number is the
+level of sub-directories to create. By default this is one, indicating
+an indirection of one directory. Again this parameter should not
+be changed unless extremely large queues are expected (say $>$~50,000.)
+
+\item[\verb|fsync|:] This is a boolean variable which controls the use
+of the \man fsync (2) call. Fsync is normally used when critical files
+are written to before passing back a handshake. However, it can be
+switched off by a value of \verb|no| if you consider that it is too
+expensive.
+
+\item[\verb|diskuse|:] This parameter is used to limit the disk space
+consumed by PP. There are two numbers, the first being the number of blocks
+that should be free, the second being the percentage of the disk space
+that should be free. Either of these can be effectively disabled by
+setting them to \verb|0|. The disk that is checked is the partition
+holding the queue (\verb|quedir|).
+
+\item[\verb|adminstration\_assigned\_alternate\_recipient|:]
+\index{adminstration\_assigned\_alternate\_recipient} 
+This variable allows a undeliverable local address to be redirected to
+the user given here. This needs to be used with care, as messages that
+would normally be returned to the sender will be delivered to this
+address. Possible uses of this feature might be to deliver all failed
+messages to the postmaster for advice, or to deliver to a special
+program that returns fuzzy matches.
+\end{description}
+
+\section{Logging Tailor File Entries.}\index{tailoring, logs}
+This section describes how to tailor the logging produced by PP.
+
+There are four main groups of logging; covering normal events, unusual
+operational events, authorisation, and ISODE.  By default, each group
+will describe in a single file, the appropriate activities of all the
+programs that provide logs.  However, the \file{tailor} file may be used to
+separate out logging on a per-program or per-channel basis (see
+Section~\ref{sect:divlog} for more details).  Thus, for
+example, all normal activities may be logged in one file except
+\pgm{submit} which may be logged in a different file, and at a different
+level.
+
+All logging entries are comprised of a standard set of 
+key/value pairs, described below. 
+ 
+\begin{describe}
+\item[\verb+file=xxx+:]\index{log, file}
+Set the log file to \verb+xxx+. This is either a fully qualified
+filename, or more usually just a relative pathname which is taken
+relative to the \file{logdir}. It defaults to one of \verb|norm|,
+\verb|stat| or \verb|oper| depending on the log stream.
+
+\item[\verb+level=value+:]\index{log, level}
+This adds to the logging levels the given value. Legal values are
+\begin{describe}
+\item[\verb+all+:]	Enable all logging (this fills disks very quickly!).
+\item[\verb+fatal+:]	Enable reporting of fatal errors.
+\item[\verb+exceptions+:] Report exceptional happenings.
+\item[\verb+notice+:]	Report interesting happenings.
+\item[\verb+trace+:]	Trace the programs flow (very detailed).
+\item[\verb+debug+:]	A full debugging trace.
+\item[\verb+pdus+:]	Show protocol data units.
+\end{describe}
+The last three levels are only available if PP was compiled with
+\verb+PP_DEBUG+ defined to a suitable level. The value \verb|all| is
+special, in that it sets all values. The other levels only set the
+individual values (e.g., \verb+debug+ does not imply settings of any
+other values).
+
+The default level is to enable \verb+notice+, \verb+exceptions+ and
+\verb+fatal+.
+
+\item[\verb+dlevel=value+:]\index{log, dlevel}
+This unsets a logging level. Legal values of this are the same as
+the above.
+
+\item[\verb+sflags=value+:]\index{log, sflags}
+This sets the logging flags to a given value; the value being one of:
+\begin{describe}
+\item[\verb+close+:]	Close the log file after each entry is made.
+\item[\verb+create+:]	Create the log file if it doesn't already exist.
+\item[\verb+zero+:]	Zero the log file when it gets too big.
+\item[\verb+tty+:]	Log to the standard error as well as to the
+file. This should be used only when debugging.
+\end{describe}
+The default is to \verb|create| new files.
+
+\item[\verb+dflags+:]\index{log, dflags}
+This unsets one of the above levels for the log.
+
+\item[\verb+size+:]\index{log, size}
+Set the maximum size in Kilobytes to which the log should be allowed
+to grow. The default is not to limit the log size. What happens when
+the logfile reaches the specified maximum is governed by the flags. If
+\verb|zero| is not in force, logging will just stop. If \verb|zero| is
+in force, then the log will be truncated and restarted.
+\end{describe}
+
+There are currently four logging variables that can be specified
+although there are several logging structures.  
+
+The logging variables are:
+
+\begin{describe}
+\item[\verb+normlog+:]\index{normlog}
+This is the log where the bulk of the logging is done.
+
+\item[\verb+operlog+:]\index{operlog}
+This is where urgent messages are logged. In the normal course of
+events no entries should be made in this log unless something serious
+has happened.
+
+\item[\verb+authlog+:]\index{authlog}
+This indicates where authorisation tracing will be logged. 
+
+\item[\verb+isodelog+:]\index{isodelog}
+This line allows the tailoring of specific ISODE tracing levels. The
+first argument is an ISODE logging level. The rest of
+the line is interpreted as a normal log tailoring line.
+Valid ISODE logging levels are:
+\begin{describe}
+\item[\verb+x25level+:]		X.25 level (if used).
+\item[\verb+compatlevel+:]	Compatibility level.
+\item[\verb+addrlevel+:]	Addressing level.
+\item[\verb+tsaplevel+:]	Transport level.
+\item[\verb+ssaplevel+:]	Session level.
+\item[\verb+psaplevel+:]	Presentation structures.
+\item[\verb+psap2level+:]	Presentation level.
+\item[\verb+acsaplevel+:]	Association level.
+\item[\verb+rtsaplevel+:]	Reliable transfer level.
+\item[\verb+rosaplevel+:]	Remote operations level.
+\end{describe}
+
+\end{describe}
+
+An example of logging tailoring is shown in Figure~\ref{example:log}.
+
+\tagrind[hbtp]{log-examp}{Example of Log Tailoring}{example:log}
+
+\subsection{Diverting Logging Streams}\label{sect:divlog}
+By default, all the ISODE logging is directed at the normal log.
+
+Notice that for a given program or channel, the logging information
+can be diverted.  If a logging entry starts with the name of the
+program (e.g., \verb|argv[0]| normally) then that line is specific to
+that program; e.g.:
+\begin{quote}\small\begin{verbatim}
+submit	normlog file=submit
+\end{verbatim}\end{quote}
+makes a \pgm{submit}-specific \verb+normlog+ tailoring entry.
+Hence all logging from \pgm{submit} directed at the \verb+normlog+ will go
+to the file \file{submit} instead of the file associated with
+\verb+normlog+. The net result is that all the normal logging messages
+from \pgm{submit} end up in the file \file{submit} in the log directory.
+
+
+\section{Table Tailor File Entries}\index{tailoring, tables}
+
+This section describes how the tables of aliasing and addressing
+information, referenced by \pgm{submit} and the channel programs, are
+defined in the \file{tailor} file.
+
+Generally each table's entry is comprised of a line with several
+key/value pairs.  The line starts with the keyword \verb+tbl+ which is
+followed by a string setting the default name for the table and the
+plain text file in \file{tbldir}.  Then come the key/value pairs,
+described below.
+\begin{describe}
+\item[\verb+name=value+:]\index{table, name}
+Name this table with the given value (to override the default -- see
+above). This is included only for completeness as it is set by first
+argument; it is not normally used. The name is used in all references
+to the table.
+
+\item[\verb+file=value+:]\index{table, file}
+The tables contents are found in the given file (to override the default).
+
+\item[\verb+show="value"+:]\index{table, show}
+A descriptive string used when printing
+messages about this table, mainly for logging purposes.  It defaults
+to the same as the table name.
+
+\item[\verb+flags=value+:]\index{table, flags}
+A set of flags that specifies how this table
+operates. It should be one of the following:
+
+\begin{describe}
+\item[\verb+dbm+:]\index{table, dbm}
+This table is stored in the database for fast
+access (the default).
+
+\item[\verb+linear+:]\index{table, linear}
+This table is searched with a linear pass through the file in
+\file{tbldir} (this is slow, but does not require rebuilding the
+database, and changes take immediate effect). Linearly searched files
+are still built into the database.
+
+\end{describe}
+
+\item[\verb|override|:]\index{table, override}
+This allows values in the table to be overriden, or indeed if the
+table is small the whole table to be specified in the tailor file.
+Each occurance of this keyword adds a new key/value pair to a list.
+The format should be exactly the same as in a file with a key, a colon
+character (\verb|:|) and a value.
+\end{describe}
+
+An example of table tailoring is shown in Figure~\ref{example:table}.
+
+\tagrind[hbtp]{table-examp}{Example of Table Tailoring}{example:table}
+
+\section{Channel Tailor File Entries}\index{tailoring, channels}
+
+Channels are perhaps the most complex aspect of tailoring. There are
+several types of channels. Input channels carry messages into the
+system. Output channels carry messages out of the system. Reformatting
+channels change the message structure in the queue. Finally there are
+a few miscellaneous channels that do other jobs such as message deletion.
+
+The \file{channel tailor} file entries each consist of the keyword
+\verb+chan+ followed by a value which, by default, names the channel
+and the program associated with it; then comes a list of key/value
+pairs which provides more information on the channel.
+
+A number of the values can be applied to a pair of channels
+differently depending on whether the channel is being used in outbound
+or inbound mode. Where the distinction is significant, there are
+separate tailor variables prefixed by \verb|in| and \verb|out|.
+
+The key/value pairs consist of the following:
+\begin{describe}
+\item[\verb+name=value+:]\index{channel, name}
+The name of the channel (overrides the default).
+\item[\verb+prog=value+:]\index{channel, prog}
+The program associated with this channel, i.e.,  the actual binary to
+run (overrides the default).
+
+\item[\verb|key=values|:]\index{channel, key}
+A list of keys (comma separated) by which this channel is known. This
+can be used to map several logical channels onto one. See
+Section~\ref{channel:pair} on channel pairing on
+page~\pageref{channel:pair}. Note that a \verb|key| is an equally
+valid way to refer to a channel. When referencing a channel, the first
+match on \verb|key| or \verb|name| is taken. If specifying several
+keys, the entier value should enclosed in quotes. 
+
+\item[\verb+show="value"+:]\index{channel, show}
+A descriptive string used in pretty printing.  If this string starts
+with the keywords \verb|with| or \verb|via| then this value is
+included in \verb|Received| lines generated for RFC~822 messages.
+
+\item[\verb+type=value+:]\index{channel, type}
+This parameter is {\em mandatory} and indicates the type of channel
+this is.  This {\em must} be set to one of the values shown below:
+
+\[\begin{tabular}{|l|p{0.6\textwidth}|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value}&
+		\multicolumn{1}{|c|}{\bf Type of Channel}\\
+\hline
+	\tt in& 	An incoming channel.\\
+	\tt out&	An outgoing channel.\\
+	\tt both&	Both incoming and outgoing.\\
+	\tt shaper&	A reformatter that changes the shape of the message.\\
+	\tt warn&	A warning channel.\\
+	\tt delete&	A message deletion channel.\\
+	\tt qmgrload&	A queue manager loading channel.\\
+	\tt debris&	A debris collection channel.\\
+	\tt timeout&	A timeout channel.\\
+	\tt split&	A splitter channel.\\
+\hline
+\end{tabular}\]
+
+\item[\verb+drchan=value+:]\index{channel, drchan}
+This value must be set for outbound channels that cannot handle real
+delivery reports - that is channels of type \verb|out| or type
+\verb|both|.. At present, it is only the X.400 channels and the
+X.400-based delivery channels that can handle delivery reports.  Other
+channels should set this to a suitable channel that can transform DRs
+into suitable messages. Currently this should always
+\pgm{dr2rfc}.
+
+
+\item[\verb+content-in=value+:]\index{channel, content-in}
+The content of this channel if it allows incoming messages. It is
+normally either \verb+p2+, \verb+p22+ or \verb+822+. It should be
+empty if the message is submitted in structured form (i.e. more than
+one file)
+
+\item[\verb+content-out=value+:]\index{channel, content-out}
+The content of this channel if it allows outgoing messages. Values are
+as for \verb|content-in|.
+
+\item[\verb+cost=value+:]\index{channel, cost}
+The cost of running this channel represented as a non-negative
+integer. This is used in the reformatting calculations to decide the
+best conversion path.  The lowest cost route will be chosen, all other
+things being equal. Costs are relative; a cost of 0, the default,
+means that this channel essentially makes no changes to the message.
+Higher costs make the channel less favourable. 
+
+As a rule of thumb, any channel that makes a real change to a message
+should have a positive cost. Thus \pgm{rfc822norm} channels should
+have a small cost (e.g., 1) as they make small changes to the message.
+A channel such as \pgm{P2toRFC} should have a larger cost (e.g., 10)
+as this conversion should not be done unless needed. A channel that
+removes a content type by \pgm{removebp} should be given a large cost
+(e.g., 100) as this should only be run if there is no alternative.
+However, a channel such as \pgm{p2flatten} should have a zero cost as
+it makes no change to the message content, just combining it into one
+file.
+
+\item[\verb+sort=value+:]\index{channel, sort}
+This value is a series of keys that are used for sorting purposes by
+the queue manager. The first key is the primary sort key and must be
+either \verb+mta+, \verb+user+ or \verb|none|. The value \verb|none|
+should only be used as a primary sort key for delivery channels. The
+remaining keys are secondary sort keys and are taken in order.  The
+values for this field are any of those shown below:
+\[\begin{tabular}{|l|p{0.6\textwidth}|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value}&
+		\multicolumn{1}{|c|}{\bf Meaning}\\
+\hline
+	\tt mta&	Sort by destination MTA. This is the most common
+primary sort key.\\
+	\tt user&	Sort by username. This is useful for local
+deliveries. \\
+	\tt priority&	Sort by the priority of the message.\\
+	\tt time&	Sort by queued time.\\
+	\tt size&	Sort by the size of the message.\\
+	\tt none&	Don't attempt to sort\\
+\hline
+\end{tabular}\]
+By default, all outbound channels are sorted by \verb|mta| only. Local
+channels should be sorted by \verb|user|. Reformatters and other
+channels are normally sorted by \verb|none|. However, setting a
+reformatter to \verb|mta| or \verb|user| allows multiple instances of
+the same channel to run concurrently.
+
+\item[\verb+outinfo=value+/\verb+ininfo=value+:]
+\index{channel, outinfo}\index{channel, ininfo}
+This contains channel-specific information that can be used for a
+variety of purposes.
+For example, the \verb+outinfo+ field is used by the simple formatters
+to give the real program to run. Typically a simple formatter is a
+shell script or similar, with \pgm{fcontrol} indicated as the program.
+In such cases the \pgm{fcontrol} program is then responsible for queue
+manager interaction and it runs the program in the \verb|outinfo| field as a
+subprocess.
+
+\item[\verb+inadr=value+/\verb+outadr=value+:]\index{channel, inadr}
+\index{channel, outadr}
+The type of addressing that is used by this channel.  The value is
+one of those below:
+\[\begin{tabular}{|l|l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value} &
+		\multicolumn{1}{|c|}{\bf Meaning}\\
+\hline
+	\tt	x400&	X.400 addressing\\
+	\tt	822&	rfc822 addressing\\
+%%%	\tt	any&	any of the above two types\\
+\hline
+\end{tabular}\]
+
+\item[\verb+adr=type+:]\index{channel, addr}
+This assigns the given address format to both the \verb|inadr| and
+\verb|outadr|. It is used for backwards compatability and as a short cut.
+
+
+\item[\verb+insubadr=value+/\verb+outsubadr=value+:]
+\index{channel, insubadr}\index{channel, outsubadr}
+The type of subaddressing used by a channel, if appropriate.
+Currently this is only relevant in conjunction with a definition of
+\verb+inadr=822+ or \verb|outadr=822|. The value is one of those below:
+\[\begin{tabular}{|l|l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value} &
+		\multicolumn{1}{|c|}{\bf Meaning}\\
+\hline
+	\tt	real.rfc822&	normal rfc822 style addressing \\
+	\tt	real.rfc733&	rfc733 style addressing \\
+	\tt	jnt&		JNT style addressing \\
+\hline
+\end{tabular}\]
+
+For inbound RFC~822 based channels, if \verb+insubadr+ is set to either
+\verb+real.rfc733+ or \verb+jnt+ then \pgm{submit} will recognise
+percentages as characters with routing properties.
+If \verb+insubadr+ is not set to either of these, \pgm{submit} views
+percentages as characters with no special properties.
+
+\item[\verb+subadr=type+:] \index{channel, subadr}
+This variable sets both the \verb|insubadr| and \verb|outsubadr|
+variables for a channel.
+
+\item[\verb+adr-order=value+:]\index{channel, adr-order}
+The ordering of addresses on this
+inbound channel. This is one of the following:
+\[\begin{tabular}{|l|p{0.6\textwidth}|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value} &
+		\multicolumn{1}{|c|}{\bf Meaning}\\
+\hline
+	\tt usa&	Internet style addressing is insisted upon.\\
+	\tt uk&		JNT style addressing is insisted upon.\\
+	\tt usapref&	Internet style addressing is preferred but both
+types will be tried.\\
+	\tt ukpref&	JNT style is preferred but both types will be
+tried. \\
+\hline
+\end{tabular}\]
+The default value is \verb|usa|. Normally only UK sites will need to
+modify this variable. Note that this flag only affects the behaviour
+of \pgm{submit}.
+
+\item[\verb+bptin=value+:]\index{channel, bptin}
+A list of body parts that the channel accepts as input. 
+This must be one of the
+types defined in the \verb|bodypart| tailoring item defined in
+Section~\ref{tai:bodypart} on page~\pageref{tai:bodypart}.
+
+\item[\verb+bptout=value+:]\index{channel, bpout}
+A list of body parts that the channel will output.  The possible
+values are the same as for those for bptin.
+
+\item[\verb|hdrin=value|/\verb|hdrout=value|:]
+These variables are much the same as the \verb|bptin|/\verb|bpout|
+variables but apply to the headers instead.
+
+\item[\verb+outtable=value+:]\index{channel, outtable}\index{channel, table}
+A table associated with the outbound part of this channel. This is
+used by the channel program, in a channel specific way. Not all
+channels require this.
+
+\item[\verb|intable=value|:]\index{channel, intable}
+A table associated with the inbound part of this channel.
+
+\item[\verb+mtatable=value+:]\index{channel, mtatable}
+This is a table that is used in binding to the appropriate channel. See
+Section~\ref{channel:pair} on page~\pageref{channel:pair}
+on channel pairing for use of this feature.
+
+\item[\verb+mta=value+:]\index{channel, mta}
+A destination MTA for this channel. If this is set, all messages will
+be delivered to this MTA regardless of the destination MTA given in
+the message. This is useful for relaying all messages for a given
+channel via another MTA.
+
+\item[\verb+access=value+:]\index{channel, access}
+The type of access this channel requires; only applicable to channels
+of type \verb|in| and \verb|both|. The value is either \verb+mta+, in
+which case the channel must be run by a trusted user-id, or else
+\verb+mts+ in which case authentication of messages is enabled. The
+default is \verb|mta|.
+
+\item[\verb+domain-norm=value+:]\index{channel, domain-norm}
+The amount of domain normalisation of MTS addresses on inbound
+channels.  The value is one of those below (the default is
+\verb+partial+):
+\[\begin{tabular}{|l|l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value} &
+		\multicolumn{1}{|c|}{\bf Meaning}\\
+\hline
+	\tt	full&		all domains in an MTS address are normalised\\
+	\tt	partial&	only the next hop of an MTS address is normalised\\
+\hline
+\end{tabular}\]
+With \verb|partial| local domains are recognised and skipped, so the
+first non-local domain will be normalised.
+
+\item[\verb+maxproc=value+:]\index{channel, maxproc}
+This is the maximum number of instances of the channel the QMGR is
+allowed to run at any time.  A value of \verb+0+ indicates that there
+is no maximum to the number of instances the QMGR can run.  The
+default is \verb+0+. See Section~\ref{sect:qmgrmgr} for some discussion
+on limiting channels in this way.
+
+\item[\verb+auth-table=value+:]\index{channel, auth-table}
+This is a table which contains the authentication data for the channel
+if it is an \verb+mts+ submission channel. The format is described in
+Section~\ref{sect:authen} on page~\pageref{sect:authen}.
+
+\item[\verb|conv=value|:]\index{channel, conv}
+This variable specifies what effect the channel has on a message. This
+is used to check on conversion restrictions; in particular the X.400
+and RFC~1148 conversion semantics. It may take one of the following
+values:
+\[\begin{tabular}{|l|l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value} &
+		\multicolumn{1}{|c|}{\bf Meaning}\\
+\hline
+	\tt	none&	channel does no conversion\\
+	\tt	1148&	channel does RFC 1148/987 header mappings\\
+	\tt	conv&	channel does conversion without loss\\
+	\tt	loss&	channel does conversion with loss\\
+\hline
+\end{tabular}\]
+The default value is \verb|none|. Channels that do mapping of P2 to
+RFC~822 {\em headers} and the reverse should use the value \verb|1148|
+to indicate that conversion can be carried out even in the presence of
+the conversion-prohibited flag of X.400. This will allow messages with
+header mappings and no body part conversions to go through an
+RFC~1148/987 gateway. Channels that change formats without losing
+information (except RFC~1148/RFC~987 channels) should be marked as
+\verb|conv|. Channels which lose data (such as, say, G3Fax to Ia5)
+should be marked as loss (they should also be given a high cost).
+
+
+\item[\verb|probe=value|:]\index{channel, probe}
+This variable states whether this channel can support X.400 style
+probe messages. It has values \verb|y| and \verb|n|. The default is
+\verb|n|. This should be set for X.400 channels. If submit determines
+the channel cannot support probes it will return a delivery report.
+
+\item[\verb|trace=value|:]\index{channel, trace}
+This variable tells \pgm{submit} what sort of trace element to
+generate. This is only applicable to RFC~822-based protocols, and can
+be set to either \verb|received| to generate Received lines or
+\verb|via| for Via lines. The default is \verb|received|.
+
+\item[\verb|solo-proc=value|:]\index{channel, solo-proc}
+If this variable is set to \verb|yes|,
+\pgm{submit} ensures that messages processed
+through this channel only have one recipient.
+This may result in a message with multiple recipients being
+resubmitted several times with one recipient each time.
+This feature is useful for when the processing must be specific to one
+recipient i.e. the \pgm{hdr2fax} filter (see
+Section~\ref{sect:faxconv}).
+By default, \verb+solo-proc+ is set to \verb|no|.
+
+Note this feature uses the \verb+splitter+ channel.
+So such a channel must also be tailored.
+
+\item[\verb|bad-sender-policy=value|:] \index{channel, bad-sender-policy}
+This can be set to one of the following keys to control the policy for
+unroutable or unreplyable sender addresses.
+\[\begin{tabular}{| l | l |}
+\hline
+	\multicolumn{1}{|c|}{\bf Value} &
+		\multicolumn{1}{|c|}{\bf Meaning} \\
+\hline\hline
+	\tt strict&	Generate delivery report (default).\\
+	\tt sloppy&	Artificially route on failure. \\
+\hline
+\end{tabular}\]
+It is STRONGLY recommended that the default policy is used. This will
+fail messages that arrive with an unroutable or unreplyable sender
+specification. If this is overridden, messages can easily be lost if
+any failure occurs.
+
+If the \verb+sloppy+ mode is in effect, PP will attempt to route
+failure messages for unroutable senders either via the inbound MTA or
+if that fails to \verb+postmaster+.
+
+\item[\verb|check=value|:]\index{channel, check}
+This variable sets the checking mode of the channel. Normally this
+should be left as the default, which is strict checking. However, for
+unusual cases it may be required to relax some of the constraints
+normally imposed. Setting \verb|check| to \verb|sloppy| will reduce
+the strictness of the checking to some extent. In particular it will
+allow RFC~822 messages with no, or multiple \verb|Date| fields to be
+accepted.
+
+\end{describe}
+
+An example of a channel tailoring is shown in
+Figure~\ref{example:chan} and will help to make things a little clearer.
+The descriptions above can be used to determine exactly what each
+channel does.
+
+\tagrind[hbtp]{chan-examp}{Example of Channel Tailor Entry}{example:chan}
+\clearpage
+
+\section {ISODE Runtime Tailoring}
+
+\subsection{Queue Manager Tailoring}
+Information relating to the MTA, its QMGR, and their
+addresses are normally obtained from the file 
+\file{isoentities} and take the general form:
+\begin{quote}\small\begin{verbatim}
+vs2 "pp qmgr" 1.17.6.2.1 #1001/Internet=vs2+18000
+\end{verbatim}\end{quote}
+
+The first field is the designator of the machine that the QMGR
+is running on. It is usually the name of the machine. The second is
+the QMGR service; this should not be changed.  The same goes for the
+other third field. The last field specifies the transport
+selector that the QMGR listens on (1001 in this case) and the NSAP
+address. In this case it is in internet form, with hostname \verb|vs2|
+and TCP port number \verb|18000|. The QMGR uses this address to listen
+on, \pgm{submit} uses the address to contact the QMGR as do mta
+console programs such as \pgm{MTAconsole}.
+
+This information may also be obtained from the directory if the
+directory nameserver is being used. A suitable
+entry for addition to quipu might be:
+\begin{quote}\begin{verbatim}
+objectClass= top & applicationEntity & quipuObject
+cn= pp qmgr
+description= Submit to Qmgr
+presentationAddress= \
+   '1001'H/LOCAL-ETHER=lancaster.xtel.co.uk+18000
+supportedApplicationContext= 0.9.2342.60200172.201.1
+acl=
+\end{verbatim}\end{quote}
+The presentation address should be ammended to be correct for your
+site, the {\verb|supportedApplicationContext|}
+must not be altered however.
+
+\subsection{X.400 Tailoring}
+If the X.400 is going to be used, then a definition of this must be
+placed in the file \file{/etc/isoservices}. A suitable definition
+might look like this:
+\begin{quote}\small\begin{verbatim}
+"tsap/p1"  "591"   /usr/lib/pp/chans/x400in84
+\end{verbatim}\end{quote}
+
+This shows the service name \verb|tsap/p1|, the transport selector
+\verb+"591"+ and indicates the location of the program. You should use
+a numeric IA5 form of TSEL for X.400(84) compliance.
+
+Alternatively, an entry can be added to the directory if the 
+\man iaed(8) is being used. Such an entry might look like the
+following:
+\begin{quote}\small\begin{verbatim}
+objectClass= top & applicationEntity &\
+      quipuObject & iSODEApplicationEntity
+cn= x40084
+description= X.400 service (1984)
+presentationAddress= "591"/LOCAL-ETHER=128.243.9.1|\
+  Janet=00002100102999|\
+  IXI=20433450210399
+supportedApplicationContext= 2.6.0.1.6
+execVector= /usr/lib//pp/cmds/chans/x400in84
+\end{verbatim}\end{quote}
+
+For more details of the formats of these files, see {\em The ISO
+Development Environment: Users Manual}.
+
+\section{Channel Pairing}\label{channel:pair}
+
+Many of the channels within PP naturally fall into pairs. For
+instance, it is usual to have an inbound X.400 channel and a
+corresponding outbound X.400 channel.
+
+As this is a common occurence, one channel definition in the \file{tailor}
+file can be used to define both channels. Such a channel should be
+marked as type \verb|both|. Where both sides of the channel require a
+parameter, such as a table, there is an explicit in and out value.
+
+Channel pairing can bring several benefits. If the QMGR knows about
+paired channels, it can make some optimisations. When a message is
+received for an MTA on the inbound side of a paired channel, it can,
+if there are messages waiting to go out on that channel, assume that this
+MTA has just come up and schedule a retry immediately (this feature is
+planned for PP but not implemented in 6.0).
+
+A side effect of channel pairing can help with authorisation. An
+incoming channel usually has a fixed name. However, if a number of
+channels are defined in the tailor file with a \verb|key| of that
+value, then all of these channels are potentially usable. In this
+case, the MTA that the message was received in is looked up in each of
+the associated \verb|mtatable| table. The first channel to match on
+both key and the contents of the mtatable is chosen.  Authorisation is
+then done on this basis. One of the channels may not have an
+\verb|mtatable| associated with it, in which case this is the default
+channel to use. Note that this gives the first match, rather than the
+best possible match of tables.
+
+The format of the \file{mtatable} is identical to the \file{domain}
+table.  However, the value on the RHS is only used in determining
+matches. It must however be a legal value.
+
+As an example, consider a host on the internet which wishes to
+authorise usage on the basis of whether the user is ``local'' or
+``remote''. This might be achieved by the following:
+\begin{quote}\small\begin{verbatim}
+chan smtp-local key="smtp",mtatable=localhosts,...
+chan smtp-internet key="smtp"
+\end{verbatim}\end{quote}
+
+The incoming channel then claims to be ``smtp''. If the MTA the
+message is received from is present in the localhosts table, then
+\verb|smtp-local| is used as the channel, and authorisation done on
+that basis. Otherwise it is assumed to be \verb|smtp-internet| and
+potentially different authorisation is applied.
+
+On a smaller site, this same feature can be used to map many channels
+onto one. For instance, the \pgm{greyin} channel selects one of
+\verb|gb-janet| \verb|gb-pss| or \verb|ipss| depending on which
+network the call originated. If this distinction is not important, all
+three can be mapped to one channel by tailoring:
+\begin{quote}\small\begin{verbatim}
+chan gb-janet key="gb-pss,ipss",...
+\end{verbatim}\end{quote}
+
+\section {Tailoring of Common Channels}\index{channel}
+
+Channels perform operations on messages.  Intermediate channels for
+reformatting and other manipulation are considered later.  The
+following terms apply to endpoint channels:
+
+\begin {description}
+\item[outbound:]  A channel which delivers messages out of PP.
+
+\item[inbound:]  A channel which passes messages into PP 
+(through \pgm{submit}).
+
+\item[active:] A channel which is initiated by the QMGR.
+
+\item[passive:] A channel which is not initiated by the QMGR (typically by a
+user or server).
+
+\end {description}
+
+The most common types of channel are passive inbound and active outbound.
+
+\subsection	{Submit}\label{sect:submit}
+
+The \pgm{submit} program can run in a variety of modes. The original
+and default mode is for incoming channels and user agents to directly
+execute submit and communicate using \man pipe(2) interprocess
+communication.
+
+As an alternative, if the \verb|submit_addr| variable is used, submit
+can be run either from \pgm{inetd} or as a standalone daemon.
+For example the
+following \file{tailor} file entry
+\begin{quote}\begin{verbatim}
+submit_addr	lancaster.xtel.co.uk:pp-submit
+\end{verbatim}\end{quote}
+might be combined with the following \file{inetd.conf} entry
+\begin{quote}\begin{verbatim}
+pp-submit stream tcp nowait pp 
+    /usr/lib/pp/cmds/submit submit
+\end{verbatim}\end{quote}
+
+Alternatively, submit with the \verb|-s| switch will run in standalone
+server mode. A similar tailor line to above is required. In this mode,
+submit will read the tailor file and contact the \pgm{qmgr} before
+answering connections, thus being more efficient in some cases.
+
+\subsection	{Protocol Channels}
+
+Protocol channels are channels that talk to the outside world. There
+are a number of these supplied with PP.  Those that have special
+requirements or are optional are described here.
+
+\subsubsection	{SMTP channel}\label{sect:smtp}
+The \pgm{smtp} channel comes in two parts, the outbound channel and the
+inbound daemon. The inbound daemon can have a number of arguments to
+it, and can be run either under the control of \man inetd (8) or under
+the standalone server \pgm{smtpd}. To configure it to run under
+\pgm{inetd} the following entry in the file \file{/etc/inetd.conf}
+might be appropriate (but see \man inetd.conf (5) for more details).
+
+\begin{quote}\small\begin{verbatim}
+smtp stream tcp nowait pp \
+    /usr/lib/pp/cmds/chans/smtpsrvr smtpsrvr smtp
+\end{verbatim}\end{quote}
+
+If, however, you prefer to run a standalone smtp server, the command is
+something like this (usually included in \file{pp.start}):
+
+\begin{quote}\small\begin{verbatim}
+/usr/lib/pp/cmds/smtpd /usr/lib/pp/cmds/smtpsrvr smtp
+\end{verbatim}\end{quote}
+
+The following arguments are supported by the \pgm{smtpd} program.
+\begin{describe}
+
+\item[\verb|-p port|:]	Specify a different TCP port to listen on when
+running standalone.
+
+\item[\verb|-i maxcon|:] Set the maximum number of simultaneous smtp
+connections that are supported. Only obeyed when running standalone.
+
+\item[\verb|-t timeout|:]	Set a default timeout for use with the
+nameserver. This is only used if the server is compiled with nameserver
+support included.
+
+\end{describe}
+The two mandatory arguments for \pgm{smtpd} are the name of a server
+program to interpret the smtp protocol, and the name of a channel that
+incoming messages will arrive on.
+
+Finally, the smtp server makes use of one additional tailoring
+variable in the channel specification. If the \verb|ininfo| element
+of the channel tailoring entry contains the string
+{\verb|sloppy|\index{sloppy}} then any connection will be allowed. If
+this is not the case, connections are only supported from hosts that
+can be reversed translated (e.g., the IP number can be converted back
+to a host name).
+
+The smtp outbound channel has only one special option. It can be
+given a flag \verb|-p port| to tell it to connect to a different tcp
+port other than the default. This can be set up by setting the tailor
+entry to something like the following:
+
+\begin{quote}\small\begin{verbatim}
+chan smtp-odd pgm="smtp -p 2001",show="Odd smtp"...
+\end{verbatim}\end{quote}
+
+
+\subsubsection	{X.400 inbound channel}
+
+The X.400(84) inbound channel (\pgm{x400in84}) takes note of the
+\verb|ininfo| part of the tailoring information. If this is set to the
+string \verb|sloppy| then no checking of MTA name and password is done
+for any connection incoming on that channel. Also, if the NSAP cannot
+be found in the inbound table for this channel, the connection is
+still allowed.
+
+X.400 inbound also has an optional flag; this is as follows:
+\begin{describe}
+\item[\verb|-c channelname|:]	Claim to be the given channel name on
+input. You may have a number of X.400 inbound channels, selected
+initially by T-Selector or network address. If you wish to split up
+traffic in this way, possibly for authorisation reasons, you should
+set the channel name in this way in the \pgm{isoservices} file. By default
+the channel is assumed to be the name of the program itself. However,
+a better way to do this is through the channel pairing system.
+\end{describe}
+
+\subsubsection	{UUCP Channel}\index{channel, uucp}
+
+The uucp channel interfaces to the UUCP system. It uses the \verb|outinfo|
+string of the channel to tailor the interface. This string is a key
+value pair that can set various parameters. The key/value pairs are
+separated by a comma. The possible keys are:
+\begin{describe}
+\item[\verb|uux|:]	Set the \verb|uux| pathname and arguments.
+This parameter must be present.
+
+\item[\verb|host|:]	When constructing the uucp from line, use this
+value as the host name.
+\end{describe}
+An example configuration might be:
+\begin{quote}\small\begin{verbatim}
+chan uucp-out prog=uucp-out,show="UUCP outbound channel",
+    type=out, adr=822,adr-order=ukpref,outtable=uucp
+    outinfo="uux=/usr/bin/uux - -r,host=nott-cs"
+\end{verbatim}\end{quote}
+
+\subsubsection {\decnet/ MAIL11 channel}\index{channel, decnet}
+The \pgm{decnet} channel implements the DECnet mail protocol. It is
+currently only available for the Sun implementation of DECnet (Sunlink
+DNI, V7.0 onward). The channel comes in two parts, the outbound channel
+and the inbound server. The inbound server is run under the control of
+the DECnet spawner (the DECnet equivalent of \pgm{inetd}) and will
+require an entry of the form
+
+\begin{quote}\begin{verbatim}
+27    MAIL   /usr/lib/pp/cmds/chans/decnetsrvr
+\end{verbatim}\end{quote}
+
+in the \file{dniserver.reg} configuration file.  It is not possible to
+pass any arguments into the server due to limitations of the
+\pgm{dniserver}, so the server takes its tailoring from a channel with
+the hardwired name of \verb|decnet-in|.
+
+The \pgm{decnet} outbound channel makes use of a number of tailoring
+options. The \verb|outinfo| element of the channel tailoring entry
+may be set to any combination of the following options. If more than
+one option is selected then the options are separated by commas and
+the whole string must be enclosed in quotes. 
+
+\begin{description}
+\item[\verb|strip|:] If this option is selected, all headers except
+for To:, From: and Subject: will be stripped off and thrown away,
+otherwise they will be moved into the message body. This is for the
+benefit of VMS users who tend to be panicked by what they see as UNIX
+style headers.
+
+\item[\verb|mrgate|:]
+Select this option if the MTAs contacted by this channel are running
+DECs mail router software. This makes a small but significant change
+to the addresses presented to such sites.
+
+\item[\verb|map\_space|:]
+This option enables the mapping of space to underbar in the incoming
+channel and vice versa in the outgoing channel. This caters for sites
+running All-in-One and/or mail router which have chosen to have mail
+addresses with spaces in them. This can be specified in the
+\verb|ininfo| and \verb|outinfo| variable.
+\end{description}
+
+Note that incoming connections are only allowed from hosts for which a
+reverse mapping exists in the DECnet database. There is no equivalent
+of the \pgm{smtp} \verb|sloppy| option.
+
+\subsection	{Filter Control and Common Filters} \index{filter control}
+
+Filters can be called via a special channel called \pgm{fcontrol}.
+This channel can be used in a variety of guises to run various filters
+on messages and, in particular, on the body parts within the messages.
+It should only be used for filters where there is a one-to-one mapping
+between incoming body parts and outgoing body parts; i.e., the contents
+of the body parts, and possibly their names, may be altered by a
+filter, but the structure of the message will remain the same.
+
+A filter reads an incoming body part from the standard input, does the
+required filtering, and writes the outgoing body part to the standard
+output.  Any error or logging messages produced by the filter should
+be written onto the standard error. \pgm{fcontrol} logs these messages
+at the \verb+LLOG_NOTICE+ level. The filter should exit with a value
+of \verb|0| to indicate success. Any other exit value is taken as
+a temporary failure.
+
+To create a channel which runs a given filter, an entry has to be made
+in the \file{tailor} file.  The entry should be constructed in the normal way
+with the following provisos:
+
+\begin{describe}
+
+\item[\verb+prog+:] This should contain the filename of the
+filter controller, \pgm{fcontrol}.
+
+\item[\verb+outinfo+:] 
+The pathname of the filter's executable program should be placed in
+the \verb+outinfo+ field, followed by any arguments that are to be passed
+to the filter.  If the given name is not a fully qualified pathname,
+the filter controller assumes the executable to be under the
+\file{formdir} directory.  Arguments of the form \verb+$(key)+ will be
+expanded to the entities described in Table~\ref{tab:expansions}.  The
+key is case independent.
+
+\item[\verb+bptin+/\verb+bptout+] 
+Filters should not change the structure of the message. \verb+bptin+
+should only contain one type of bodypart.  This type is the bodypart
+type that the filter converts. \verb+bptout+ should also only contain
+one type of bodypart.  This bodypart type is the result of the
+filter's conversion.  i.e., the filter converts bodypart \verb+bptin+
+into bodypart
+\verb+bptout+.
+
+\item[\verb+hdrin+/\verb+hdrout+]
+This fulfills the same type of function as \verb+bptin+/\verb+bptout+
+but for the headers of the messages. The header must be one of those
+defined in \verb+headertype+.
+
+\item[\verb+type+] The type should be set to \verb|shaper|.
+
+\end{describe}
+
+\tagtable{info_expan}{Filter Control Expansion Macros}{tab:expansions}
+
+Example \file{tailor} file entries of filters running in conjunction with
+\pgm{fcontrol} are shown in Figure~\ref{example:fcontrol}.
+
+\tagrind[hbtp]{filt-examp}{Example of Filter Control Tailoring}{example:fcontrol}
+
+Trivial filters such as voice to ia5 mappings can be done by a simple
+shell script of the type shown in Figure~\ref{example:shellfilt}.
+
+\tagrind[hbtp]{shelfilt}{Simple Shell Script Filter}{example:shellfilt}
+
+Here are descriptions of some common filters run in conjunction with
+\pgm{fcontrol}:
+
+\subsubsection {RFC~822 Filter}\index{rfc822norm}
+
+The filter \pgm{rfc822norm} is used in conjunction with the
+general filter controller \pgm{fcontrol}, for dealing with RFC~822 and
+related headers.  It takes a generic RFC~822 header as input, and
+outputs a ``normalised'' form.  A normalised header is one in which
+all addresses are fully qualified and are in the correct order.  For
+this reason, the \verb+hdrin+ and {\verb+hdrout+} fields in any
+associated \file{tailor} file entry should be some extended version of
+{\verb+822+}, e.g \verb+822-us+, {\verb+822-uk+}, etc.
+
+The filter affects the following fields of the RFC~822 header:
+
+\begin{itemize}
+\item All of the addressing fields in RFC~822.
+\item The Acknowledge-To field (JNT Mail).
+\item Any invalid trace fields are replaced.
+\end{itemize}
+
+The filter's behaviour may be altered by specifying various options.
+These options are passed through \pgm{fcontrol} to the filter
+by use of the \verb|outinfo| element of the channel structure.
+One possible \verb|outinfo| string is as follows:
+\begin{quote}\small\begin{verbatim}
+rfc822norm -822 -striptrace -jntsender $(822sender)
+\end{verbatim}\end{quote}
+
+The \pgm{rfc822norm} filter can be used in a variety of guises.
+For example, in appendix~\ref{app:tailor} the combination of
+\pgm{fcontrol} and \pgm{rfc822norm} appears twice, so
+providing two different channels, \pgm{822touk} and \pgm{822tous}.
+
+The filter takes the following options:
+
+\begin{describe}
+
+\item[\verb+-822+:] Format source routes according to RFC~822.
+
+\item[\verb+-733+:] Format source routes with a ``\%'' notation (default).
+
+\item[\verb+-bigend+:] Format domains big--endian.
+
+\item[\verb+-littleend+:] Format domains little--endian (default).
+
+\item[\verb+-jnt+:] A combination of the \verb+-bigend+ option and the
+\verb+-733+ option.
+
+\item[\verb+-striproutes+:] Removes any source routes (733 or 822)
+from the \\
+header. This removal starts after the first valid domain in each address.
+
+\item[\verb+-stripdomain <domain>+:] Like -striproutes, except that only the
+specified domain is stripped.
+
+\item[\verb+-striptrace+:] Remove all trace fields from the header.
+
+\item[\verb+-jntsender <sender>+:] This applies the rules of mailgroup note 15,
+to ensure that the JNT Mail return path correctly identifies the P1 originator.
+Typically, this will involve adding a Sender Field to the message, and
+possibly modifying existing trace fields.
+
+\item[\verb+-msgid+:] This flag ensures the presence of a message id in
+the message.
+If there is no message id, the RFC~822 filter will create one and
+append it to the header.
+
+\item[\verb+-full+:] This flag indicates that all domains in addresses
+should be normalised. By default, only the next hop of an address is
+normalised.
+
+\item[\verb+-percent+:] This flag indicates that the \verb+%+
+character should be treated as a routing character when parsing
+addresses. If this witch is not in force, \verb|%| will be treated as 
+any other character.
+
+\item[\verb+-hidelocal <pattern>+:] Apply a host-hiding heuristic to
+``clean-up'' mail sent from other hosts on site which is going off site.
+Pattern can be a simple domain or a domain with wildcard subdomains,
+for example:
+\begin{quote}\small\begin{verbatim}
+  *.icl.stc.co.uk
+and
+  stl.stc.co.uk
+\end{verbatim}\end{quote}
+but not domains of the form
+\begin{quote}\begin{verbatim}
+frodo.*.co.uk
+\end{verbatim}\end{quote}
+
+{\em Warning}: this flag should be used with care and should not normally be
+required.
+
+\item[\verb+-changedomain <from> <to>+:] Change occurances of domain
+\verb+from+ to domain \verb+to+. This flag is useful when running PP
+as a gateway between two or more networks and a specific domain is
+known by different names on different networks.
+Note that this replacement may only work on normalised domains.
+So to normalise all domains and guarantee the replacement, the
+\verb+-percent+ should also be used.
+ 
+\item[\verb+-fold <number>+:] This indicates the length for displaying 
+RFC~822 header fields. 
+The default value is 79; alternately with a value of -1 there will be 
+no folding. Whatever the value, folding will only occur at higher level
+breaks, and not within an address. 
+
+\item[\verb|-stripack|:] Strip \verb|Acknowledge-To| lines from the header.
+
+\item[\verb|-acks|:] If no \verb|Acknowledge-To| lines are present, generates
+Acknowledge-To the the sender.
+
+\item[\verb|-exorcise|:] Changes domains not found in the table
+specified by \verb|-valid_domains| to be routed via the domain
+specified by \verb|-exorcise_domain| (defaulting as appropriate).
+
+\item[\verb|-exorcise\_domain domain|:] The domain to be added. This defaults
+to \verb|loc_dom_site|. This also enables the \verb|-exorcise| switch.
+
+\item[\verb|-valid\_domains table|:] This is a table containing a list
+of known domain references. It defaults to the \file{domain} table.
+This also enables the \verb|-exorcise| switch.
+
+\item[\verb|-external|:] When normalising a local address, follow
+\file{alias} table entries marked with 
+the qualifier \verb|external| (the default).
+
+\item[\verb|-internal|:] Don't follow \file{alias} table entires
+marked with \verb|external| when normalising local addresses.
+
+\end{describe}
+
+\subsubsection {P2norm Filter}\index{p2norm}
+
+The filter \pgm{p2norm} can be used to
+\begin{itemize}
+\item normalise O/R addresses in X.400 P2 headers 
+\item and/or downgrade X.400 (88) P2 headers to X.400 (84) P2
+headers.
+\end{itemize}
+
+The normalisation of O/R addresses consists of the replacing of
+synonyms in the \file{or} table (e.g replacing
+\verb+/PRMD=X-Tel Ltd/ADMD= /C=GB/+ with
+\verb+/PRMD=X-Tel Services/ADMD= /C=GB/+) and the replacing of
+local synonyms in the \file{aliases} table (e.g replacing
+\verb+/S=pac/+ with \verb+/I=P/S=Cowen/+).
+
+The downgrading from X.400 (88) to X.400 (84) is done according to the
+INTERNET draft ``X.400 1988 to 1984 downgrading'' written by
+S.E.Hardcastle-Kille.
+
+The \pgm{p2norm} filter's behaviour may be altered by specifying
+various command line options.
+The possible options are as follows:
+\begin{describe}
+\item[\verb+-nonorm+:] don't normalise the O/R addresses in
+P2 headers. By default, \pgm{p2norm} will normalise any addresses in
+the headers.
+\item[\verb+-downgrade+:] downgrade X.400 (88) headers to X.400 (84)
+headers.
+By default, \pgm{p2norm} will not downgrade the headers.
+\item[\verb+-internal+:] don't follow \file{aliases} table entries
+marked with the \verb+external+ qualifier.
+\item[\verb+-external+:] follow \file{aliases} table entries marked
+with the \verb+external+ qualifier. This is the default behaviour.
+\end{describe}
+
+\subsubsection	{Body Part Deleting Filters}
+
+In the \file{formdir} directory there is a general shell script that
+can be run as a filter to remove body parts. It ignores its input and
+writes out a short message indicating that the body part has been
+removed. This can be used as a trivial filter in say, \verb|fax| to
+\verb|ia5|, to indicate that a fax body part has been deleted.
+The \verb|outinfo| string for such a channel might be:
+\begin{quote}\small\begin{verbatim}
+outinfo='removebp "Group 3 Fax"'
+\end{verbatim}\end{quote}
+An example \file{tailor} file entry for such a filter is shown in
+Figure~\ref{example:fcontrol}.
+
+\subsubsection	{ODIF filters}
+There exist some filters that will convert between BBN Slate format
+and ODIF. These filters are not publicly available as they were
+developed under an ESPRIT PODA project. However, anyone interested in
+these filters should contact Prof. Peter Kirstein
+(P.Kirstein@cs.ucl.ac.uk).
+
+\subsection	{The List Channel}\index{list}
+
+This channel should be tailored in a content independent fashion.
+This means that the following fields should \verb+NOT+ be set:
+\begin{quote}\begin{verbatim}
+content-in
+content-out
+bptin
+bptout
+hdrin
+hdrout
+\end{verbatim}\end{quote}
+
+Note that it is not possible to mix different forms of addresses on
+lists.  This is because of the different meanings of symbols between
+the different forms of addressing.  For example, with an X.400 address
+\verb+(a)+ is a printable string encoding of the \verb+@+ symbol but
+with an RFC~822 address it is just a comment.  This means that lists
+with X.400 forms of addresses \verb+must+ only contain X.400 addresses
+and must be expanded by a list channel that is tailored with
+\verb+outadr=x400+.  Similarly lists with RFC~822 forms of addresses
+\verb+must+ only contain RFC~822 addresses and must be expanded by a
+list channel that is tailored with \verb+outadr=822+.
+
+It may be necessary to set the field \verb+adr-order+ in the tailoring
+for a list channel.  The default for this field is \verb+usaonly+.  If
+you have some UK ordering of domains in your lists you should set
+\verb+adr-order=ukpref+ or \verb+adr-order=usapref+.
+
+A valid content independent entry for the list channel is as follows:
+\begin{quote}\small\begin{verbatim}
+chan list prog=list,show="List channel",type=both,
+          table=list,drchan=dr2rfc,outadr=822
+\end{verbatim}\end{quote}
+
+The value of the \verb+outinfo+ field can alter the behaviour of the list
+channel.
+The values that can be set in the \verb+outinfo+ field are:
+\begin{describe}
+\item[\verb+dosublists+:] This enables the expansion of sublists
+contained within a list.
+This will improve performance if there are a number of nested lists
+{\em BUT} this behaviour may cause problems with the sender field.
+If a sublist is expanded, it will be submitted with the sender
+relating to the main list and not relating to the sublist.
+By default, the expansion of sublists is disabled.
+\item[\verb+linked+:]
+\item[\verb+notlinked+:] These two values indicate the mechanism used
+for resubmitting the body of a message.
+If the \verb+linked+ value is set, the body of the message is
+resubmitted using the UNIX link facility.
+This is more efficient in terms of speed and space.
+If the \verb+notlinked+ value is set, the body of the message is
+resubmitted by copying.
+The default behaviour is \verb+linked+.
+\end{describe}
+
+The list channel's basic function is to expand one recipient to many
+by resubmission. The one recipient is the distribution list, the many
+are the members of that list. On resubmission, the list channel
+changes the originator of the message from the original address to the
+address of the maintainer of the list.
+The address of the maintainer is constructed using the defacto
+standard of \verb+listname-request+.
+As such this address must be a valid address -- usually an
+\verb+alias+ entry in the \file{aliases} table.
+If no such address is found, \verb+postmaster+ is used as the new
+originator.
+
+\subsection	{The RFC 1148 Channels}\index{rfc1148}
+
+The \pgm{P2toRFC} and \pgm{RFCtoP2} channels perform RFC~1148 conversions
+on the headers of messages.
+The tailoring of these channels is as with other channels with the
+proviso that the \verb+conv+ entry is set to \verb+1148+.
+Note also that the \verb+hdrin+ field should be set to have
+\verb+ipn+ as well as either \verb+p2+ or \verb+p22+.
+This enables the \pgm{P2toRFC} channel to recognise and map IPNs.
+
+Note that \pgm{P2toRFC} needs to compare OIDs and for this needs
+QUIPU's OID tables to be present and correct.
+
+The output of the 1148 channels maybe be altered by use of the
+\verb+outinfo+ tailor entry.
+
+With the \pgm{P2toRFC}, if the \verb+outinfo+ entry contains the string
+\verb+uk+, all rfc822 addresses in the produced header will be output
+in the uk order of domains.
+
+With the \pgm{RFCtoP2}, if the \verb+outinfo+ entry contains the string
+\verb+rfc987+, the conversion from rfc822 to P2 will adhere to the
+RFC~987 mapping rather than the RFC~1148. 
+Note that these mappings are very similar anyway.
+
+\subsection 	{Shaping Channels}
+
+Shaping channels alter the structure of the message.
+This section describes tailoring requirements of the common shaping
+channels. 
+
+\subsubsection	{RFC 934 Channel}\index{rfc934}
+
+The \pgm{rfc934} channel flattens an RFC~822 style message as
+specified by RFC~934.  The tailor file entry for such a channel should
+be constructed with the following provisos:
+\begin{describe}
+
+\item[\verb+type+:] This field should be set to \verb+shaper+ as the
+channel alters the shape of the message.
+
+\item[\verb+content-out+:] This field should contain the value
+\verb+822+ to indicate that it converts contents to RFC~822 format.
+\end{describe}
+Note that the \pgm{rfc934} channel only recognises three types of
+bodyparts: RFC~822 headers, which it recognises as starting with the
+string \verb+hdr.822+; text bodyparts, which it recognises as being of
+the form \verb+n.ia5+ where \verb+n+ is a number; and forwarded
+messages, which it recognises as being subdirectories.
+If there is a bodypart in the message that it does not recognise, the
+\pgm{rfc934} channel will fail.
+The key strings \verb+hdr.822+ and \verb+ia5+ are hardwired into PP.
+They can only be changed by editing the relevant entries in the file
+\file{Lib/pp/static.c} within the source tree.
+
+\subsubsection	{P2flatten Channel}\index{p2flatten}
+
+The \pgm{p2flatten} channel combines all the separate components of a
+message into one file of \verb+p2+ or \verb+p22+, depending on how the
+channel is tailored.  The tailor file entry for such a channel should
+be constructed with the following provisos:
+\begin{describe}
+
+\item[\verb+type+:] This field should be set to \verb+shaper+, as the
+channel alters the shape of the message.
+
+\item[\verb+content-out+:] This field should contain the content
+that the channel outputs. 
+It should be either \verb+p2+ or \verb+p22+.
+If it is set to \verb+p2+, \pgm{p2flatten} will output a file of \verb+p2+
+(i.e., a message suitable for transfer via X.400(84)).
+If it is set to \verb+p22+, \pgm{p2flatten} will output a file of
+\verb+p22+ (i.e., a message suitable for transfer via X.400(88)).
+
+\end{describe}
+
+\subsubsection	{P2explode Channel}\index{p2explode}
+
+The \pgm{p2explode} channel explodes a \verb|p2| or \verb|p22| message into its
+separate component bodyparts.  The tailor file entry for such a
+channel should be constructed with the following provisos:
+\begin{describe}
+
+\item[\verb+type+:] This field should be set to \verb+shaper+ as the
+channel alters the shape of the message.
+
+\item[\verb+content-in+:] This field should contain the inbound
+content, either \verb+p2+ or \verb+p22+.
+
+\end{describe}
+
+\subsection      	{Miscellaneous Channels}
+
+Miscellaneous channels groups together the ``special'' channels
+required by PP.  This section describes tailoring requirements of
+these ``special'' channels.
+
+\subsubsection	{Qmgrload Channel}\index{qmgrload}
+
+The \pgm{qmgrload} channel is used to refresh the QMGR model of
+the queue by reading the model stored on disc.  The only proviso for
+the tailor file entry of this channel is that the
+\verb+type+ is set to \verb+qmgrload+. This channel takes note of the
+\verb|outinfo| field in the \file{tailor} file. This, if present, should be
+a number indicating how many messages to load into the QMGR at
+one time. It defaults to 50 which is a sensible value for most sites.
+
+\subsubsection	{Msg-Clean Channel}\index{msg-clean}
+
+The \pgm{msg-clean} channel is used by the QMGR to free the
+storage associated with a message once all activity to do with that
+message has finished.  For the tailor file entry of this channel,
+\verb+type+ is set to \verb+delete+.
+
+\subsubsection	{Debris Channel}\index{debris}
+
+The \pgm{debris} channel is used by the QMGR to free any storage which
+no longer is of interest to the mail system.  The \file{tailor} file
+entry of this channel should have \verb+type+ set to
+\verb+debris+.
+
+The \pgm{debris} channel only removes files and directories which it
+deems suitable for deletion and whose lasted modified times are
+suitable ancient. The time interval after which a file is suitable
+ancient may be specified in the \verb+outinfo+ field.
+If not specified, the interval is set to the default value of three days.
+If given, the interval must be specified as a string of the form
+\verb+"4d 2h"+ which represents an interval of four days and two hours.
+The time unit abbreviations recognised are:
+\begin{tabular}{l l}
+\tt s& seconds \\
+\tt m& minutes \\
+\tt h& hours \\
+\tt d& days \\
+\tt w& weeks \\
+\end{tabular}
+
+\subsubsection {Splitter Channel}\index{splitter}
+
+The \pgm{splitter} channel is used by \pgm{submit} to divide a multiple
+recipient message into many single recipient messages.
+This division is done via resubmission. A splitter channel has
+a \verb|type| value of \verb|splitter|.
+
+\subsubsection	{Timeout Channel}\index{timeout}
+
+The \pgm{timeout} channel is used to time messages out once they have been
+around for a given time.  The tailor file entry of this channel should
+have \verb+type+ set to \verb+timeout+.
+
+\subsubsection	{Warning Channel}\index{warning}
+
+The \pgm{warning} channel is used to send a message back to the
+originator of a message, warning him or her that the message is
+delayed and still awaiting delivery.
+The tailor file entry for this channel should have \verb+type+ set to
+\verb+warn+.
+If the \verb+outinfo+ field has an entry of value
+\verb+copy-to=address+ copies of any warning messages sent will also
+be sent to the address specified.
+
+The \pgm{warning} channel sends back a message found in the
+\file{warndir} directory. The file it sends back is of the either
+\verb|warning.N| where \verb|N| is the number of the warning message
+(usually either 1 or 2). If this file is not present it will send the
+file \verb|warning| from that directory.
+
+The text of the file is subject to macro expansion. Strings of the
+form \verb|$(key)| are expanded with value given in
+Table~\ref{table:warn}.
+
+\tagtable{warn}{Warning expansion macros}{table:warn}
+
+\subsubsection	{Dr2rfc Channel}\index{dr2rfc}
+
+The \pgm{dr2rfc} channel constructs receipt
+notifications or error messages in the form of RFC~822 messages.
+Once constructed these messages are then submitted to the QMGR
+for return to the sender.
+The channel's behaviour can be altered by various key/value pairs which
+may appear in the \verb+outinfo+ entry of the channel's tailor entry.
+These pairs are as follows:
+\begin{describe}
+\item[\verb|order=value|:] If the \verb|value| equals \verb|uk|,
+\pgm{dr2rfc} produces UK-ordered domains in its output.
+By default, \pgm{dr2rfc} produces US-ordered domains.
+
+\item[\verb|submit=value|:] This alters the method used to submit any
+return of contents.
+\verb+value+ can have one of two values - \verb+linked+ or
+\verb+copy+.
+If the value is \verb+linked+, \pgm{dr2rfc} will submit the return of
+contents via the use of links wherever possible.
+If the value is \verb+copy+, \pgm{dr2rfc} will copy the return of
+contents on \pgm{submit}.
+The default value is \verb+linked+.
+
+\item[\verb|admininfo=value|:] This determines whether verbose
+adminstration information is included in positive delivery reports.
+If the value is \verb+true+, adminstration information is included
+with positive delivery reports.
+By default, the adminstration information is omitted for positive
+delivery reports.
+
+\item[\verb|return=value|:] This key/value pair tailors the amount of the
+original message that will be submitted as return of contents.
+If the value is \verb+all+, the whole of the original message is
+returned.
+By default, the return of contents is subject to the constraints
+described below.
+Otherwise the value must have the syntax of a number followed by a
+letter (e.g., 10k or 2000l).
+This provides an upperbound on certain aspects of the return of contents.
+The letter must either be an \verb+l+ or a \verb+k+ indicating
+which aspect is constrained. If both quantities are tailored, the
+minimum value of either is taken.
+\verb+l+ constrains the number of lines the return of contents can
+contain.
+\verb+k+ constrains the size of the return of contents (note that the
+number before the letter is multiplied by 1000 to get the actual
+constraint).
+The default values for these constraints are 5k for the size and 10
+lines.
+Note that return of contents is subject to availability and if
+available the header of the original message is always returned
+irrespective of any return of contents constraints.
+
+The \verb|return| key may have multiple occurances in the \verb|outinfo|
+field, typically to constrain both the number of lines and the size of
+the return of contents i.e. \verb|outinfo="return=10k return=4l"|.
+
+\end{describe}
+
+Note that \pgm{dr2rfc} uses QUIPU's OID tables to map to ``user
+friendly'' representations of OIDs.
+
+\section{How Channels Work}\label{chan-op}
+
+The majority of channels work in the way described below.
+This description may clarify the view one gets from examining the
+logging produced by the \pgm{qmgr} and the channels.
+
+A channel is called by the QMGR. The QMGR first calls up the
+\pgm{pptsapd} program and tells it what channel is required. The
+\pgm{pptsapd} then fork's and exec's the appropriate channel passing
+over the communication channel from the Qmgr.
+
+The QMGR then initialises the channel which informs the channel what
+name it is (at this point the channel usually checks that this is
+reasonable).  Then the QMGR tells the channel to process a given
+message and a set of recipients.  All of the identified recipients
+will be on the same MTA, or require the same conversion.  The channel
+will then attempt to do the work.  After this it will update the queue
+in the following way for each recipient:
+
+\begin {itemize}
+\item  If a conversion succeeded, it will increment the reformat counter.
+\item If a delivery succeeded, it will set the status to DONE or DR, 
+dependent on whether a positive Delivery Report is needed.
+\item If the operation failed permanently, it will set the status to
+DR.
+\item If the operation failed for some temporary reason, no change is
+made to the message.
+\end {itemize}
+
+If the status is set to DR, the DR should be generated before updating
+the queue status.  When the queue is updated, the QMGR should be
+informed of the final status of each recipient.  The returned value is
+one of the following:
+\begin{describe}
+\item[success:] In this case the QMGR will schedule the next
+designated channel to process the message. The current channel will be
+given other messages to process if they are available.
+
+\item[messageFailure:] This is a soft failure associated with the
+message. The QMGR will try the message again sometime in the future.
+Other messages on this channel will be tried immediately.
+
+\item[mtaFailure:] This is a soft failure associated with the
+destination mta. No more messages to this destination will be tried,
+but messages to other destination may be tried on this channel.
+
+\item[messageAndMtaFailure:] This is a combination of both the above.
+Other messages to this destination will not be tried, and in addition,
+when they are retried this message will not be tried first (e.g., it
+is suspected that this message may have caused the mta failure!)
+
+\item[positiveDR:] A positive delivery report was generated. The QMGR
+will schedule the appropriate channels to return the report.
+
+\item[negativeDR:] The QMGR treats this exactly the same as above.
+\end{describe}
+
+Once the response is received, the QMGR will give the channel
+more work, or close it down.  Connections to MTAs should be kept open,
+the QMGR will attempt to sort the queue by MTA.
+

@@ -1,0 +1,62 @@
+% -*- LaTeX -*-
+
+\chapter{Miscellaneous Utilities}
+
+There are a number of small utility programs provided with PP that may
+be of interest to end users. These are described here.
+
+\section{A /bin/mail Replacement}
+
+PP comes with a very simple user interface for submitting messages. It
+has approximately the functionality normally assumed by
+{\pgm{/bin/mail}} except that reading mail is not supported, only
+submission. That is, it takes a list of addresses on the command line
+and reads the body of the message on the standard input. By default
+all the addresses are marked as \verb|To:| recipients. The command has
+a few options; each option stays in force until overriden.
+
+\begin{describe}
+\item[\verb|-t|:] The following arguments, up to the next flag, are
+\verb|To:| addresses.
+\item[\verb|-c|:] The following arguments are \verb|Cc:| addresses.
+\item[\verb|-s|:] The following arguments are text for the
+\verb|Subject:| line.
+\end{describe}
+
+This program is most useful in scripts and programs as a simple way of
+sending a message.
+
+\section{Message Status Checkup}
+
+% -a messages from and to ow just from
+% -h connect to this mta rather than local
+
+PP provides a tool, \pgm{checkmail}, that connects to an MTA and finds
+out about messages related to the user.
+
+There are two flags to alter \pgm{checkmail}'s behaviour.
+\begin{description}
+
+\item [-a:] This flag prompts \pgm{checkmail} to find out about
+messages to and from the user. By default, \pgm{checkmail} only finds
+out about messages from the user.
+
+\item [-h MTAname:] This flag prompts \pgm{checkmail} to connect to the
+named MTA. By default, \pgm{checkmail} attempts to connect to an MTA
+running on the local machine.
+
+\end{description}
+
+Here are two example displays from the \pgm{checkmail} tool:
+\begin{quote}\small\begin{verbatim}
+john% xcheckmail -h sheriff
+Please wait while attempt to connect to sheriff....connected
+The messages from pac on sheriff are as follows:
+msg.aa03130 is pending delivery to p.pat@cs.nott.ac.uk
+
+john% xcheckmail -h sheriff -a
+Please wait while attempt to connect to sheriff....connected
+The messages to or from pac on sheriff are as follows:
+msg.aa03130 is pending delivery to p.pat@cs.nott.ac.uk
+msg.aa03140 is from  P.Pat@cs.nott.ac.uk
+\end{verbatim}\end{quote}

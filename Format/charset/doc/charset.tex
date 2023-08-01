@@ -1,0 +1,229 @@
+\documentstyle [11pt,a4] {article}
+\begin{document}
+\section {CHARACTER SET CONVERSION FILTER}
+
+\bigskip
+\subsection {Description}
+\medskip
+\noindent The Character Set Filter {\em charset}, was written by: 
+Keld Simonsen, RAP, Sct. Joergens Alle 8, DK-1615 Copenhagen V, Denmark.
+\\
+Electronic mail address: "Keld Simonsen
+\begin{math} <\end{math} keld@dkuug.dk \begin{math} >\end{math} ".
+\\
+The Copyright and the design documentation for this filter, 
+are located in the PP/Lib/charset source directory. 
+
+\medskip
+\noindent  
+{\em Charset} which is located in the {\em formdir}, 
+is a general character set conversion filter 
+that converts data belonging to one character set into that belonging 
+to another. 
+Although the code is mainly used by the {\em asn} filter and the 
+{\em rfc822norm} filter, it may be run on its own by using it in 
+conjunction with the general filter {\em fcontrol}. 
+This is useful when a message originating from another 
+country has characters of data within its body part that is unacceptable 
+to the host country, so rather than have a body part containing 
+unreadable characters, those characters of data
+will either get converted into acceptable ones or omitted altogether.
+
+
+\bigskip\bigskip
+\subsection {Runtime Options}
+\medskip
+
+\begin {tabbing}
+{\bf {\em charset}} \\
+\ \ \ \ \=
+\begin{math} \{-i \ \ input.character.set\} \end{math} \ \ \ 
+\= \begin{math} \{-o \ \ output.character.set\} \end{math} \ \ \ 
+\= \begin{math} [ -x \  | \  -m ] \end{math}
+\end{tabbing}
+
+
+\bigskip
+\noindent Where:
+\begin {itemize}
+\item Standard input (stdin), output (stdout) and error (stderr), are used. 
+\item The available input and output character sets, can be found in
+"Appendix A - Character Sets supported by the {\em charset} filter".
+\item The {\em -x}/{\em -m} options specify {\bf either} a X.408 
+{\bf or} a Mnemonic conversion.  The default is {\em -x}, 
+where mnemonics are unrecognised. 
+If the {\em -m} option is specified, then those characters of data which 
+cannot get converted are replaced by their 2 character mnemonics, 
+preceded by an {\bf identification character} of value 29 (GS),
+which used to distinguish between real and mnemonic characters.
+\end {itemize}
+
+\bigskip\bigskip
+\subsection {Compiling}
+\medskip
+
+Before compiling you may wish to:
+
+\begin {itemize}
+\item Go into the PP/Lib/charset source directory and 
+edit the {\em Make.defs} file, to modify the CSDIR option. This 
+is only necessary if you wish to change the directory location 
+of the generated character set tables. The default is
+{\em formdir/charset\_tables}.
+\end {itemize}
+
+
+\bigskip\bigskip
+\subsection {Tailoring}
+
+\noindent The following fields need to be set within the tailor file.
+\begin {itemize}
+\item {\bf prog}, set to the value {\em fcontrol},
+because the {\em charset} filter is only used in conjunction 
+with the general filter controller. 
+\item {\bf bptin} and {\bf bptout}, set to specified {\bf bodypart}s.
+\item {\bf type}, set to {\em shaper}.
+\item {\bf conv}, set to {\em loss}.
+\item {\bf cost}, set because information is lost. 
+\item {\bf info}, set to the charset filter name {\em charset}, followed 
+by its required options.
+\end {itemize}
+
+
+\bigskip\bigskip\noindent
+\subsubsection {Example:}
+
+\begin{verbatim}
+
+        bodypart	FR
+        bodypart	IA5IRV
+
+        chan	fr2irv	prog=fcontrol,
+                        show="fr->irv charset filter",
+                        type=shaper,
+                        bptin=fr,
+                        bptout=ia5irv,
+                        conv=loss,
+                        cost=1,
+                        info="charset -i FR -o CCITT_X.408_IA5IRV"
+\end{verbatim}
+
+
+\clearpage
+\section {APPENDIX A}
+\bigskip
+\subsection {Character sets supported by charset filter}
+\bigskip\medskip\noindent
+
+
+\begin {tabular} {l l l}
+437 & 850 & 860 \\
+863 & 865 & ANSI\_X3.110-1983 \\
+ANSI\_X3.4-1968 & APL & ARABIC \\
+ARABIC7 & ASCII & ASMO\_449 \\
+BS\_4730 & BS\_VIEWDATA & CA \\
+CCITT\_T.50.IRV:1988 & CCITT\_X.408\_IA5IRV & CHARDEFS \\
+CHARMAP.10646 & CHARMNEM & CHARSETS \\
+CN & CODAR-U & CP437 \\
+CP850 & CP860 & CP863 \\
+CP865 & CSA7-1 & CSA7-2 \\
+CSA\_T500-1983 & CSA\_Z243.4-1985-1 & CSA\_Z243.4-1985-2 \\
+CSA\_Z243.4-1985-GR & CSN\_369103 & CUBA \\
+CYRILLIC & DE & DEC \\
+DEC-MCS & DIN\_31624 & DIN\_31625 \\
+DIN\_66003 & DK & DK-US \\
+DS2089 & DS\_2089 & E13B \\
+EBCDIC-AT-DL & EBCDIC-AT-DL-A & EBCDIC-BE \\
+EBCDIC-BR & EBCDIC-CA-FR & EBCDIC-DK-NO \\
+EBCDIC-DK-NO-A & EBCDIC-ES & EBCDIC-ES-A \\
+EBCDIC-ES-S & EBCDIC-FI-SE & EBCDIC-FI-SE-A \\
+EBCDIC-FR & EBCDIC-INT & EBCDIC-IT \\
+EBCDIC-JP-E & EBCDIC-PT & EBCDIC-UK \\
+EBCDIC-US & ECMA-CYRILLIC & ELOT\_928 \\
+ES & ES2 & FI \\
+FR & GB & GB\_1988-80 \\
+GOST\_19768-74 & GREEK & GREEK-CCITT \\
+GREEK7 & HEBREW & HU \\
+IEC\_P27-1 & INIS & INIS-8 \\
+INIS-CYRILLIC & IRV & ISO-IR-10 \\
+ISO-IR-100 & ISO-IR-101 & ISO-IR-102 \\
+ISO-IR-103 & ISO-IR-109 & ISO-IR-11 \\
+ISO-IR-110 & ISO-IR-111 & ISO-IR-121 \\
+ISO-IR-122 & ISO-IR-123 & ISO-IR-126 \\
+ISO-IR-127 & ISO-IR-128 & ISO-IR-129 \\
+ISO-IR-13 & ISO-IR-137 & ISO-IR-138 \\
+ISO-IR-139 & ISO-IR-14 & ISO-IR-141 \\
+ISO-IR-142 & ISO-IR-143 & ISO-IR-144 \\
+ISO-IR-146 & ISO-IR-147 & ISO-IR-148 \\
+ISO-IR-15 & ISO-IR-150 & ISO-IR-151 \\
+\end {tabular}
+
+\clearpage
+{\bf Character sets supported by charset filter (cont)}
+\bigskip\bigskip\noindent
+
+\begin {tabular} {l l l}
+ISO-IR-152 & ISO-IR-153 & ISO-IR-154 \\
+ISO-IR-155 & ISO-IR-157 & ISO-IR-158 \\
+ISO-IR-16 & ISO-IR-17 & ISO-IR-18 \\
+ISO-IR-19 & ISO-IR-2 & ISO-IR-21 \\
+ISO-IR-25 & ISO-IR-27 & ISO-IR-31 \\
+ISO-IR-37 & ISO-IR-38 & ISO-IR-39 \\
+ISO-IR-4 & ISO-IR-47 & ISO-IR-49 \\
+ISO-IR-50 & ISO-IR-51 & ISO-IR-53 \\
+ISO-IR-54 & ISO-IR-55 & ISO-IR-57 \\
+ISO-IR-59 & ISO-IR-6 & ISO-IR-60 \\
+ISO-IR-61 & ISO-IR-68 & ISO-IR-69 \\
+ISO-IR-70 & ISO-IR-71 & ISO-IR-72 \\
+ISO-IR-8-1 & ISO-IR-8-2 & ISO-IR-84 \\
+ISO-IR-85 & ISO-IR-86 & ISO-IR-88 \\
+ISO-IR-89 & ISO-IR-9-1 & ISO-IR-9-2 \\
+ISO-IR-90 & ISO-IR-91 & ISO-IR-92 \\
+ISO-IR-93 & ISO-IR-94 & ISO-IR-95 \\
+ISO-IR-96 & ISO-IR-98 & ISO-IR-99 \\
+ISO\_2033-1983 & ISO\_5426:1980 & ISO\_5427 \\
+ISO\_5427:1981 & ISO\_5428 & ISO\_5428:1980 \\
+ISO\_646.BASIC:1983 & ISO\_646.IRV:1983 & ISO\_6937-2-25 \\
+ISO\_6937-2-ADD & ISO\_8859-1 & ISO\_8859-1:1987 \\
+ISO\_8859-2 & ISO\_8859-2:1987 & ISO\_8859-3 \\
+ISO\_8859-3:1988 & ISO\_8859-4 & ISO\_8859-4:1988 \\
+ISO\_8859-5 & ISO\_8859-5:1988 & ISO\_8859-6 \\
+ISO\_8859-6:1987 & ISO\_8859-7 & ISO\_8859-7:1987 \\
+ISO\_8859-8 & ISO\_8859-8:1988 & ISO\_8859-9 \\
+ISO\_8859-9:1989 & ISO\_8859-SUPP & ISO\_9036 \\
+IT & JIS\_C\_6229-1984-HAND & JIS\_C\_6229-1984-A \\
+JIS\_C\_6229-1984-B & JIS\_C\_6229-1984-B-ADD & JIS\_C\_6220-1969 \\
+JIS\_C\_6229-1984-HAND-ADD & JIS\_C\_6229-1984-KANA & JIS\_X0201 \\
+JP & JP-OCR-A & JP-OCR-B \\
+JP-OCR-HAND & JP-OCR-HAND-ADD & JS \\
+JUS\_I.B1.002 & JUS\_I.B1.003-MAC & JUS\_I.B1.003-SERB \\
+KATAKANA & L1 & L2 \\
+L3 & L4 & L5 \\
+L6 & LAP & LATIN-GREEK \\
+LATIN-GREEK-1 & LATIN-LAP & LATIN1 \\
+LATIN1-2-5 & LATIN2 & LATIN3 \\
+LATIN4 & LATIN5 & LATIN6 \\
+MAC & MACEDONIAN & MACINTOSH \\
+\end {tabular}
+
+\clearpage
+{\bf Character sets supported by charset filter (cont)}
+\bigskip\bigskip\noindent
+
+
+\begin {tabular} {l l l}
+MOSAIC-2 & MOSAIC-3 & MSZ\_7795.3 \\
+NAPLPS & NATS-DANO & NATS-DANO-ADD \\
+NATS-SEFI & NATS-SEFI-ADD & NC\_NC00-10:81 \\
+NF\_Z\_62-010 & NF\_Z\_62-010\_(1973) & NO \\
+NO2 & NS\_4551-1 & NS\_4551-2 \\
+PT & PT2 & R8 \\
+REF & ROMAN8 & SE \\
+SE2 & SEN\_850200\_B & SEN\_850200\_C \\
+SERBIAN & ST\_SEV\_358-88 & T.101-DS1 \\
+T.101-G2 & T.101-G3 & T.61 \\
+T.61-8BIT & UK & US \\
+US-DK & VIDEOTEX-SUPPL & X0201 \\
+X0201-7 & & \\
+\end {tabular}
+\end {document}

@@ -1,0 +1,571 @@
+% -*- LaTeX -*-
+
+\input lcustom
+
+\documentstyle[11pt,a4]{article}
+
+\begin{document}
+
+\title{PP -- The Fun and the Pain}
+\author{Julian P.~Onions\\[0.1in]
+X-Tel Service Ltd.\\
+Nottingham University\\[0.1in]
+jpo@xtel.co.uk}
+\date{Tuesday 19th March 1991}
+
+\maketitle
+
+\begin{abstract}
+This paper describes the design and implementation of
+the PP message transport system. This is a message transfer system
+that can relay a variety of protocols, and gateway between them.
+
+The paper describes what PP is now and some of its plans for
+development. The second half of the paper is a report on some of the
+experiences gained watching and tinkering with PP.
+\end{abstract}
+
+\section{Introduction}
+
+This paper describes the design and implementation of PP\footnote{PP
+is not an acronym. Despite many rumours to the contrary, the author is
+sticking to this position!.}. PP is a generic Message Transfer Agent
+capable of carrying a number of message formats. It has been written
+as a joint project by University College London and Nottingham
+University and is designed to run on \unix/ systems. It makes
+use of the ISODE package\cite{ISODE}.  Its design is heavily
+influenced however, by the need to carry X.400 MHS\cite{CCITT.MHS} and
+RFC-822\cite{RFC822} based mail. The major goals of PP include:
+\begin{itemize}
+\item	Robustness. PP is designed for heavy use. It should be
+capable of transferring high levels of traffic in an optimal way.
+
+\item	A clean interface for submission and delivery. PP does not
+provide a user agent but does provide a library interface which allows
+user agents to be added to PP easily.
+
+\item	Sophisticated message processing to optimise delivery and
+remote transfers.
+
+\item	Support for message conversion in an integrated way.
+
+\item	Support for multiple addressing formats (initially two).
+
+\item	Support for multi-media mail.
+
+\item	Support for arbitrary message structures.
+
+\item	Designed for large systems. PP is not designed to run on your
+PC or even on a workstation. It is designed to be a central mail
+processing hub for a group of computers. It is not a small piece of
+software!
+\end{itemize}
+
+As indicated above, PP is designed to deal with a large variety of
+problems. The questions that comes to mind is ``why bother spending
+all those years doing this?''. 
+
+The answer is partly historical, but is still mostly relevant. When PP
+was first thought about, there was very little that could be picked up
+``off the shelf'' to deal with X.400 mail. What's more, the products we
+had seen were just not suitable for the sort of environment we wanted
+to run a mail system in. Most of the products then, and still now to
+an extent, were what might be considered ``toy'' systems. Yes, they
+would take an X.400 message and deliver it to a recipient, but there
+is more to a reliable MTA than this. PP put management and monitoring
+of the MTA very high on its list of desirable features. We believe
+this has been attained - although not perfectly yet (what is).
+
+\section{The design of PP}
+
+The design of PP was influenced in part by the RFC-822 mail system
+MMDF\cite{MMDFII}. In this model, extensive use is made of separate
+processes to do different jobs. This allows each element to be built
+and tested separately and encourages modularity. A fuller description
+of the design of PP can be found in \cite{PP.MTA}.
+
+\subsection{The Process Structure}
+
+PP has a single queue of messages on which a number of processes
+operate.  There are two critical processes which undertake complex
+functions, the rest of the processes are essentially ``dumb''.
+
+\subsubsection{Submit}
+The first key process is that entitled {\em submit}. This process
+guards the entrance to the queue. All messages entering the queue pass
+through this process. It performs a variety of checks on the message
+to ensure it can either be delivered or returned; works out the
+routing for the message; calculates the reformatting of the message if
+necessary; and applies other criteria such as authorisation and
+authentication. By checking as much as possible at this point later
+processes have to do less and completely undeliverable messages can be
+stopped from entering the queue. 
+
+As all message must pass though submit, all messages are checked at
+this stage. This is where the authorisation policies are enforced.
+Where possible, submit will always try and accept a message and return
+it if necessary. Typically this leads to better error messages as
+submit can take complete charge of generating the delivery report. 
+
+Submit will refuse to accept a message when it can't parse or route
+back to the originator. In this case, submit attempts to signal back
+to the remote site that this message will not be accepted. In some
+protocols, such as X.400(84), this is not possible. In this case,
+submit gives up and the message as a whole is forwarded to the
+postmaster to sort out. Fortunately, such occurrences are fairly rare.
+
+\subsubsection{Qmgr}
+The second key process is the {\em \verb|qmgr|}, or queue manager. This
+process is responsible for all the scheduling operations of the
+messages in the queue. The \verb|qmgr| holds a representation of the queue in
+memory and so can perform complex and optimal scheduling of messages.
+This scheduling consists of either delivering the message locally or
+remotely or else converting the message within the queue (e.g.
+gatewaying between protocols).
+
+As the \verb|qmgr| holds a complete representation of the queue in memory it
+also provides an information service. It can be queried by suitable
+tools to display the state of the queue and such tools can even
+control the behaviour of the \verb|qmgr|. This is the second half of the
+management framework. As the \verb|qmgr| has a full overall picture of what
+is going on in the queue - on a second to second basis, good global
+decisions are possible.
+
+An X-windows based MTA console is provided with PP which can attach
+to remote \verb|qmgr|'s and display the status in graphic detail, where
+possible using colour to highlight problems. With suitable
+authentication, the MTA console can also control the \verb|qmgr|'s behaviour.
+
+\subsection{The Queue}
+
+The queue of messages is held in two components. The first is an
+address file which contains the envelope information about the
+message. This is held in a text encoded form and is a generic envelope
+structure which can hold both X.400 and RFC-822 messages. The text
+encoding is a big advantage as it allows manipulation of the queues in
+an emergency by a text editor. Whilst this should not normally be
+necessary it is much easier than providing special management tools
+to cover every eventuality.
+
+The second component is the message content. This includes the headers
+and body parts. If no processing is necessary for the message this is
+kept as a single file. However, if conversion is necessary, the
+content is broken up into parts, each part being placed in a separate
+file. Each time a message content is transformed, a new directory is
+created and the appropriate files are changed. This allows simple
+filters (such as {\em sed} even) to do the conversions.
+
+
+\subsection{Channels}
+
+Most other processes in PP are termed {\em channels}. A channel takes
+as input a message and outputs a different form of that message.
+Channels are controlled directly by the \verb|qmgr| by means of a networked
+protocol. Each channel does a specific job. Channels come in four
+basic forms as described below.
+
+\subsubsection{Outbound Channels}
+This style of channel is usually a protocol engine. It takes a message
+out of the queue and delivers it. This delivery may be local as in the
+case of delivering to a mailbox; or remote such as driving the
+SMTP\cite{SMTP} or X.400 protocols. Each channel reads the internal
+format of the queued message and converts it to the protocol specific
+format. The \verb|qmgr| informs a channel which message to deliver and the
+channel reports on the status of the message. This allows the \verb|qmgr| to
+discover whether the delivery attempt was successful, the remote site
+did not respond or whether the message cannot be delivered. This
+information is then used by the \verb|qmgr| to schedule further deliveries.
+
+\subsubsection{Inbound Channels}
+Inbound channels perform the opposite function to outbound channels.
+They take care of the various protocols necessary to receive a
+message, either from a user agent (local submission) or across a
+network. Their main task is mapping from the protocol specific form of
+the message to the form used withing the queue. This form is then
+passed by a private protocol to submit which enqueue the message and
+then informs the \verb|qmgr| of the new message.
+
+\subsubsection{Formatting and protocol conversion channels}
+These channels transform the message in some way without delivering
+it. They are treated in exactly the same way as outbound channels and
+are scheduled by the \verb|qmgr|. These channels come in two basic types.
+\begin{itemize}
+\item	Channels that change the directory structure. These either map
+from the single file into a directory hierarchy, or the reverse.
+
+\item	Simple reformatting. These channels might change, say, a teletex
+body part into an ascii body part. When gatewaying is being performed,
+such a channel might convert RFC-822 headers into X.400 headers.
+\end{itemize}
+
+\subsubsection{Housekeeping and maintenance channels}
+These channels do not usually have anything to do with delivery, but
+perform meta tasks. These include loading the \verb|qmgr|, deleting
+messages, timeing out messages and removing junk from the queue.
+
+\section{PP Status}
+
+PP currently contains the following parts.
+
+\begin{description}
+\item[Core]	The basic core of the system including the \verb|qmgr|,
+submit and a number of support tools.
+
+\item[X.400 1984] The X.400 1984 protocols are supported.
+
+\item[SMTP]	Smtp protocols are supported, including use of the
+name server protocols for address resolution.
+
+\item[Grey Book] Grey book mail transfer is working, using  the
+unix-niftp blue book transfer system to provide non-spooled mail
+transfer over JANET.
+
+\item[List]	A list channel to offload the processing of
+distribution lists. This helps speed up submission to large
+distribution lists and allows list management.
+
+
+\item[MTA Console]	An X-windows based console display which
+interrogates the \verb|qmgr| and displays the current state of the
+queues. It emphasises problems in the queue and allows parameters to
+be adjusted interactively.
+
+\item[UUCP] There is some support for UUCP though this has not really
+been tested in a large UUCP environment.
+
+\item[Tools]	Various auxiliary programs to configure the system and
+provide debugging support.
+ 
+\end{description}
+
+PP also contains the following experimental modules.
+\begin{description}
+\item[X.400 1988]	The 1988 version of X.400 is in a beta test
+form. The 1988 version of X.400 is uncommon at present so interworking
+testing is limited. This will include secure messaging and extensions.
+
+\item[Directory Lists] An experimental channel that store distribution
+lists in the X.500 directory is provided. This will be emphasised more
+in future releases.
+
+\end{description}
+
+\subsection{The future}
+Work is already under way on the next version of PP. The next version
+has three main thrusts.
+
+\subsubsection {Reliability, robustness and efficiency}
+These are general goals, without any specific actions to be taken. In
+general we hope the level of reliability and robustness of the
+software to increase with each future release. At the same time, some
+effort will be expended on streamlining the code and improving
+throughput and decreasing machine load (the usual motherhood and apple
+pie goals...).
+
+\subsubsection {Use of directory}
+The next version of PP will make much larger use of the X.500
+directory. It will use the distribution list channel indicated above.
+it will also be able to map Directory Names into O/R names by use of
+the directory. Finally, work will be done on use of the directory for
+routing. 
+
+\subsubsection{Message Store}
+A Message Store for PP is currently being written. It will allow
+both P7 and P7+ access to messages. This will allow workstations and
+portable computers to retrieve and store messages remotely. A user
+agent for Unix with these features in mind is being written as a
+separate project.
+
+\section{Message Scheduling}
+Much of the PP system revolves around the \verb|qmgr| process which as
+described above schedules the messages in the queue. The development
+of this aspect of PP has been through many iterations, and is quite
+interesting (at least to the author).
+
+\subsection{The first cut}
+The first version of the \verb|qmgr| was a shell script!
+It was 152 lines long by the time it was dropped, and originally had a
+simplicity and understandability that was rather elegant (if I do say
+so myself). All in all it was cute, and did the job reasonably well
+for a week or two. 
+
+At this stage though PP was very different to its current form
+and no serious message process was being done. This version was only
+used for experimentation, and I certainly would never have trusted my
+mail with it. This version was never intended as anything other than
+the proverbial {\em quick hack} to get things going. To my rather
+faded memory it scheduled less than 100 messages in its short
+lifetime.
+
+It was obvious though that this method was of limited potential. It
+did not have the capability for interrogation. It did hold an in-core
+copy of the queue as a shell variable but it refreshed this copy every
+few minutes (can you say \verb|echo msg.*|). It was also clear that
+with really big queues the lack of management and sophisticated
+backoff and retry strategies alone would just not cut it.
+Besides, who would have any credibility for a 15Mb mail system
+claiming performance upwards of a message per second controlled by 100
+lines of shell!
+
+\subsection{Take 2}
+The next version of the \verb|qmgr| was a C program. This was a small
+program, I forget exactly the size. It did queue management in a
+rather cavalier fashion. It scheduled messages by the simply
+fork/exec'ing  processes to deal with delivery. It read the queue
+directly on start up and received UDP packets from submit to notify it
+that new messages had arrived. The UDP packet contained a simple
+string which was the queue name of the message. The \verb|qmgr| would then go
+and read in this message, add it to the internal queues and start
+scheduling it. 
+
+It was cavalier in the respect that it did not trust anyone. The UDP
+packet was a hint that a message had arrived. The \verb|qmgr| would
+independently check this by attempting to read from the queue.  Also,
+as UDP is inherently unreliable - and also because the \verb|qmgr| had an
+{\em attitude problem} - it would reread the entire queue frequently
+to check what it thought was correct and that it hadn't missed
+anything.
+
+This scheme works ok after a fashion. However, the frequent queue
+reading we knew by experience would be a real performance killer. Most
+of the queueing systems that we were familiar with have had as a
+bottleneck the reading of the queue. UUCP has long had this problem,
+with some very ingenious work-arounds to avoid quadratic behaviour with
+large queues. MMDF had a similar problem, although to a lesser extent.
+Normally MMDF will try and sort the mail queue optimally, but above a
+threshold (300 messages) it admits defeat and gets very relaxed about
+the whole thing, taking each message as it finds it without any
+attempt at optimality.
+
+Another problem was this UDP issue. I liked it as it was simple, but
+if we wanted to get away from the frequent queue reading, this
+process would have to be reliable. We could obviously move to TCP for
+reliability and then we could pass all the information we needed to
+the \verb|qmgr|. But how to pass the data? We could have used something like
+XDR and RPC from sun, which would probably do the job very well.
+However, at the time I was deeply involved in work with ISODE and
+getting ASN.1 tools together. We therefore decided - hey, we're
+suppose to be pushing OSI, lets see if it can cut it. This leads on to ...
+
+\subsection{The current version}
+The book {\em The Mythical Man Month} makes a great play of the fact
+that the third and presumably subsequent versions of a piece of
+software are usually the better versions. The first version being a
+rather cautious attempt to see if you can do the job, having minimal
+functionality and being a sort of prrof of concept case. The second
+version is then usually a wild extravaganza of crazy ideas that you
+thought up while writing the first version and just {\em had} to put
+in. The third version then falls somewhere between these two. I am
+rather proud therefore that there have been three rewrites of this
+part of the system.
+
+The current version of the \verb|qmgr| is rather detached from reallity in
+some respects. It never interacts directly with anything. Indeed the
+\verb|qmgr| can run on a different machine to the rest of the system.
+The \verb|qmgr| issues commands to other programs for all its
+operations. In this way it is usually very responsive as it never has
+to do serious amounts of work itself. When started up, the \verb|qmgr|
+first schedules a channel called \verb|qmgr-load| which reads the
+queue and passes its findings to the \verb|qmgr|. The \verb|qmgr| then
+processes the messages in the queue calling different channels until
+finally on each message the \verb|msg-clean| process is called to
+remove each message.  Every 6 hours or so, the \verb|qmgr| will
+reschedule \verb|qmgr-load| to just check the queue is what it really
+thinks it is. It also schedules irregularly a process called
+\verb|trash| which will crawl around the queue looking for dead
+messages or general junk.
+
+The \verb|qmgr| receives news of new messages via ROS operations from submit
+and believes this information. From this it can be seen that the \verb|qmgr|
+is not a trusted process. It just schedules the channels it thinks it
+should on the basis of the information it receives. Each channel is
+responsible for checking that the \verb|qmgr|'s request is reasonable.
+This scheme appears to work fairly well. 
+
+\subsection{Tuning performance - initial}
+It turns out that scheduling is never as easy as you thought it might
+be - even if you take this maxim into account! To begin with, I was
+running the \verb|qmgr| on an empty queue and introducing one message at a
+time to see that it scheduled things as it should. It took many
+iterations before I had everything sorted out so that the \verb|qmgr| always
+scheduled things that were ready to run. There is a fairly complex
+interaction between address that have been cached for a while,
+messages that are locked as they are being processed and the
+intelligence of scheduling. Eventually this was solved, such that
+messages appeared to do what they were suppose to.
+
+The next step was to introduce it into service. We ran it on a machine
+at Nottingham processing maybe 100 messages a day delivering to a
+handful of brave recipients. It turns out that 100 messages a day is
+not too dissimilar to the one message at a time scenario. Things seem
+to run fine. Then one day a glut of messages arrived at the same time
+as several local messages were submitted. The machine (a sun 3/60 with
+8Mb) practically died. The \verb|qmgr| was a little over eager -
+scheduling everything it could We had 10-15 processes hammering away
+at the queue and performance was non-existent.
+
+The first step to correct this was to put a limit on the total number
+of simultaneous channels that could be run. By setting this figure to
+one you can get back to linear behaviour and a figure of about 3 is
+suitable for most reasonably small sites. The next thing that was
+noticed was that with 2 messages were introduced into the queue, the
+following happened.
+\begin{quote}\small\begin{verbatim}
+process1: deliver message1 to recipient
+process1: message1 delivered
+process2: start up and initialise
+process1: deliver message2 to recipient
+process2: delete message1
+process2: shutdown
+process1: message2 delivered
+process2: start up an initialise
+process2: delete message1
+process2: shutdown
+\end{verbatim}\end{quote}
+As the delivery time is slightly longer than the time to delete a
+message, the deletion process is started up and stopped many times. A
+simple fix for this is to cache a channel for a few seconds when it
+shuts down. By enforcing an idle period of, say, 20 seconds, between
+the same process running, this cuts down thrashing of one process.
+Another useful technique is to round up cache times. If you cache a
+message, then you round that time off to the nearest whole minute.
+This means when the channel restarts to retry these messages is may
+have a number to try - rather than starting up for just one message
+and again a few seconds later for another.
+
+\subsection{Tuning performance - for real}
+The next step in the evolution was when PP was pressed into service at
+UCL. Here there are many messages processed (about 30,000+ a week).
+As far as I recall, this really didn't affect scheduling policy that
+much. Most of the bugs had been shaken out and although the queues had
+grown to perhaps 1-300 messages things still worked reasonably well.
+What it did show up was that more management control was needed. Much
+work was done with the \verb|MTAconsole| at this stage to allow a
+variety of new controls and some graphical details on performance.
+
+It was pushed a little more heavily one week when most of UCL's
+machines were down for air-conditioning maintenance. At this point
+delivery to local users could not proceed as the relevant NFS
+partitions were not present. It would have been nice to do some more
+useful cacheing in this case, such as detecting that a whole disc was
+missing so disabling delivery to a whole range of users. Unfortunately
+this sort of thing is rather difficult to detect in software -
+especially in a portable way. All you generally know is that a
+chdir(2) or open(2)failed.
+
+Anyway, the \verb|qmgr| continued to run ok with a few minor tweaks here and
+there - mainly to provide new statistics for the console process.
+
+And then... it was brought up at nsfnet-relay. 
+
+Whereas at UCL the queues might peak at 1000 messages occasionally,
+this sort of figure is the typical ``quiet'' day at nsfnet-relay. We
+were rather staggered seeing at first hand the sort of traffic they
+processed. The ULCC people had received a copy of the UCL system and
+had been playing around with it to see if it did what was required.
+Then one particularly heavy day, there was just too much traffic for
+the MMDF and grey-book system to take. As some traffic had been
+filtered through the PP system at nsfnet-relay already, it was decided
+to switch to PP to clear the backlog. This was done, and a backlog of
+5000 messages was cleared together with a constant stream of new
+traffic within about a day. As everything appeared to be working ok
+the system was left in production.
+
+This worked fine, although watching things carefully it was clear that
+things were not being processed optimally. Of the 6 channels the \verb|qmgr|
+had to work with it would start off by allocating the following.
+\begin{quote}
+\small
+\begin{verbatim}
+smtp: 2
+greybook: 2
+msg-clean: 1
+822touk: 1
+\end{verbatim}
+\end{quote}
+However, after a while, some of the channels cleared - or else all
+hosts were deemed unreachable currently. The channel would then
+shutdown and be reallocated. Then, at this point they would do other
+work such as reformatting and messages would build up in one of the
+outbound queues. Once the reformatting was complete, Channels would be
+allocated to the outbound channel. As there were many messages on this
+channel, as other channels finished they would be allocated to this
+channel. This would result in an allocation such as:
+\begin{quote}
+\small
+\begin{verbatim}
+greybook: 5
+msg-clean: 1
+\end{verbatim}
+\end{quote}
+Eventually the greybook queue would clear, but by this time the smtp
+queue had built up so processing switched to that.
+This continued in a sort of bistable flip-flop routine. This is not
+particularly serious - although probably not the sort of behaviour that
+is required.
+
+The real disaster occurred a week or so later. It seems to have
+happened after the US thanksgiving holiday. We suspect that during
+this time a number of machines in the U.S. were either taken down or
+crashed, making the mail pile up at nsfnet-relay. Then, when they came
+back up - there was an enormous flood of mail. At one stage we had
+over 11,000 messages in the queue. A simple ls(1) in the queue
+directory took several minutes! PP continued to work through this
+queue though, and was making some progress. Every night however, the
+machine is taken down for 30 minutes or so to perform a full backup.
+When the machine restarted, the \verb|qmgr| scheduled the
+\verb|qmgr-load| process as normal.  However, there were so many
+messages in the directory (and unix behaves rather quadratically with
+large directories) that this process took over an hour to read in all
+the files. By this time the process had grown to about 50Mb in size.
+Then it tried to transfer the queue to the
+\verb|qmgr|, which also had to grow to 50Mb's to accomodate it. There was only
+100Mb of VM configured - so not suprisingly the \verb|qmgr| ran out of
+memory. Despite this it continued to run which I was quite pleased
+about!
+
+This was desperate. The nsfnet-relay machine is not one that you can
+say ``Oh well, never mind - thats one for the record books'', it {\em
+has} to be fixed. There was a panic days work to convert the
+qmgr-loader into an incremental process that loaded 50 messages at a
+time rather than all at once. Meanwhile, a small debugging program we
+had around that was used to load individual messages into the queue
+was pressed into service. Together with ls and xargs it succeeded in
+loading up the
+\verb|qmgr| in about 2 hours total. The backlog of messages was cleared in
+about two days total.
+
+In hindsight, this was an obvious problem waiting to happen, but it
+was an issue that was hardly discussed until it happened.
+
+\subsection{... in the light of experience}
+After the experiences with nsfnet-relay, we are adapting some of the
+software. It is clear that more statistics are needed (such as number
+of messages processed and messages processed/second). It also seems as
+though the \verb|qmgr| is using too much of its memory when running. From
+observation, it uses less than 1Mb of memory to hold just over 1000
+messages (e.g. the \verb|qmgr| at the peak traffic on nsfnet-relay was of the
+order 11Mb). However, it also seems to use most of this memory most of
+the time. This causes heavy paging traffic. With some subtle changes
+to the internal data structures I believe it is possible to reduce the
+working set size considerably - which will give other processes a
+chance!
+
+\section{Conclusions}
+PP has been an interesting project and we are now getting some real
+feedback on the design decisions taken early on. It seems to be mostly
+up to the job asked of it - even in the busiest environments. We
+worked out using back-of-the-envelope calculations, that it can
+process about a message/second at the present time - on input and
+output. We think with a few of the changes hinted at above we can move
+this to 10 messages/second without too much effort. This works out at
+just less than a million messages a day. We hope this will be
+sufficient for most peoples usage. (You could always buy another
+machine!)
+
+\bibliography{bcustom,networking,software}
+\bibliographystyle{alpha}
+
+\showsummary
+
+\end{document}

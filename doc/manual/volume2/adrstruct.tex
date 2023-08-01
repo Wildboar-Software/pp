@@ -1,0 +1,127 @@
+\File{adrstruct.h},{10:25},{Nov 20 1991}
+\L{\LB{typedef struct ad\_redirection \{}}
+\L{\LB{}\Tab{8}{struct ad\_redirection *rd\_next;}}
+\L{\LB{}\Tab{8}{char}\Tab{16}{*rd\_addr;}\Tab{32}{\C{}\/* O\/R Name *\/\CE{}}}
+\L{\LB{}\Tab{8}{char}\Tab{16}{*rd\_dn;}\Tab{32}{\C{}\/* Distinguished Name *\/\CE{}}}
+\L{\LB{}\Tab{8}{UTC}\Tab{16}{rd\_time;}}
+\L{\LB{}\Tab{8}{int}\Tab{16}{rd\_reason;}}
+\L{\LB{\} Redirection;}}
+\L{\LB{}}
+\L{\LB{typedef struct}\Tab{16}{adr\_struct \{}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{ad\_no;}\Tab{40}{\C{}\/* recipient number *\/\CE{}}}
+\L{\LB{}\Tab{40}{\C{}\/* PP\'s key to this adr *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}\Tab{40}{\C{}\/* Next 3 parms may be modfiied *\/\CE{}}}
+\L{\LB{}\Tab{40}{\C{}\/* in Q.  Fixed text encoding *\/\CE{}}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{ad\_status;}\Tab{40}{\C{}\/* recipient status *\/\CE{}}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{ad\_rcnt;}\Tab{40}{\C{}\/* reformatters done count  *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{\C{}\/* \-\- MTS Service Parms *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{*ad\_value;}\Tab{40}{\C{}\/* address\-original *\/\CE{}}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{*ad\_dn;}\Tab{40}{\C{}\/* Directory Distinguished Name *\/\CE{}}}
+\L{\LB{}\Tab{40}{\C{}\/* QUIPU string encoding *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{ad\_usrreq;}\Tab{40}{\C{}\/* user\-report\-request bit *\/\CE{}}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{ad\_explicitconversion;}\Tab{48}{\C{}\/* explicit conversion *\/\CE{}}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{ad\_type;}\Tab{40}{\C{}\/* address\-type *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{*ad\_orig\_req\_alt; \C{}\/* originator requested alternate *\/\CE{}}}
+\L{\LB{}\Tab{40}{\C{}\/* recipient \- std encoded *\/\CE{}}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{ad\_orig\_req\_alt\_crit;}}
+\L{\LB{}}
+\L{\LB{\#define AD\_RDM\_MAX}\Tab{24}{4}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{ad\_req\_del[AD\_RDM\_MAX];}\Tab{48}{\C{}\/* requested delivery method *\/\CE{}}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{ad\_req\_del\_crit;}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{ad\_phys\_forward; \C{}\/* boolean \- is physical }\Tab{72}{*\/\CE{}}}
+\L{\LB{}\Tab{40}{\C{}\/* forwarding allowed *\/\CE{}}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{ad\_phys\_forward\_crit;}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{ad\_phys\_fw\_ad\_req;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{ad\_phys\_fw\_ad\_crit;}}
+\L{\LB{}\Tab{40}{\C{}\/* boolean \- request for phys *\/\CE{}}}
+\L{\LB{}\Tab{40}{\C{}\/* foward address *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{ad\_phys\_modes;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{ad\_phys\_modes\_crit;}}
+\L{\LB{}\Tab{40}{}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{ad\_reg\_mail\_type;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{ad\_reg\_mail\_type\_crit;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{*ad\_recip\_number\_for\_advice;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{ad\_recip\_number\_for\_advice\_crit;}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{OID}\Tab{24}{ad\_phys\_rendition\_attribs;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{ad\_phys\_rendition\_attribs\_crit;}}
+\L{\LB{}\Tab{8}{}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{ad\_pd\_report\_request;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{ad\_pd\_report\_request\_crit;}}
+\L{\LB{}\Tab{8}{Redirection}\Tab{24}{*ad\_redirection\_history;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{ad\_redirection\_history\_crit;}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{struct qbuf}\Tab{24}{*ad\_message\_token;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{ad\_message\_token\_crit;}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{struct qbuf}\Tab{24}{*ad\_content\_integrity;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{ad\_content\_integrity\_crit;}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{int }\Tab{24}{ad\_proof\_delivery;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{ad\_proof\_delivery\_crit;}}
+\L{\LB{}\Tab{32}{\C{}\/* boolean.  Is proof of delivery *\/\CE{}}}
+\L{\LB{}\Tab{32}{\C{}\/* requested *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{\C{}\/* \-\- MTA Service Params (calculated for MTS AS) *\/\CE{}}}
+\L{\LB{}\Tab{8}{}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{ad\_extension;}\Tab{40}{\C{}\/* extension\-id *\/\CE{}}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{ad\_resp;}\Tab{40}{\C{}\/* responsibility bit *\/\CE{}}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{ad\_mtarreq;}\Tab{40}{\C{}\/* mta\-report\-request bit *\/\CE{}}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{ad\_subtype;}\Tab{40}{\C{}\/* address\-subtype *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{X400\_Extension}\Tab{24}{*ad\_per\_recip\_ext\_list;}}
+\L{\LB{}\Tab{40}{\C{}\/* bucket for new and private *\/\CE{}}}
+\L{\LB{}\Tab{40}{\C{}\/* odds and sods *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{\C{}\/* \-\- parameters calculated by PP \-\- *\/\CE{}}}
+\L{\LB{}\Tab{8}{\C{}\/* \-\- Note: the outbound mta is held in ad\_outchan \-\- *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{*ad\_r400adr;}\Tab{40}{\C{}\/* x400\-addr *\/\CE{}}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{*ad\_r822adr;}\Tab{40}{\C{}\/* rfc\-addr *\/\CE{}}}
+\L{\LB{}\Tab{8}{}}
+\L{\LB{}\Tab{8}{\C{}\/* \-\- should only be set for inbound x400 channels \-\- *\/\CE{}}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{*ad\_r400orig;}\Tab{40}{\C{}\/* original form of x400 address *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{\C{}\/* \-\- next two should only be set for \-\- *\/\CE{}}}
+\L{\LB{}\Tab{8}{\C{}\/* \-\- unroutable originator addresses \-\- *\/\CE{}}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{*ad\_r400DR;}\Tab{40}{\C{}\/* x400 address for DRs *\/\CE{}}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{*ad\_r822DR;}\Tab{40}{\C{}\/* 822 address for DRs *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{*ad\_content;}\Tab{40}{\C{}\/* outgoing content type *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{LIST\_RCHAN}\Tab{24}{*ad\_fmtchan;}\Tab{40}{\C{}\/* reformatting channels *\/\CE{}}}
+\L{\LB{}\Tab{8}{LIST\_RCHAN}\Tab{24}{*ad\_outchan;}\Tab{40}{\C{}\/* outbound channel structure *\/\CE{}}}
+\L{\LB{}\Tab{8}{LIST\_BPT}\Tab{24}{*ad\_eit;}\Tab{40}{\C{}\/* outgoing eit\'s *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{\C{}\/* \-\- from here onwards extra PP specific info \-\- *\/\CE{}}}
+\L{\LB{}\Tab{8}{\C{}\/* \-\- Diagnostics for any address parsing failures \-\- *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{ad\_parse\_stat;}\Tab{40}{\C{}\/* address parsing err status *\/\CE{}}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{*ad\_parse\_message; \C{}\/* address parsing err message *\/\CE{}}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{ad\_reason;}\Tab{40}{\C{}\/* DR reason failure *\/\CE{}}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{ad\_diagnostic;}\Tab{40}{\C{}\/* DR diagnostic code *\/\CE{}}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{*ad\_add\_info;}\Tab{40}{\C{}\/* DR supplementary info *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{Aparse}\Tab{24}{*aparse;}\Tab{40}{\C{}\/* parsing bucket *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{\C{}\/* \-\- Address Control File offsets for fixed length variables \-\- *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{off\_t}\Tab{24}{ad\_no\_offset;}\Tab{40}{\C{}\/* offset param for recip number *\/\CE{}}}
+\L{\LB{}\Tab{8}{off\_t}\Tab{24}{ad\_stat\_offset; \C{}\/* offset param for recip status *\/\CE{}}}
+\L{\LB{}\Tab{8}{off\_t}\Tab{24}{ad\_rcnt\_offset; \C{}\/* offset param for reformat next *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{struct adr\_struct   *ad\_next;}}
+\L{\LB{\} ADDR;}}
+\L{\LB{}}
+\L{\LB{\#define NULLADDR ((ADDR *)0)}}

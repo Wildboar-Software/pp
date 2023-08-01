@@ -1,0 +1,455 @@
+% -*- LaTeX -* Although it's slitex really
+
+\documentstyle[blackandwhite,pagenumbers,small,oval,psfig,tgrind]{NRslides}
+
+\raggedright
+
+\begin{document}
+\title	{PP - The Fun and the Pain}
+
+\author{Julian P.~Onions\\
+j.onions@xtel.co.uk\\[.5in]
+X-Tel Services Ltd.\\
+Nottingham University\\
+Nottingham NG7 2RD\\
+ENGLAND}
+
+\date	{December 18th, 1990}
+
+\maketitle
+
+\begin{bwslide}
+\ctitle	{CONTENTS}
+PART I
+\begin{nrtc}
+\item	What is PP?
+
+\item	The PP Architecture
+
+\item	The PP Queue
+
+\item	Submission
+
+\item	Scheduling and Control
+
+\item	Channels
+
+\item	Status and Availability
+\end{nrtc}
+PART II
+\begin{nrtc}
+\item The scheduling story
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\part*{PART I\\
+Basic PP description}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{What is PP}
+\begin{nrtc}
+\item	Basically, A Mail transfer system (MTA in the jargon).
+
+\item	Largely protocol independent, but deals with X.400
+	and existing mail formats.
+
+\item	Written by people at UCL and Nottingham
+
+\item	Design aims include:-
+	\begin{itemize}
+
+	\item	High performance/throughput
+	\item	Support for message conversion.
+	\item	Support for multi-media
+	\item	Clean interface for user interfaces.
+	\end{itemize}
+
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Why PP}
+\begin{nrtc}
+\item At the time there was no suitable alternative.
+
+\item Most implementations were in the ``toy'' category.
+
+\item Too expensive
+
+\item Only did X.400 - no gatewaying, or else added as an
+afterthought.
+
+\item Worked to minimal profiles.
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Some goals for PP}
+\begin{nrtc}
+\item	Scheduling of messages in an optimal way, such that many
+thousands of messages a day can be processed.
+
+\item	Robustness.
+
+\item	Support for RFC-822, X.400(84) and X.400(88) and others.
+
+\item	Reformatting between body part types in a general manner.
+
+\item	Provision of management, authorisation and monitoring tools.
+
+\item	Use of standardised services such as X.500.
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{The PP Architecture}
+\begin{nrtc}
+\item	PP is based on a system of cooperating processes.
+
+\item	Each process has a specific task to achieve.
+
+\item	Most of these processes are ``dumb''.
+
+\item	The ``intelligence'' of the system is provided by two processes.
+
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{The PP Architecture}
+
+\vskip .5in
+
+\diagram[p]{figure2}
+
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{The PP Queue}
+\begin{nrtc}
+\item	All messages are placed in a queue on disc.
+
+\item	For each message there are two components
+	\begin{itemize}
+	\item	A Control file holding all the envelope information.
+	\item	The Message structure holding the Message data.
+	\end{itemize}
+\item	The Control file is text encoded.
+
+\item	The Message is either a single file, or a directory hierarchy.
+
+\item	The Message may undergo a number of transformations whilst in
+	the queue
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Submission}
+\begin{nrtc}
+\item	The first intelligent process is {\em submit}.
+
+\item	All messages entering the queue pass through this process.
+
+\item	It validates the message in a number of ways:
+	\begin{itemize}
+	\item	Ensures the originator can be reached.
+	\item	Ensures the destination is known.
+	\item	Works out a conversion path from incoming format to outgoing.
+	\item	Applies access controls if required.
+	\end{itemize}
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Scheduling and Controlling}
+\begin{nrtc}
+\item	The other ``intelligent'' process is the queue manager, {\em qmgr}.
+
+\item	Keeps an in memory map of the queue.
+
+\item	Drives all channel programs using network IPC.
+
+\item	Makes all the scheduling decision about messages in the queue.
+
+\item	Sorts the queue  in ``optimal'' ways.
+
+\item	Allows connections to interrogate queue status
+
+\item	More about this later...
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Channels}
+\begin{nrtc}
+\item	Channels in PP process messages.
+
+\item	May reformat a message by conversion e.g.
+	\begin{itemize}
+	\item	Mapping X.400 to RFC-822 message
+	\item	Converting Telex to Ascii
+	\end{itemize}
+\item	May attempt delivery e.g.
+	\begin{itemize}
+	\item	Drive the SMTP or X.400 protocols
+	\item	Deliver to users
+	\end{itemize}
+\item	May restructure the message
+	\begin{itemize}
+	\item	Convert a file into a directory hierarchy
+	\item	Convert multiple body parts into one
+	\end{itemize}
+\item	Housekeeping
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{PP management}
+\begin{nrtc}
+\item The MTA console provides a good monitor of whats going on.
+\item All address that are handled are logged in a special log which
+an be processed to give statistics (and charging) information.
+\item Authorisation can be controlled by user, host, content-type size
+and route.
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Current Status}
+\begin{nrtc}
+\item	PP-5.0 was released on September 21st, 1990.
+
+\item	It is providing a real service at a number of universities and
+	will shortly be providing the UK WEP service.
+
+\item	PP is freely available for use and should be the backbone of
+	JANET as it transitions to X.400 protocols.
+
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Current Status}
+\begin{nrtc}
+\item PP-5.0 provides the following channels currently
+
+	\begin{itemize}
+	\item SMTP with DNS support
+	\item X.400 (1984)
+	\item UUCP mail
+	\item JNT grey book mail
+	\item Distribution list expansion and maintenance
+	\item RFC822 local delivery and delivery time processing
+	\item RFC822 and X.400 conversion
+	\item X-windows based management console
+	\item Message authorisation checking
+	\item X.400(1988) P1 protocol (beta test)
+	\item X.500 distribution lists (beta test)
+	\end{itemize}
+
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{What is planned for the future}
+\begin{nrtc}
+\item	Fax gateway to convert outgoing messages to faxes and vice
+versa.
+
+\item	More use of the X.500 directory, for routing and directory
+name lookup.
+
+\item	P7 Message store with remote access
+
+\item	Improvements in throughput and robustness
+
+\item	Some work on System Five portability and a DECNET channel by
+people outside the PP group. 
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Availability and Support}
+\begin{nrtc}
+\item	Source code is free by FTP/FTAM etc.
+\item	A distribution charge for a tape
+
+\item	Available by FTP/FTAM from ucl, psi and eunet.
+
+\item	Full support is also available if you require it from X-Tel.
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\part*{PART II\\
+Fun and Games with Scheduling}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{How to schedule a queue of messages}
+\begin{nrtc}
+\item	Firstly, it's harder than you think, even when you take this
+maxim into account
+
+\item	Secondly, as Martin Padlipsky said,
+\begin{quote}\em
+``Optimality differs according to context''.
+\end{quote}
+
+\item	So -- apply a few general constraints:
+	\begin{enumerate}
+	\item	Once you have a connection -- give it all you've got.
+	\item	Reading the entire queue is expensive -- so don't if
+		you can help it.
+	\item	When there is nothing to do -- don't do anything.
+	\item	If there is something to do -- get on with it.
+	\item	Keep in mind management.
+	\end{enumerate}
+
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{The first cut}
+\begin{nrtc}
+\item	The first version of the qmgr was a shell script!
+\item	This was 152 lines long and ``cute''
+\item	It read the queue every 5 seconds or so.
+\item	Directly started processes.
+\item	Was fun and easy to understand.
+\item	Of the list above, it did 1.
+\item	Lasted about 2 weeks as far as I recall
+\item	Other than that - it was essentially useless.
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Lets get serious}
+\begin{nrtc}
+\item	Next version was a C program.
+\item	It was fairly small and compact.
+\item	It had an attitude problem - it didn't believe anyone.
+\item	It read the queue frequently.
+\item	It communicated via UDP with submit
+\item	It directly executed programs.
+\item	Of the list above, it did 1 and 4.
+\item	It lasted a few months as I recall.
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{The current version}
+\begin{nrtc}
+\item	Its the third version - a big plus for Frederick Brooks fans.
+\item	It is rather detached from reality.
+\item	It does all its communication via IPC (ROS).
+\item	It does not even have to run on the same machine as the rest.
+\item	I believe it does all 5 things mentioned above.
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Tuning the scheduling - first cut}
+\begin{nrtc}
+\item	First -- get it working with a single message. This includes:
+	\begin{itemize}
+	\item	Make sure the message is processed as fast as possible
+	\item	When the message is gone - the qmgr should do nothing.
+	\item The management facilities work
+	\end{itemize}
+\item	Next -- make sure it works with a few messages. This involves:
+	\begin{itemize}
+	\item	Ensuring no fighting breaks out.
+	\item	Check that unlocking a message allows it to be processed.
+	\end{itemize}
+\item	Then -- take a deep breath and try it for real!
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Did it work}
+\begin{nrtc}
+\item	Yes -- at least for a while!
+\item	Until -- a glut of messages arrived.
+\item	Qmgr goes wild scheduling everything it can
+\item	Load average rises exponentially...
+\item	Phone starts ringing...
+\item	kernel tables overflow...
+\item	Lynching mobs are formed...
+\item	Ooops -- fixes required quickly.
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle {The fixes}
+\begin{nrtc}
+\item	First: check life insurance policy.
+\item	Second: Impose a limit on the maximum number of channels
+\item	This makes the system bounded.
+\item	Third: get the scheduling better so the limit is not required
+	so much.
+\item	Improvements involve
+	\begin{itemize}
+	\item	Stop channel thrashing.
+	\item	Cluster failures.
+	\item	Stop spurious channel start ups.
+	\end{itemize}
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+
+\ctitle{Wider experience}
+\begin{nrtc}
+\item	Next step, UCL.
+\item	Seemed to work fine there.
+\item	Some minor tweaks in performance
+\item	Some large tweaks in management information.
+\item	Pretty good all in all. 
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Feeling confident now!}
+\begin{nrtc}
+\item	Brought into service at ULCC on nsfnet-relay duty.
+\item	Works well initially.
+\item	The disaster - thanksgiving outage wipes us out!
+\item	11,000+ Messages in the queue - more arriving every second.
+\item	An \verb|ls| of the queue takes several minutes.
+\item	\verb|qmgr-load| grows to 50Mb and takes over an hour to run!
+\item	VM exhausted by the \verb|qmgr-load| $\rightarrow$
+	 \verb|qmgr| interaction.
+\item	Panic sets in, airports and ports are alerted.
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{The fix - and the lessons}
+\begin{nrtc}
+\item	\verb|qmgr-load| $\rightarrow$ \verb|qmgr| interaction made
+	into small batches.
+\item	Obvious really in hindsight.
+\item	Some scheduling of channels still to be done.
+\item	Avoid flip-flop channel effects
+\item	Group channels into related clusters
+\item	Parcel out processes on a percentage basis perhaps.
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+
+\ctitle{Summary and Conclusions}
+\begin{nrtc}
+\item	First -- its been mostly fun.
+\item	We think we have a good system.
+\item	We reckon we can handle about 1 message/second currently
+\item	With some tuning that should cope with about 10 message/second
+\item	This is just less than a million a day!
+\item	What more could you want? (this is a statement not a question!)
+\end{nrtc}
+\end{bwslide}
+
+\end{document}

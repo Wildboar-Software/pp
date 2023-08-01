@@ -1,0 +1,57 @@
+\File{io.c},{10:17},{Sep 17 1990}
+\L{\LB{\Proc{submit\_message}submit\_message (orig, recips, fp)}}
+\L{\LB{ADDR}\Tab{8}{*orig;}}
+\L{\LB{ADDR}\Tab{8}{*recips;}}
+\L{\LB{FILE}\Tab{8}{*fp;}}
+\L{\LB{\{}}
+\L{\LB{}\Tab{8}{RP\_Buf}\Tab{16}{rps, *rp = \&rps;}}
+\L{\LB{}\Tab{8}{char}\Tab{16}{buf[BUFSIZ];}}
+\L{\LB{}\Tab{8}{ADDR}\Tab{16}{*ap;}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{if (rp\_isbad (io\_init(rp)))}}
+\L{\LB{}\Tab{16}{error ();}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{if (rp\_isbad (io\_wprm (prm, rp)))}}
+\L{\LB{}\Tab{16}{error ();}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{if (rp\_isbad (io\_wrq (q, rp)))}}
+\L{\LB{}\Tab{16}{error ();}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{if (rp\_isbad (io\_wadr (orig, AD\_ORIGINATOR, rp)))}}
+\L{\LB{}\Tab{16}{error ();}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{for (ap = ad\_recipients; ap; ap = ap \-\> ad\_next)}}
+\L{\LB{}\Tab{16}{if (rp\_isbad (io\_wadr (ap, AD\_RECIPIENT, rp)))}}
+\L{\LB{}\Tab{24}{error ();}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{if (rp\_isbad (io\_adend(rp)))}}
+\L{\LB{}\Tab{16}{error ();}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{if (rp\_isbad (io\_tinit(rp)))}}
+\L{\LB{}\Tab{16}{error ();}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{if (rp\_isbad (io\_tpart (\S{}\"hdr.822\"\SE{}, FALSE, rp)))}}
+\L{\LB{}\Tab{16}{error ();}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{while (fgets( buf, sizeof buf, fp))}}
+\L{\LB{}\Tab{16}{if (rp\_isbad (io\_tdata (buf, strlen (buf))))}}
+\L{\LB{}\Tab{24}{error ();}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{if (rp\_isbad (io\_tdend(rp)))}}
+\L{\LB{}\Tab{16}{error ();}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{if (rp\_isbad (io\_tpart (\S{}\"1.ia5\"\SE{}, FALSE, rp)))}}
+\L{\LB{}\Tab{16}{error ();}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{while (fgets (buf, sizeof buf, stdin))}}
+\L{\LB{}\Tab{16}{if (rp\_isbad (io\_tdata (buf, strlen (buf))))}}
+\L{\LB{}\Tab{24}{error ();}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{if (rp\_isbad (io\_tdend (rp)))}}
+\L{\LB{}\Tab{16}{error ();}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{if (rp\_isbad (io\_tend (rp)))}}
+\L{\LB{}\Tab{16}{error ();}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{ io\_end(OK);}}
+\L{\LB{\}}}

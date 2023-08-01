@@ -1,0 +1,381 @@
+\documentstyle[blackandwhite,small,trademark] {NRslides}
+
+\title {PP --- A Message Transfer Agent}
+
+\author {S.E. Kille \\
+Department of Computer Science \\
+University College London}
+
+\date {October 1988}
+\raggedright
+
+\begin {document}
+
+\maketitlepage
+
+\begin {bwslide}
+\ctitle {What is PP}
+
+\begin {itemize}
+\item A Message Transfer Agent:
+
+\begin {itemize}
+\item Multiple Message Transfer Protocols, including X.400
+\item Protocol and Format Conversion
+\item Suitability for high levels of traffic
+\end {itemize}
+\item Use on \unix/.
+\item Openly Available as a part of the ISODE
+\item A name and not an acronym
+\end {itemize}
+
+
+\end {bwslide}
+
+\begin {bwslide}
+\ctitle {Why PP}
+
+\begin {itemize}
+\item  Current RFC 822 based MTAs such as MMDF or Sendmail have:
+\begin {itemize}
+\item Support for multiple UAs
+\item Support for a range of protocols
+\item Integrated within the \unix/ environment
+\item No support for X.400
+\item Not suitable to extend for X.400
+\end {itemize}
+
+\item X.400 MTAs considered for replacing the older MTAs have:
+\begin {itemize}
+\item X.400
+\item Not a lot else (procrustean)
+\item Wrong price
+\item Caveat: I may not have looked at {\em your} MTA
+\end {itemize}
+
+\item PP Aims to
+\begin {itemize}
+\item Support {\em full} X.400 functionality --- not just the protocols
+
+\item Provide good local functionality
+
+\item Be available at the right price --- free
+
+\item Encourage a higher standard of X.400 implementation
+\end {itemize}
+
+\end {itemize}
+
+\end {bwslide}
+
+
+
+\begin {bwslide}
+\ctitle {Goals (1)}
+
+\begin {itemize}
+\item Provision of a clean interface for message submission and
+delivery, to support a wide range of User Agents.
+\begin {itemize}
+\item Procedural
+\item Protocol
+\end {itemize}
+
+\item Support for all of the Message Transfer Service Elements specified by
+the 1984 and 1988 versions of X.400.
+
+\item Support for some services not provided by X.400.
+
+\item Specific support to facilitate the handling of multimedia
+messages.
+
+\item Robustness and efficiency required to support high levels of
+traffic.
+
+\item Scheduling of message delivery in a sophisticated manner, to 
+optimise local and communication resources.
+\end {itemize}
+\end {bwslide}
+
+\begin {bwslide}
+\ctitle {Goals (2)}
+
+\begin {itemize}
+\item Provision of a range of management, authorisation and monitoring
+facilities.
+
+\item Reformatting between body part types in a general manner.
+
+\item Support for multiple address formats (initially two).
+
+\item Use of
+standardised OSI Directory Services.
+
+\item Support for message protocol conversion in an integrated
+fashion.
+
+\item Full access to the Message Transfer Service for applications
+other than Inter-Personal Messaging.
+
+\end {itemize}
+\end {bwslide}
+
+
+\begin {bwslide}
+\ctitle {Process Structure}
+\vspace{2ex}
+\diagram[p]{structure}
+\end {bwslide}
+
+
+\begin {bwslide}
+\ctitle {Queue Structure}
+\begin {itemize}
+\item Each queued message is represented by a text encoded file, with
+functionality corresponding to the P1 envelope, with extensions. This
+includes the following per-message parameters:
+\begin {itemize}
+\item Message Originator
+\item Message ID
+\item Trace Information
+\item Open-ended list of encoded information types
+\end {itemize}
+
+And include the following per-user parameters:
+\begin {itemize}
+\item Unique key
+\item Address of the recipient 
+\item Sequence of channels to process the message
+\item Processing status
+\end {itemize}
+
+
+\item A \unix/ directory containing:
+\begin {itemize}
+\item The original message
+\item Converted variants of the original message
+\item Associated Delivery Notifications
+\end {itemize}
+
+\end {itemize}
+
+\end {bwslide}
+
+
+\begin {bwslide}
+\ctitle {Queue Example (part 1)}
+
+\footnotesize
+\begin {verbatim}
+Start-of-MsgEnvPrm  
+Message-type User-Mpdu  
+Message-size 257  
+Queued-date "880919163408+0000"  
+Departure-date  
+Inbound-channel x400in  
+Inbound-host cs.ucl.ac.uk  
+Number-warnings 0  
+Warning-time 0  
+Return-time 0  
+Content-type p2  
+Encoded-info EncTypes undefined  
+Priority normal  
+PerMsg-Flags disclose-recipients  
+PerMsg-Flags return-contents  
+MsgId Country GB  
+MsgId Admin GOLD 400  
+MsgId Prmd UK.AC  
+MsgId string "880919152949+0000"
+Trace Country GB  
+Trace Admin GOLD 400  
+Trace Prmd UK.AC  
+Trace arrival-time "880919152949+0000"
+Trace action relayed  
+Trace End-of-unit  
+Trace Country GB  
+Trace Admin GOLD 400  
+Trace Prmd UK.AC  
+Trace arrival-time "880919163413+0000"  
+Trace action relayed  
+Trace End-of-block  
+\end{verbatim}
+\end {bwslide}
+
+
+\begin {bwslide}
+\ctitle {Queue Example (part 2)}
+
+\footnotesize
+\begin{verbatim}
+Start-of-MsgEnvAddr  
+Origs rno=000 status=done dn=000 reform-nxt=000 
+  reform-list=empty ext-id=0   
+  resp=n mta-rreq=basic usr-rreq=basic 
+  mta=pyr1.cs.ucl.ac.uk   
+  outchan=local explicit=0 
+  type=a822 subtype=empty   
+  orig=/S=alina/OU=CS/O=UCL/PRMD=UK.AC/ADMD=GOLD\ 400/C=GB/ 
+  x400=/S=alina/OU=CS/O=UCL/PRMD=UK.AC/ADMD=GOLD\ 400/C=GB/ 
+  rfc=alina@cs.ucl.ac.uk
+  End-of-addr  
+Recip rno=001 status=dliv dn=001 reform-nxt=000 
+  reform-list=empty ext-id=1   
+  resp=y mta-rreq=basic usr-rreq=basic 
+  mta=pamir 
+  outchan=x400out explicit=0 
+  type=x400 subtype=empty   
+  orig=/S=test/OU=mirsa/O=inria/PRMD=aristote/ADMD=PTT/C=Fr/   
+  x400=/S=test/OU=mirsa/O=inria/PRMD=aristote/ADMD=PTT/C=Fr/   
+  rfc=empty 
+  End-of-addr  
+\end{verbatim}
+\end {bwslide}
+
+
+\begin {bwslide}
+\ctitle {Queue Structure}
+\vspace{2ex}
+\diagram[p]{dir}
+
+\end {bwslide}
+
+
+\begin {bwslide}
+\ctitle {Message Submission}
+\begin {itemize}
+\item Submission may be from:
+\begin {itemize}
+\item Local User Agent
+\item Remote User Agent (e.g P3)
+\item Protocol Server (e.g. P1)
+\end {itemize}
+
+\item Submit process uses a private protocol:
+\begin {itemize}
+\item Text based (derived from queue structure)
+\item Local IPC
+\item Superset of features of other protocols
+\item Address checking before message copying
+\end {itemize}
+
+\item Initial Address checking provides:
+\begin {itemize}
+\item Routing
+\item Conversion control
+\item Authorisation
+\item Multiple address formats
+\end {itemize}
+
+\item Submission of one or more body parts
+
+\end {itemize}
+\end {bwslide}
+
+
+
+\begin {bwslide}
+\ctitle {Conversion}
+\begin {itemize}
+\item Messages structured as \unix/ directory hierarchy
+
+\item Body part names indicate their type (e.g. ``3.P2.IA5'')
+
+\item Conversion creates new copy of message
+
+\item Unaffected body parts  are linked
+
+\item Format conversion of body parts
+
+\item Message restructuring
+
+\item Protocol conversion
+\end {itemize}
+
+\end {bwslide}
+
+
+\begin {bwslide}
+\ctitle {Queue Mangement}
+
+\begin {itemize}
+\item The Queue Manager (QMGR) holds representation of queue in memory, and {\
+em
+never} reads the disk
+
+\item Access to the QMGR is through ROS
+\begin {itemize}
+\item Use of ROSY from ISODE
+\end {itemize}
+
+\item Controls channels, and gives flexible scheduling
+
+\item Management facilities
+
+\item MTA Console
+\end {itemize}
+
+
+\end {bwslide}
+
+
+\begin {bwslide}
+\ctitle {Items for PP 4.0}
+\begin {itemize}
+\item Protocols
+\begin {itemize}
+\item P1(1984)
+\item SMTP
+\item JNT Mail
+\item UUCP
+\end {itemize}
+
+\item Conversion
+\begin {itemize}
+\item RFC 987/1026
+\item RFC 934
+\item UK domain ordering
+\end {itemize}
+
+\item User Interfaces
+\begin {itemize}
+\item Text based X.400 interface
+\item MH
+\item Assorted RFC 822 interfaces
+\end {itemize}
+
+\item Distribution Lists
+
+\item Use of X.500 (QUIPU)
+
+\end {itemize}
+
+\end {bwslide}
+
+
+\begin {bwslide}
+\ctitle {Further Items}
+\begin {itemize}
+\item MTA Console
+\item P1 (1988)
+\item Additional body part formatters
+\item RFC 987 (1988)
+\item P2 $\Leftrightarrow$ P22
+\item Message Store (P3/P7)
+\item Operation over PSTN
+\end {itemize}
+
+\end {bwslide}
+
+
+\begin {bwslide}
+\ctitle {Availability of PP}
+\begin {itemize}
+\item To be distributed with ISODE 5.0 in January 1989
+\item Available by Internet FTP and FTAM from Delaware
+\item Available by NIFTP and FTAM from UCL
+\item Available by post from Pennsylvania Univ, UCL, CWI and CSIRO
+\end {itemize}
+
+\end {bwslide}
+
+\end {document}

@@ -1,0 +1,38 @@
+.TH MAIL 1
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man1/RCS/mail.1,v 6.0 1991/12/18 20:43:41 jpo Rel $
+.\"
+.\" $Log: mail.1,v $
+.\" Revision 6.0  1991/12/18  20:43:41  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+mail \- dumb mail interface
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+mail \%[-t] \%[-c] \%[-s] \%[recipients..]
+.in -.5i
+.SH DESCRIPTION
+\fIMail\fP is a very simple interface to PP. It takes a message on its
+standard input and submits it to the given list of recipients.
+.PP
+It has the following options
+.TP
+\-t
+Interpret the remaining arguments up to the next switch as
+\*(lqTo:\*(rq recipients.
+.TP
+\-c
+Interpret the recipients arguments up to the next switch as
+\*(lqCc:\*(rq recipients.
+.TP
+\-s
+Interpret the next argument as the subject string. Processing will revert to
+the previous type after this argument (r.g. to or cc). Multiple subject 
+arguments may be given and will be concatenated.
+.SH FILES
+None
+.SH "SEE ALSO"
+\fIPP Manual \- Volume 3: User Manual\fP

@@ -1,0 +1,14 @@
+\File{rchan.h},{10:21},{Nov 20 1991}
+\L{\LB{typedef struct list\_rchan \{}}
+\L{\LB{}\Tab{8}{char                    *li\_mta; \C{}\/* the MTA *\/\CE{}}}
+\L{\LB{}\Tab{8}{CHAN                    *li\_chan; \C{}\/* the channel its on *\/\CE{}}}
+\L{\LB{}\Tab{8}{union \{}}
+\L{\LB{}\Tab{16}{AUTH            *li\_un\_auth; \C{}\/* auth stuff used in submit *\/\CE{}}}
+\L{\LB{}\Tab{16}{char}\Tab{32}{*li\_un\_dir; \C{}\/* the directory associated *\/\CE{}}}
+\L{\LB{}\Tab{8}{\} list\_rchan\_un;}}
+\L{\LB{}\Tab{8}{struct list\_rchan       *li\_next; \C{}\/* next in the chain *\/\CE{}}}
+\L{\LB{\} LIST\_RCHAN;}}
+\L{\LB{\#define li\_auth list\_rchan\_un.li\_un\_auth}}
+\L{\LB{\#define li\_dir list\_rchan\_un.li\_un\_dir}}
+\L{\LB{}}
+\L{\LB{\#define NULLIST\_RCHAN           ((LIST\_RCHAN *)0)}}

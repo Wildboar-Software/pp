@@ -1,0 +1,23 @@
+\File{pp\_start.sh},{18:00},{Dec  4 1989}
+\L{\LB{\C{}\#! \/bin\/sh}}
+\CE{}\L{\LB{}}
+\L{\LB{\C{}\# SMTP running under inetd}}
+\CE{}\L{\LB{\C{}\#cd \/usr\/pp\/pp\/lib\/chans}}
+\CE{}\L{\LB{\C{}\#if [ \-f smtpd \-a \-f smtpsrvr ]; then}}
+\CE{}\L{\LB{\C{}\#}\Tab{8}{(.\/smtpd `pwd`\/smtpsrvr smtp \> \/dev\/null 2\>\&1 ) \& }}
+\CE{}\L{\LB{\C{}\#}\Tab{8}{echo \-n \' smtp\'}}
+\CE{}\L{\LB{\C{}\#fi}}
+\CE{}\L{\LB{}}
+\L{\LB{\K{cd} \/usr\/pp\/pp\/lib}}
+\L{\LB{su pp \<\<EOF}}
+\L{\LB{echo \-n \S{}\' pp.startaspp : \'\SE{}}}
+\L{\LB{\K{if} [ \-f pptsapd ]; \K{then}}}
+\L{\LB{}\Tab{8}{echo \-n \S{}\' pptsapd \'\SE{}}}
+\L{\LB{}\Tab{8}{pptsapd \> \/dev\/null 2\>\&1 }}
+\L{\LB{\K{fi}}}
+\L{\LB{\K{if} [ \-f qmgr ]; \K{then}}}
+\L{\LB{}\Tab{8}{echo \-n \S{}\' qmgr \'\SE{}}}
+\L{\LB{}\Tab{8}{qmgr \> \/dev\/null 2\>\&1}}
+\L{\LB{\K{fi}}}
+\L{\LB{echo \S{}\'.\'\SE{}}}
+\L{\LB{EOF}}

@@ -1,0 +1,253 @@
+% -*- LaTeX -* Although it's slitex really
+
+\documentstyle[blackandwhite,pagenumbers,small,oval,psfig,tgrind]{NRslides}
+
+\raggedright
+
+\begin{document}
+\title	{Electronic Mail -- X.400 and PP}
+
+\author{Julian P.~Onions\\
+jpo@cs.nott.ac.uk\\[.5in]
+Communications Research Group\\
+Computer Science Department\\
+Nottingham University
+}
+
+\date	{September 7/8, 1989}
+
+\maketitle
+
+\begin{bwslide}
+\ctitle	{CONTENTS}
+\begin{nrtc}
+\item	What is PP?
+
+\item	An Introduction to X.400
+
+\item	The X.400 Model
+
+\item	The X.400 Message
+
+\item	X.400 Addressing
+
+\item	The PP Architecture
+
+\item	The PP Queue
+
+\item	Submission
+
+\item	Scheduling and Control
+
+\item	Channels
+
+\item	Status and Availability
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{What is PP}
+\begin{nrtc}
+\item	Basically, A Mail transfer system (MTA in the jargon).
+
+\item	Largely protocol independent, but deals with X.400
+	and existing mail formats.
+
+\item	Written by people at UCL and Nottingham
+
+\item	Design aims include:-
+	\begin{itemize}
+
+	\item	High performance/throughput
+	\item	Support for message conversion.
+	\item	Support for multi-media
+	\item	Clean interface for user interfaces.
+	\end{itemize}
+
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{A (quick) Introduction to X.400}
+\begin{nrtc}
+\item	X.400 is a family of protocols that form an international
+standard for electronic mail.
+
+\item	Based on three layers
+	\begin{itemize}
+	\item	The User
+	\item	The User Agent (UA)
+	\item	The Message Transfer Agent (MTA)
+	\end{itemize}
+\item	Defined in terms of a language called ASN.1
+
+\item	PP is an instance of an MTA
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{The X.400 Model}
+
+\vskip .5in
+\diagram[p]{figure1}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{The X.400 Message}
+\begin{nrtc}
+\item	The Message is divided into three parts:
+	\begin{itemize}
+	\item	The envelope;
+	\item	the header; and
+	\item	and a list of body parts.
+	\end{itemize}
+
+\item	The envelope (P1 protocol) is used by MTA's to work out how to
+	deliver the message.
+
+\item	The header (P2 protocol) is constructed by the user.
+
+\item	The body parts can be in any of numerous formats.
+
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{X.400 Addressing}
+\begin{nrtc}
+\item	X.400 Addresses are binary lists of attribute values.
+
+\item	They look pretty horrible
+
+\item	X.400 is designed to interact with the X.500 directory service.
+
+\item	This hides these address to a large extent.
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{The PP Architecture}
+\begin{nrtc}
+\item	PP is based on a system of cooperating processes.
+
+\item	Each process has a specific task to achieve.
+
+\item	Most of these processes are ``dumb''.
+
+\item	The ``intelligence'' of the system is provided by two processes.
+
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{The PP Architecture}
+
+\vskip .5in
+
+\diagram[p]{figure2}
+
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{The PP Queue}
+\begin{nrtc}
+\item	All messages are placed in a queue on disc.
+
+\item	For each message there are two components
+	\begin{itemize}
+	\item	A Control file holding all the envelope information.
+	\item	The Message structure holding the Message data.
+	\end{itemize}
+\item	The Control file is text encoded.
+
+\item	The Message is either a single file, or a directory hierarchy.
+
+\item	The Message may undergo a number of transformations whilst in
+	the queue
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Submission}
+\begin{nrtc}
+\item	The first intelligent process is {\em submit}.
+
+\item	All messages entering the queue pass through this process.
+
+\item	It validates the message in a number of ways:
+	\begin{itemize}
+	\item	Ensures the originator can be reached.
+	\item	Ensures the destination is known.
+	\item	Works out a conversion path from incoming format to outgoing.
+	\item	Applies access controls if required.
+	\end{itemize}
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Scheduling and Controlling}
+\begin{nrtc}
+\item	The other ``intelligent'' process is the queue manager, {\em qmgr}.
+
+\item	Keeps an in memory map of the queue.
+
+\item	Drives all channel programs using network IPC.
+
+\item	Makes all the scheduling decision about messages in the queue.
+
+\item	Sorts the queue  in ``optimal'' ways.
+
+\item	Allows connections to interrogate queue status
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Queue Monitoring}
+
+\vskip .5in
+
+\psfig{file=console.ps,height=6in}
+
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Channels}
+\begin{nrtc}
+\item	Channels in PP process messages.
+
+\item	May reformat a message by conversion e.g.
+	\begin{itemize}
+	\item	Mapping X.400 to RFC-822 message
+	\item	Converting Telex to Ascii
+	\end{itemize}
+\item	May attempt delivery e.g.
+	\begin{itemize}
+	\item	Drive the SMTP or X.400 protocols
+	\item	Deliver to users
+	\end{itemize}
+\item	May restructure the message
+	\begin{itemize}
+	\item	Convert a file into a directory hierarchy
+	\item	Convert multiple body parts into one
+	\end{itemize}
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Status and Availability}
+\begin{nrtc}
+
+\item	Currently, PP is in alpha test at three sites
+
+\item	Has transferred many thousands of messages
+
+\item	Will be entering beta test to a slightly wider audience soon.
+
+\item	Should be released at the end of this year.
+
+\item	PP is freely available for use and should be the backbone of
+	JANET as it transitions to X.400 protocols.
+\end{nrtc}
+\end{bwslide}
+
+\end{document}

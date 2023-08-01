@@ -1,0 +1,15 @@
+#! /bin/sh
+
+#
+# Start PP running - assumes we are root.
+# This is suitable for running from /etc/rc.local or similar.
+#
+cd /usr/pp/cmds
+
+#
+# SMTP usually run from inetd
+# chans/smtpd smtpsrvr > /dev/null 2>&1
+#
+
+su pp -c ./pptsapd > /dev/null 2>&1
+su pp -c ./qmgr > /dev/null 2>&1

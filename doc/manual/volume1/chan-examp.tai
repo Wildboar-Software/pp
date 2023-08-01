@@ -1,0 +1,19 @@
+chan	822-local  prog=local,
+	show="Local 822 Delivery channel",type=both,
+	sort="user time",adr=822,adr-order=ukpref,
+	hdrout=822, bptout=ia5, content-out=822,
+	outtable=local,access=mts, drchan=dr2rfc
+
+chan	x40084  prog=x400out84,show="X400 1984 channel",
+	type=both, adr=x400, adr-order=ukpref,
+	intable=x400in84, outtable=x400out84
+
+chan	qmgr-load prog=qmgr-load,show="Loading the QMGR",
+	type=qmgrload
+
+chan	p2flatten prog=p2flatten,show="Structured body -> P2",
+	type=shaper,content-out=p2
+
+chan	g3faxtotxt	prog=fcontrol,type=shaper,bptin=g3fax,
+	bptout=ia5,outinfo=f-fax2txt,
+	show="Fax -> Text mapper"

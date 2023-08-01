@@ -1,0 +1,47 @@
+.TH SMTPD 8
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man8/RCS/smtpd.8,v 6.0 1991/12/18 20:44:03 jpo Rel $
+.\"
+.\" $Log: smtpd.8,v $
+.\" Revision 6.0  1991/12/18  20:44:03  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+smtpd \- Smtp protocol server front end process
+.SH
+.in +.5i
+.ti -.5i
+/usr/lib/pp/smtpd
+\%[-p\ port] \%[-i\ maxcon] server channel
+.in -.5i
+(under rc.local or inetd)
+.SH DESCRIPTION
+.I Smtpd
+is the front end to the smtp server provided with PP. 
+It provides a simple network listener service for smtp requests
+similar to that provided by \fIinetd(8)\fP. However, the smtp server
+it invokes can normally be run directly under inetd.
+.PP
+.I Smtpd
+responds to the following flags.
+.TP
+\-p port
+When running standalone, this overrides the default internet port that
+\fIsmtpd\fP listens on.
+.TP
+\-i maxcon
+When running standalone, this option limits the number of simultaneous
+smtp connections that can be open. Once this limit is reached,
+\fIsmtpd\fP will ignore further requests for connections until one of
+the current connections terminates.
+.PP
+The two mandatory arguments to \fIsmtpd\fP are firstly the pathname of
+the server that is to be executed to obey the smtp protocol, and
+secondly the PP channel that the server should claim to originate from.
+Neither of these values default and both must be specified.
+.SH FILES
+/etc/rc.local	started from here
+.SH "SEE ALSO"
+\fIThe PP Manual: Volume 1 \- Installation and Operation\fP
+

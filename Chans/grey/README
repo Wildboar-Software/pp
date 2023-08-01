@@ -1,0 +1,20 @@
+Grey book interface.
+
+This interface is for the grey book protocol running over Blue book
+file transfer protocol. This is a JANET specific protocol.
+
+The files in this directory represent only the PP specific parts of
+the interface. PP is designed to make use of the unix-niftp public
+domain package to complete this channel. If you do not currently have
+this package you will not make much headway!
+
+The particular unix-niftp you need should have the appropriate hooks
+in for PP. This requires the latest version of unix-niftp.
+
+This is obtainable from Piete Brooks at cambridge university (pb@uk.ac.cam.cl).
+You can get information on the current unix-niftp version from him or
+from the info-server at cambridge.
+
+If you have problems with this - or are confused, drop a note to the
+pp-support address and we will see if something can be sorted out.
+

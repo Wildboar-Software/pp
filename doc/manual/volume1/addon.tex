@@ -1,0 +1,466 @@
+\chapter {Additional Capabilities} 
+
+This chapter describes various units that may be added to PP to
+provide specific functionality.
+These units tend to provide new protocol functionality.
+
+\section {G3Fax capability in PP} \label{fax}
+
+This section describes PP's G3Fax capability and how to add it to the
+configured system.
+The G3Fax capability is divided into several components:
+\begin{itemize}
+\item	Addressing
+\item	Tables
+\item	Conversion
+\item	Transmission and Reception
+\end{itemize}
+These are described below.
+
+\subsection {Fax Addressing} \label{sect:faxaddress}
+
+To enable an address to contain the information required for fax
+delivery, PP recognises two specific X.400 domain defined attributes:
+\begin{describe}
+
+\item[\verb+FAX+:] the value of this attribute is used to identify the
+remote fax machine. 
+It can be the actual telephone number of the
+machine (e.g. \verb-/FAX=+44 602 790278/-), in which case it is used
+directly.
+Or it can be a string 
+which is looked up in the \file{fax} table to get the required
+information (e.g. \verb+/FAX=xtel/+)
+
+Note that the \verb+FAX+ attribute is compulsory.
+The PP fax transmission channel will bounce the message if this
+attribute is not present.
+
+Note also that the number may contain symbols like '\verb-+-' and
+'\verb+P+'.
+The meaning and processing of these symbols is specific to the driver
+being used (see Section~\ref{sect:faxtrans}).
+
+\item[\verb+ATTN+:] the value of this attribute is a descriptive
+string.
+This string is printed on the
+coverpage of the fax along with the key \verb+For the attention
+of+.
+
+\end{describe}
+
+The \verb+FAX+ attribute identifies the remote fax machine and the
+\verb+ATTN+ attribute gives an informative string for presentation on
+the coverpage.
+Note that the presence of one or both of these attributes is not
+sufficient to route a message through PP for delivery via the fax
+transmission channel.
+Addresses will still have to be routed to the fax transmission
+channel via the conventional PP routing tables (the \file{channel} table
+and/or the the \file{users} table).
+
+\subsection {The Fax Table} \label{sect:faxtable}
+
+This section describes the format of the table used by the fax related
+channels and filters.
+As the table is shared by both the conversion filters and the
+fax transmission channel, it is appropriate to describe the format and
+contents of the table here.
+
+The general format of the table is the same as that of all PP tables.
+That is:
+\begin{quote}\begin{verbatim}
+key:value
+\end{verbatim}\end{quote}
+
+The table contains a mixture of delivery information and formating
+information.
+The main type of entry is of the form
+\begin{quote}\begin{verbatim}
+key: number,description
+\end{verbatim}\end{quote}
+Where
+\begin{describe}
+
+\item[\verb+key+:] is the value of the domain defined attribute
+\verb+FAX+ described in Section~\ref{sect:faxaddress}.
+
+\item[\verb+number+:] is the telephone number of the remote fax
+machine.
+
+Any special symbol processing and meaning given to special values is a
+specific to drivers and described in Section~\ref{sect:faxtrans}
+
+\item[\verb+description+:] is a string describing the remote site.
+This description, if given, is printed on the coverpage by
+\pgm{hdr2fax}.
+\pgm{hdr2fax} maps the sequence ``\verb+\n+'' to a newline when printing
+the string.
+\end{describe}
+
+The fax table may also contain several hardwired keys used by the
+conversion filters and the transmission channel.
+These are:
+\begin{describe}
+\item[\verb+keyfont+:] the value is the name of a file containing the
+font used by \pgm{hdr2fax} when printing out keys on the coverpage.
+
+\item[\verb+valuefont+:] the value is the name of a file containing
+the font used by \pgm{hdr2fax} when printing out the values
+associated with the keys.
+
+\item[\verb+textfont+:] the value is the name of a file containing the
+font used by \pgm{ia52fax} for all text and by \pgm{hdr2fax} for any
+subsiduary information it puts on the coverpage.
+
+\item[\verb+xstart+:]
+\item[\verb+ystart+:] the values of these are used by \pgm{hdr2fax} to
+identify the top left hand corner of the coverpage.
+The values can be given in units, \verb+cm+ for centimetres or
+\verb+in+ for inches.
+If no unit is specified, the value is assumed to be in millimetres.
+
+\item[\verb+tab+:] the value is the minimum amount of space to leave
+between the start of the \verb+key+ and the start of the \verb+value+
+on the coverpage. It can be specified with units in the same way as
+\verb+xstart+ and \verb+ystart+.
+
+\item[\verb+coverpage+:] the value is the name of a file containing
+the bitmap of a design which is used by \pgm{hdr2fax} as a backdrop to
+the coverpage.
+
+\item[\verb+localOrg+:] the name and address of the local
+organisation.
+This is printed by \pgm{hdr2fax} on the coverpage.
+Note that \verb+\n+ is mapped to a newline.
+
+\item[\verb+localNumber+:] the telephone number of the local
+organisation.
+This is printed on the coverpage by \pgm{hdr2fax}.
+
+\item[\verb+postscript+:] supplementary information which is printed
+at the bottom of the coverpage by \pgm{hdr2fax}.
+Note that \verb+\n+ is mapped to a newline.
+
+\item[\verb+int\_prefix+] the prefix required to phone international
+numbers.
+
+\end{describe}
+
+Figure~\ref{fig:faxTable} shows an example fax table.
+
+\tagrind[hbtp]{faxTable}{Example of Fax Table}{fig:faxTable}
+
+\subsection {Fax Conversion} \label{sect:faxconv}
+
+This section describes the fax conversion facilities supplied with PP.
+There are two filters:
+\begin{description}
+\item [\pgm{hdr2fax}:] which converts an RFC-822 header to a G3Fax
+bodypart containing a coverpage.
+\item [\pgm{ia52fax}:] which converts an ia5 bodypart to a G3Fax
+bodypart with multiple pages.
+\end{description}
+Note that the size of the page produced is driven by the
+\verb+FAXPAGESIZE+ macro from \file{Make.defs}.
+If this macro is not defined, the filters will produce US size pages.
+That is 216 mm wide by 273 mm high.
+If \verb+FAXPAGESIZE+ equals \verb+-DA4+, the filters will produce A4
+size pages, 210mm wide by 297 mm high.
+
+These filters use fonts and bitmaps encoded in PP's own format.
+There are two subsiduary tools which can be used to produce the
+required format of fonts and bitmaps:
+\begin{describe}
+\item[\verb+xfontconv+:] this converts an X windows' font into PP's
+format.
+It is run as follows:
+\begin{quote}\begin{verbatim}
+xfontconv -font fontName -file fileName
+\end{verbatim}\end{quote}
+where \verb+fontName+ is the name of the required font which must be
+present in the local X server and \verb+fileName+ is the name of the
+file in which to place the PP encoded version of the font.
+
+\item[\verb+ximageconv+:] this converts an X windows' bitmap into PP's
+format.
+It is run as follows:
+\begin{quote}\begin{verbatim}
+ximageconv -in xbitmapFile -out fileName
+\end{verbatim}\end{quote}
+where \verb+xbitmapFile+ is the file containing the bitmap to convert
+and \verb+fileName+ is the file in which to place the PP encoded
+version of the bitmap.
+\end{describe}
+
+\subsubsection {The \pgm{hdr2fax} Filter}
+
+The \pgm{hdr2fax} filter is used in conjunction with the general
+filter controller \pgm{fcontrol}.
+It produces a coverpage for a message, based on the information it is
+passed via the tailored \verb+outinfo+ field and the information it
+can glean from the RFC-822 header field.
+
+The coverpage is built up as a series of key/value pairs separated by
+a set horizontal distance (\verb+tab+ see Section~\ref{sect:faxtable}).
+These key/value pairs include To/value, From/value etc.
+
+The information passed via the \verb+outinfo+ field is standard and
+as such the \verb+outinfo+ field should be tailored thus
+\begin{quote}\begin{verbatim}
+hdr2fax -table $(table) -from $(400sender) -to $(400recip) \
+	-subject $(ua-id) -outmta $(outmta)
+\end{verbatim}\end{quote}
+
+Although the \verb+outinfo+ is standard, you may omit or alter components
+of the field if you wish.
+This will result in the corresponding key/value pair being omitted
+from the coverpage.
+The only component which is compulsory is the \verb+-table+ component.
+Note that the \verb+$(...)+ values will be expanded automatically by
+\pgm{fcontrol}.
+
+The components of the \verb+outinfo+ field are:
+\begin{describe}
+\item[\verb+-table+:] the name of the fax table (see
+Section~\ref{sect:faxtable})
+\item[\verb+-from+:] the originator of the message.
+\item[\verb+-to+:] the recipient of the message.
+\item[\verb+-subject+:] the subject of the message.
+\item[\verb+-outmta+:] the pseudo mta to which this message is to be
+delivered.
+\end{describe}
+
+There is a further consideration concerning the tailoring of
+\pgm{hdr2fax}.
+\pgm{hdr2fax} produces a coverpage specific to one recipient of a message.
+Therefore to ensure that each recipient gets a coverpage specific to
+themself, the tailoring for the \pgm{hdr2fax} should have the variable
+\verb+solo-proc+ set to \verb+yes+.
+
+Figure~\ref{example:faxtai} shows an example of how \pgm{hdr2fax}
+should be tailored.
+
+\tagrind[hbtp]{faxtai}{Example Tailoring of Fax Channels}{example:faxtai}
+
+\subsubsection {The \pgm{ia52fax} Filter}
+
+The \pgm{ia52fax} filter is used, in conjunction with the general
+filter controller \pgm{fcontrol}, to convert ia5 bodyparts into
+multiple page g3fax bodyparts.
+
+The \verb+outinfo+ field needs to specify which font the filter should
+use.
+This can be 
+\begin{itemize}
+\item	either indirectly via the \verb+textfont+ specified in the fax table
+(see Section~\ref{sect:faxtable}). In which case the \verb+outinfo+ field
+should contain the component \verb+-table $(table)+.
+\item	or directly by specifying the name of the file containing the
+font to be used. The \verb+outinfo+ field should contain the component
+\verb+-font filename+
+\end{itemize}
+
+Figure~\ref{example:faxtai} shows an example of how \pgm{ia52fax}
+should be tailored.
+
+\subsection	{The Fax Transmission and Reception Channels} 
+	\label{sect:faxtrans}
+
+This section describes the fax transmission and reception facilities
+supplied with PP.
+This code is divided into PP skeletons for an outbound fax channel and
+an inbound fax daemon, and drivers that are written to use these
+skeletons.
+At present there are only two drivers written using these skeletons.
+These drivers are for the following systems:
+\begin{itemize}
+\item	the Panasonic Systemfax 250 
+\item	the Fujitsu dexNet200
+\end{itemize}
+At the time of writing the inbound daemon is still in the beta stage.
+
+The inbound daemon receives an incoming fax, wraps it up into an x400
+message and sends it to a specified address.
+The outbound channel transmits a message to the remote fax machine via
+the local fax machine.
+
+With channel pairing, both these entities can be tailored as one
+channel.
+Figure~\ref{example:faxtai} shows an example of how these could be
+tailored.
+This example is written for the Panasonic Systemfax 250 driver.
+
+Before describing the details germane to the individual drivers,
+the details germane to the PP skeletons are described.
+The key data structure linking the skeletons and the drivers is the
+structure \verb+FaxCtlr+.
+The elements of this structure are mostly function pointers which
+should be filled in by the driver code.
+The structure  contains other elements which mostly relate to the
+inbound daemon.
+These include: the address to send inbound faxes to; the subject to
+attach to the message sent; and the channel to run as.
+
+In terms of tailoring, there is only one PP specific tailor element.
+This is for the outbound channel and is the element \verb+confirm+.
+If this element is set to \verb+always+, a positive delivery report
+will be sent back to the originator of the message when the message
+has been successfully transmitted.
+If set to \verb+never+, positive delivery reports aren't sent.
+The default action is not to send delivery reports.
+
+\subsubsection {The Panasonic Systemfax 250 Driver}
+
+\subsubsection{The Outbound Transmission Channel}
+
+The Panasonic Systemfax's outbound channel's behaviour can be altered
+by several key/value pairs in the \verb+outinfo+ tailor field:
+\begin{description}
+\item[\verb+out=device+:] the outbound device on which to contact the
+local fax machine. By default it will try to use \verb+/dev/faxout+
+
+\item[\verb+prefix=number+:] the number to prepended to the remote fax
+machine number. This is useful for a fax machine connected to an
+internal network where a prefix is required to get external numbers.
+If \verb+prefix+ is not present no number is prepended.
+
+\item[\verb+nattempts=number+:] the number of times the channel will
+attempt to connect to the remote fax machine in one invocation.
+The default is three times.
+\item[\verb+sleep=numSecs+:] the number of seconds to sleep between
+connection attempts. The default is 30 seconds.
+\item[\verb+softcar=used+:] indicates that the software carrier detect
+package is in place.
+\end{description}
+
+The outbound channel's behaviour is also altered by the 
+fashion in which the recipient was addressed.
+If the recipient was addressed directly via a telephone number, e.g
+\verb+FAX=999+, and this value was not found in the fax table, then the
+fax machine will generate a negative delivery report if it cannot
+delivery the message in the first invocation (which consists of
+\verb+nattempts+ connection attempts) providing that a connection with
+the remote site is made.
+If the value is found in the fax table, then the fax channel will not
+bounce the message if the first invocation fails to transmit it.
+Instead it will revert to the usual PP timeout method for nondelivery.
+
+The outbound channel contains special processing for the telephone
+numbers of the remote machine. This is as follows:
+\begin{itemize}
+
+\item If the number starts with the character \verb-+-, the international
+prefix is prepended to the number.
+The international prefix is stored in the fax table.
+
+\item Any ``\verb+P+'' characters in the number cause the fax transmission
+channel to pause at those positions while dialing.
+
+\item If the number is zero, the fax channel will print the fax on the local
+fax machine rather than send it to a remote fax.
+
+\end{itemize}
+
+\subsubsection {The Inbound Reception Daemon}
+
+The Panasonic Systemfax's inbound daemon`s behaviour can be altered by
+several key/value pairs in the \verb+ininfo+ tailor field:
+\begin{description}
+\item[\verb+in=device+:] the inbound device on which to listen for
+incoming fax. By default it will try to use \verb+/dev/faxin+.
+
+\item[\verb+master=address+:] the address to send incoming faxes to.
+This will default to \verb+faxmaster+.
+
+\item[\verb+subject=string+:] the subject to append to the messages
+encapsulating the incoming faxes. This defaults to the string
+``Inbound fax message''.
+
+\item[\verb+softcar=used+:] indicates that the software carrier detect
+package is in place.
+\end{description}
+
+By default the inbound daemon will run as a channel named \verb+fax+.
+This can be altered by the command line argument \verb+-c+ (e.g.
+\verb+ps250d -c fax-in+)
+
+\subsubsection {The Fujitsu dexNet200 Driver}
+
+\section {ASN.1 Filter}
+
+The ASN.1 Filter \pgm{asn}, is used in conjunction with the 
+general filter controller \pgm{fcontrol}, and is located in the 
+\file{formdir} directory.
+
+It is a general body part conversion filter and can do 
+a variety of conversions depending on its specified options.  These
+options are:
+
+\begin{itemize}
+\item Unpack ASN.1 encodings of bodyparts.
+\item Perform a character set conversion on the body part. 
+\item Pack the body part into ASN.1
+\end {itemize}
+
+\subsection {Runtime Options}
+
+The \pgm{asn} filter can take a number of arguments. All of these are
+optional. They are as
+follows:
+\begin{describe}
+\item[\verb|-ia encoding|:] The type of ASN.1 decoding to be done on
+input. If the encoding is specified as ``none'' no decoding will be
+done (the default).
+
+\item[\verb|-oa encoding|:] The type of ASN.1 encoding to be done on
+ouput. If ``none'' is specified no encoding will be done on output
+(the default).
+
+\item[\verb|-is charset|:] The input character set.
+\item[\verb|-os charset|:] The character set to be produced. If this
+is the same as the \verb|-is| parameter, no conversion will be
+performed. 
+\item[\verb|-x|:] Use X.408 encodings (the default).
+\item[\verb|-m|:] Use Mnemonic encodings.
+\item[\verb|-l|:] Add a trailing newline to each ASN.1 block decoded.
+This should be used with care.
+\end{describe}
+
+The character sets supported at present are:
+\begin{describe}
+\item[none:]	Refers to no character set.
+\item[ia5:]	This is unencoded ascii text.
+\item[generaltext:]	The ISO general test format.
+\item[motis-86-6937:] The MOTIS defined 6937 character set.
+\item[teletex:]	The T.61 character set.
+\end{describe}
+
+\subsection {Tailoring}
+
+The following fields need to be set within the tailor file.
+\begin {describe}
+\item[\verb|prog|:] This should be set to the value \pgm{fcontrol}, as
+this program is always run under \pgm{fcontrol}.
+\item[\verb|bptin|:] This should be set to the inbound character set.
+\item[\verb|bptout|:] This should be set to specified character set to
+be produced.
+\item[\verb|type|:] set to \verb|shaper|.
+\item[\verb|conv|:] set to either \verb|conv| if the conversion is
+reversible or \verb|loss| if the conversion looses information.
+\item[\verb|cost|:]  set  this to a highish value (say 99) if
+\verb|conv| is \verb|loss|.
+\item[\verb|outinfo|:] set to the ASN.1 filter name \pgm{asn} followed 
+by its required options.
+\end {describe}
+
+\subsubsection {Tailoring Examples}
+
+Figure~\ref{fig:asn} shows examples of tailoring the \pgm{asn} filter.
+The first converts iso6937 format into ascii, this conversion is not
+generally reversible, so \verb|loss| is specified. The second example
+shows conversion of ia5 into iso6937. The third specifies a conversion
+from iso6937 into teletex.
+
+\tagrind{asnfilter}{Examples of the asn filter}{fig:asn}
+

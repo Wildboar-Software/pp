@@ -1,0 +1,346 @@
+% -*- LaTeX -*-
+
+\input lcustom
+
+\documentstyle[11pt,a4]{article}
+
+\begin{document}
+
+\title{Electronic Mail -- X.400 and PP}
+\author{Julian P.~Onions\\[0.1in]
+Communications Research Group\\
+Nottingham University}
+\date{7/8th September}
+
+\maketitle
+
+\begin{abstract}
+This paper describes the design, implementation and progress of the PP
+message transport system. This is a message transfer system that can
+relay a variety of protocols, and gateway between them.
+
+The paper gives a very brief introduction to the X.400 mail standard;
+followed by an overview of the PP message system and concludes with a
+statement on progress of the work.
+\end{abstract}
+
+\section{Introduction}
+
+This paper describes the design and implementation of PP\footnote{PP
+is not an acronym. Despite many rumours to the contrary, the author is
+sticking to this position!.}. PP is a generic Message Transfer Agent
+capable of carrying a number of message formats. It has been written
+as a joint project by University College London and Nottingham
+University and is designed to run on \unix/ systems. It makes
+use of the ISODE package\cite{ISODE}.  Its design is heavily
+influenced however, by the need to carry X.400 MHS\cite{CCITT.MHS} and
+RFC-822\cite{RFC822} based mail. The major goals of PP include:
+\begin{itemize}
+\item	Robustness. PP is designed for heavy use. It should be
+capable of transferring high levels of traffic in an optimal way.
+
+\item	A clean interface for submission and delivery. PP does not
+provide a user agent but does provide a library interface which allows
+user agents to be added to PP easily.
+
+\item	Sophisticated message processing to optimise delivery and
+remote transfers.
+
+\item	Support for message conversion in an integrated way.
+
+\item	Support for multiple addressing formats (initially two).
+
+\item	Support for multi-media mail.
+
+\item	Support for arbitrary message structures.
+
+\item	Designed for large systems. PP is not designed to run on your
+PC or even on a workstation. It is designed to be a central mail
+processing hub for a group of computers. It is not a small piece of
+software!
+\end{itemize}
+
+The rest of this paper consists of a brief introduction to X.400, a
+description of the PP architecture and a statement of the current
+state of play.
+
+\section{X.400 Message Handling Service}
+
+X.400 is the international standard for message handling systems,
+defined jointly by ISO and CCITT. X.400 itself is not a single
+standard but a family of standards which includes standards such as
+\[\begin{tabular}{l l}
+X.400&	System Service and Overview\\
+X.402&	Basic Service Elements and Option User Facilities\\ 
+X.411&	Abstract Service Definitions and Procedures\\
+X.413&	Message Store Abstract Service\\
+X.419&	Protocol Specifications\\
+X.420&	Interpersonal Messaging System\\
+\end{tabular}\]
+
+\subsection{The X.400 Model}
+
+X.400 defines a model for electronic mail which has three layers, as
+shown in Figure~\ref{x400:model}. The top most layer is the user, who
+performs actions such as composing, reading and filing mail. At the
+next level is the User Agent (UA). This is the interface to the
+message transfer system. It is a piece of hardware or software which
+aids the user in composing and reading mail. All interaction with the
+system goes through this module. At the bottom is the Message Transfer
+Layer. This is an interconnection of Message Transfer Agents (MTA) (such
+as PP) which together route the message to its final destination.
+
+\tagfigure{1}{The X.400 Model}{x400:model}
+
+\subsection{The X.400 Message}
+
+The X.400 message is typically composed of three parts. Each part is
+encoded in a machine independent format call Abstract Syntax Notation
+One (ASN.1). ASN.1 is used throughout X.400 and OSI networking in
+general. ASN.1 is binary in nature and allows complex structures to be
+built up by defining them in terms of collection of a few basic primitives.
+
+The message composed by the user consists of a structured header with
+the usual electronic mail components such as To, From, Subject etc.
+The header structure is defined by a protocol
+termed P2. This protocol governs the end-to-end transfer of the
+message, and is the part that the users are aware of.
+
+This header has attached a number of body parts, each of which can be
+a different format. This allows the interchange of any several
+standard document types plus other privately defined body parts, the
+simplest and most common being ascii.
+
+When submitted to the message transfer layer, an outer envelope is
+constructed which contains all the information necessary to deliver
+the message. This protocol is termed P1. It is an important separation
+of functionality that the message contents need never be looked at by
+the MTA's, indeed if secure messaging is being used and the message is
+encrypted this is not possible.
+
+So, the structure of the message is analogous to paper mail. The P1
+envelope is the equivalent of the paper envelope, used by the postal
+service for delivery. The P2 header is equivalent to a standard letter
+heading and the body parts are the equivalent of the pages of the
+letter.
+
+\subsection{X.400 Addressing}
+
+X.400 defines an address as a list of attribute value pairs.  A
+typical address might look like this:
+\[\begin{tabular}{l l}
+Country&		GB\\
+Adminstrative Domain&	GOLD 400\\
+Private Domain&		UK.AC\\
+Organisation&		Nottingham University\\
+Organisational Unit&	Computer Science\\
+Personal Name/Given&	Julian\\
+Personal Name/Surname&	Onions\\
+\end{tabular}\]
+However, it is intended that X.400 should make use of another OSI
+standard X.500, the directory service. This allows complex queries and
+name lookup to be done across the world and so will resolve shorter
+forms of address to full X.400 addresses. It can also help with
+ambiguous queries and general searching for recipients based on
+whatever data is available. A typical X.500 address might look like:
+\[\begin{tabular}{l l}
+Country&		GB\\
+Organisation&		Nottingham University\\
+Organisational Unit&	Computer Science\\
+Common Name&		Julian Onions\\
+\end{tabular}\]
+
+\subsection{Services and Other Protocols}
+
+There have so far been two version of the X.400 standard. The 1984
+version and the 1988 version. The 1984 version was rather restrictive
+in what it allowed and several improvements were made in the 1988
+version. X.400 currently supports the following services:
+\begin{itemize}
+\item	Delivery reports -- both positive and negative.
+\item	Conversion between body parts
+\item	Secure messageing. Protocols are provided to allow many forms
+of security including
+	\begin{itemize}
+	\item	Basic message modification
+	\item	Masquerading as other users
+	\item	Proof of delivery and submission
+	\item	Traffic analysis
+	\end{itemize}
+\item	Distribution list support.
+\item	A flexible way to extend the protocols and body parts.
+\item	Message Stores.
+\item	Interfaces with other facilities including Fax, Telex and the
+postal system.
+\end{itemize}
+
+Also defined in the X.400 standards are protocols to remotely access
+the mail system (P3) and to remotely access message stores (P7).
+
+\section{The design of PP}
+
+The design of PP was influenced in part by the RFC-822 mail system
+MMDF\cite{MMDFII}. In this model, extensive use is made of separate
+processes to do different jobs. This allows each element to be built
+and tested separately and encourages modularity. A fuller description
+of the design of PP can be found in \cite{PP.MTA}.
+
+\subsection{The Process Structure}
+
+The basic PP process structure is shown in Figure~\ref{pp:process}. PP
+has a single queue of messages on which a number of processes operate.
+There are two critical processes which undertake complex functions,
+the rest of the processes are essentially ``dumb''.
+
+\tagfigure{2}{The PP Process Structure}{pp:process}
+
+The first key process is that entitled {\em submit}. This process
+guards the entrance to the queue. All messages entering the queue pass
+through this process. It performs a variety of checks on the message
+to ensure it can either be delivered or returned; works out the
+routing for the message; calculates the reformatting of the message if
+necessary; and applies other criteria such as authorisation and
+authentication. By checking as much as possible at this point later processes
+have to do less and completely undeliverable messages can be stopped
+from entering the queue.
+
+The second key process is the {\em QMGR}, or queue manager. This
+process is responsible for all the scheduling operations of the
+messages in the queue. The QMGR holds a representation of the queue in
+memory and so can perform complex and optimal scheduling of messages.
+This scheduling consists of either delivering the message locally or
+remotely or else converting the message within the queue (e.g.
+gatewaying between protocols).
+
+As the QMGR holds a complete representation of the queue in memory it
+also provides an information service. It can be queried by suitable
+tools to display the state of the queue and such tools can even
+control the behaviour of the QMGR.
+
+\subsection{The Queue}
+
+The queue of messages is held in two components. The first is an
+address file which contains the envelope information about the
+message. This is held in a text encoded form and is a generic envelope
+structure which can hold both X.400 and RFC-822 messages. The text
+encoding is a big advantage as it allows manipulation of the queues in
+an emergency by a text editor. Whilst this should not normally be
+necessary it is much easier than providing special management tools
+to cover every eventuality.
+
+The second component is the message content. This includes the headers
+and body parts. If no processing is necessary for the message this is
+kept as a single file. However, if conversion is necessary, the
+content is broken up into parts, each part being placed in a separate
+file. Each time a message content is transformed, a new directory is
+created and the appropriate files are changed. This allows simple
+filters (such as {\em sed} even) to do the conversions.
+
+
+\subsection{Channels}
+
+Most other processes in PP are termed {\em channels}. A channel takes
+as input a message and outputs a different form of that message.
+Channels are controlled directly by the QMGR by means of a networked
+protocol. Each channel does a specific job. Channels come in three
+basic forms as described below.
+
+\subsubsection{Outbound Channels}
+This style of channel is usually a protocol engine. It takes a message
+out of the queue and delivers it. This delivery may be local as in the
+case of delivering to a mailbox; or remote such as driving the
+SMTP\cite{SMTP} or X.400 protocols. Each channel reads the internal
+format of the queued message and converts it to the protocol specific
+format. The QMGR informs a channel which message to deliver and the
+channel reports on the status of the message. This allows the QMGR to
+discover whether the delivery attempt was successful, the remote site
+did not respond or whether the message cannot be delivered. This
+information is then used by the QMGR to schedule further deliveries.
+
+\subsubsection{Inbound Channels}
+Inbound channels perform the opposite function to outbound channels.
+They take care of the various protocols necessary to receive a
+message, either from a user agent (local submission) or across a
+network. Their main task is mapping from the protocol specific form of
+the message to the form used withing the queue. This form is then
+passed by a private protocol to submit which enqueue the message and
+then informs the QMGR of the new message.
+
+\subsubsection{Formatting and protocol conversion channels}
+These channels transform the message in some way without delivering
+it. They are treated in exactly the same way as outbound channels and
+are scheduled by the QMGR. These channels come in two basic types.
+\begin{enumerate}
+\item	Channels that change the directory structure. These either map
+from the single file into a directory hierarchy, or the reverse.
+
+\item	Simple reformatting. These channels might change, say, a teletex
+body part into an ascii body part. When gatewaying is being performed,
+such a channel might convert RFC-822 headers into X.400 headers.
+
+\end{enumerate}
+
+\section{PP Status}
+
+\subsection{The current version}
+
+At the time of writing this (August 1989) PP has been in alpha test
+(version 3.0) for approximately a month at a limited number of sites.
+In this time is has transferred several thousand message (mostly
+without problems!)  and has successfully gatewayed many messages
+between RFC-822 and X.400.
+
+PP was successfully demonstrated at the Cebit show where it
+interworked with a number of other X.400 products. It continues to
+interwork with a number of sites both via X.400 and RFC822 based
+protocols.
+
+The beta version of this code will be released to a larger number of
+sites in the Autumn. 
+
+\subsection{The released version}
+The released version of PP should be available around the end of the
+year. It will contain the following major modules :-
+
+\begin{description}
+\item[Core]	The basic core of the system including the QMGR,
+submit and a number of support tools.
+
+\item[X.400 1984]	The X.400 1984 protocols will be fully supported.
+
+\item[SMTP]	Smtp protocols will be supported, including use of the
+name server protocols for address resolution.
+
+\item[Grey Book] Grey book mail transfer is being tested for the next
+release. This will work with the unix-niftp blue book transfer system
+to provide non-spooled mail transfer over JANET.
+
+\item[List]	A list channel to offload the processing of
+distribution lists. This helps speed up submission to large
+distribution lists and allows list management.
+
+\item[X.400 1988]	The 1988 version of X.400 should be present in the
+released version in a beta test form. The 1988 version of X.400 is
+uncommon at present so interworking testing is limited. This will
+include secure messaging and extensions.
+
+\item[MTA Console]	An X-windows based console display which
+interrogates the QMGR and displays the current state of the
+queues. It emphasises problems in the queue and allows parameters to
+be adjusted interactively.
+
+\item[Tools]	Various auxiliary programs to configure the system and
+provide debugging support.
+ 
+\end{description}
+
+\subsection{Availability}
+PP will be available later this year in the public domain. It is
+planned to continue development for some time.
+
+\bibliography{bcustom,networking,software}
+\bibliographystyle{alpha}
+
+\showsummary
+
+\end{document}

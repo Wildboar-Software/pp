@@ -1,0 +1,38 @@
+\[\begin{tabular}{| l | l | p{0.4\textwidth}|}
+\hline
+	\multicolumn{1}{|c|}{\bf Variable} &
+		\multicolumn{1}{|c|}{\bf Default} &
+			\multicolumn{1}{|c|}{\bf Description} \\
+\hline
+	\tt CC&		\tt cc&		The \pgm{C} compiler to use\\
+	\tt CCOPTIONS&	\tt -O&		\pgm{C} compiler options\\
+	\tt LIBCCOPTIONS&\tt -O&	\pgm{C} compiler options specific
+					to library files \\
+	\tt OLDCC&	\tt cc&		Other cc if gcc is used\\
+	\tt LDOPTIONS&	\tt -s&		Loaded options\\
+	\tt PEPY&	\tt pepy&	The \pgm{pepy} ASN.1 parser/compiler\\
+	\tt POSY&	\tt posy&	The \pgm{posy} stub generator\\
+	\tt ROSY&	\tt rosy&	The \pgm{rosy} remote
+					operations stub generator \\
+	\tt PEPSY&	\tt pepsy&	The \pgm{pepsy} program \\
+	\tt X11&	\tt true&	Does the system have X11? \\
+	\tt LIBX&	\tt -lXaw -lXmu -lXt -lX11&
+					The X11 libraries - may need -lXext
+					for X11R4\\
+	\tt LINT&	\tt lint&	The \man lint (1) command\\
+	\tt LINTFLAGS&	\tt -hbuz&	Lint flags\\
+	\tt PGMPROT&	\tt 755&	Program protection mode\\
+	\tt PPUSER&	\tt pp&		The user id PP will run as\\
+	\tt ROOTUSER&	\tt root&	The user id for privileged channels\\
+	\tt CHOWN&	\tt chown&	The \man chown(8) command\\
+	\tt CHMOD&	\tt chmod&	The \man chmod(1) command\\
+	\tt BACKUP&	\tt cp&		A command to back up the old
+binary\\
+	\tt INSTALL&	\tt cp&		A command to install a new
+binary\\
+	\tt LIBPHOTO&	\tt -lphoto&
+					The quipu photo library\\
+	\tt FAXDRIVERS&	\tt dexNet200&	The fax modem to compile\\	
+\hline
+\end{tabular}\]
+

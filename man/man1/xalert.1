@@ -1,0 +1,82 @@
+.TH XALERT 1
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man1/RCS/xalert.1,v 6.0 1991/12/18 20:43:41 jpo Rel $
+.\"
+.\" $Log: xalert.1,v $
+.\" Revision 6.0  1991/12/18  20:43:41  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+xalert \- display new mail alerts
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+xalert \%[\-filename\ file] \%[\-user\ user] \%[\-port\ number]
+\%[\-bell] \%[\-nobell] \%[\-autoraise] \%[\-noautoraise]
+\%[\-photos] \%[\-nophotos]
+\%[\-s] \%[\-t] \%[\-x] \%[\-w\ width]
+\%[generic\ X\ options]
+.in -.5i
+.SH DESCRIPTION
+Xalert is a simple program designed to display new message alerts on a
+display running the X windowing system. it does very little else,
+relying on its client to do all the hard work. The program normally
+tries to start as an X client. If this fails it acceps new messages
+from the client and displays them to the users terminal.
+.PP
+It has the following options
+.TP
+\-filename file set the alert filename that \fIxalert\fP and
+\fIflagmail\fP communicate via. This defaults to the file \fB.alert\fP
+in your home directory. This file is created by \fIxalert\fP and read
+by \fIflagmail\fP. This is also settable via the X resource string fileName.
+.TP
+\-user username
+Allows you to pretend to be the given user. This does not really do
+much as you will generally only get notified of messages to you, but
+it may be useful. This is settable by the X resource string userName.
+.TP
+\-port number
+Change the default udp port that \fIxalert\fP and \fIflagmail\fP
+communicate via (normally selected by the system). This is settable by
+the X resource integer port.
+.TP
+\-bell / \-nobell
+Ring or don't ring the bell when a new message arrives. This is settable by
+the X resource boolean bell
+.TP
+\-autoraise / \-noautoraise Raise or don't raise the window to the top
+of the stack on each new message. This is settable by the X resource
+boolean autoRaise.
+.TP
+\-photos / \-nophotos
+Display the senders photograph as retrieved from the directory on each
+new message. This is settable by the X resource boolean photos.
+.TP
+\-s
+Only attempt to print to the standard output - do not search for all
+occurances of this user logged in.
+.TP
+\-t
+Do not attempt to start as an X client.
+.TP
+\-x
+Allow use of X.
+.TP
+\-w\ width
+Truncate to this width when displaying on terminals.
+.PP
+It is also quite useful as a clipboard...
+.SH FILES
+.ta \w'~/.alert\0\0'u
+~/.alert	The default alert file.
+.SH "SEE ALSO"
+flagmail(1), ttyalert(1)
+.br
+\fIPP Manual \- Volume 3: User Manual\fP
+.SH "BUGS"
+Ought to sing, dance and make coffee.
+.br
+Sometimes searching for a photograph can take a while - especially if
+the photo is big!

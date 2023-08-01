@@ -1,0 +1,32 @@
+Files in this directory are the preferred format for the pp system.
+Add new file types as needed. The format is not particularly
+important, but I think it looks ok and it has most of the essential
+info in it.
+
+A brief note about some of the formats.
+
+template.py
+	Don't forget to set the comment leader for RCS, else you'll
+	get some funny results. Basically, the first time you co a .py
+	file - the following is the easiest way.
+		ci filename.py
+		rcs -c'-- ' filename.py
+		co [-l] filename.py
+
+template.mk
+	This should include the following targets so that recursive
+	things work properly.
+	default	- the default things to build.
+	clean	- clean out all the junk.
+	lint	- lint the files. Should be a target for each separate
+		systm as well though. e.g.
+		lint: l-prog1 l-prog2
+		so that they can be lint'd separately if needed.
+	install	- installation method (one day! - leave blank for now)
+	depend	- rebuild dependency list
+	
+template.man
+	Use for -ms & -man macro - but remove the TH for ms. Also need
+	to set the comment string here. Use rcs -c'.\" ' file.
+
+	

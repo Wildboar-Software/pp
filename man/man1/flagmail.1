@@ -1,0 +1,78 @@
+.TH FLAGMAIL 1
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man1/RCS/flagmail.1,v 6.0 1991/12/18 20:43:41 jpo Rel $
+.\"
+.\" $Log: flagmail.1,v $
+.\" Revision 6.0  1991/12/18  20:43:41  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+flagmail \- interface to xalert
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+flagmail
+\%[-d] \%[-e\ string] \%[-f\ format] \%[-h\ hostfile] \%[-p num]
+\%[-s\ size] \%[-w\ width] \%[\-x]
+.in -.5i
+.SH DESCRIPTION
+Flagmail is an interface to the \fIxalert\fP program, which runs under
+the X windowing system. It's task is to build up a alert message from
+a message read from the standard input and pass it to the \fIxalert\fP
+for display.  In actual fact, \fIflagmail\fP is not limited to talking
+to \fIxalert\fP but can talk to any process that understands the
+protocol and listens on the appropriate port.
+.PP
+If it can not contact such an X server, then it will attempt to locate
+the users terminal line and notify that in the same manner as
+\fIttyalert\fP.
+.PP
+It has several options to control the format.
+.TP
+\-d
+Run in debug mode. This stops the process disappearing into the
+background at the first opportunity.
+.TP
+\-e string
+Set the \fIextra\fP variable. This is used in part of the display
+string and defaults to \*(lqNEW: \*(rq.
+.TP
+\-f format
+This allows overriding the default format of the message displayed.
+.TP
+\-h hostfile
+This changes the file that is read to discover the host xalert is
+running on.
+.TP
+\-p number
+Change the default udp port that is sent to.
+.TP
+\-s size
+This sets the \fIsize\fP variable which can be set in the
+\&\fI.mailfilter\fP delivery script (typically using the
+\*(lq$(size)\*(rq variable).
+.TP
+\-w width
+This sets the maximum width of the output line. The string is
+truncated to this width.
+.TP
+\-x 
+Force the use of protocol.
+.PP
+The default display string is the following
+.sp
+.ti +.5i
+.nf
+%extra(%size) %20from %subject << %50body
+.fi
+.sp
+.SH FILES
+.ta \w'~/.alert\0\0'u
+~/.alert	The default alert file.
+.SH "SEE ALSO"
+xalert(1), ttyalert(1)
+.br
+\fIPP Manual \- Volume 3: User Manual\fP
+.SH "BUGS"
+The formatting string ought to be more general.

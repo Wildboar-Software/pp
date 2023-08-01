@@ -1,0 +1,361 @@
+% -*- LaTeX -*-
+
+\input lcustom
+
+\documentstyle[11pt,a4]{article}
+
+\begin{document}
+
+\title{PP -- X.400 for the Masses}
+\author{Julian P.~Onions\\[0.1in]
+X-Tel Service Ltd.\\
+Nottingham University\\[0.1in]
+jpo@cs.nott.ac.uk}
+\date{Tuesday 9 October 1990}
+
+\maketitle
+
+\begin{abstract}
+This paper describes the design, implementation and expected use of
+the PP message transport system. This is a message transfer system
+that can relay a variety of protocols, and gateway between them.
+
+This paper is in three main sections, It consists of an Introduction
+to PP. It then takes a step back and considers what is useful in a
+``real'' MTA. Finally it goes into some details on how PP works.
+\end{abstract}
+
+\section{Introduction}
+
+This paper describes the design and implementation of PP\footnote{PP
+is not an acronym. Despite many rumours to the contrary, the author is
+sticking to this position!.}. PP is a generic Message Transfer Agent
+capable of carrying a number of message formats. It has been written
+as a joint project by University College London and Nottingham
+University and is designed to run on \unix/ systems. It makes
+use of the ISODE package\cite{ISODE}.  Its design is heavily
+influenced however, by the need to carry X.400 MHS\cite{CCITT.MHS} and
+RFC-822\cite{RFC822} based mail. The major goals of PP include:
+\begin{itemize}
+\item	Robustness. PP is designed for heavy use. It should be
+capable of transferring high levels of traffic in an optimal way.
+
+\item	A clean interface for submission and delivery. PP does not
+provide a user agent but does provide a library interface which allows
+user agents to be added to PP easily.
+
+\item	Sophisticated message processing to optimise delivery and
+remote transfers.
+
+\item	Support for message conversion in an integrated way.
+
+\item	Support for multiple addressing formats (initially two).
+
+\item	Support for multi-media mail.
+
+\item	Support for arbitrary message structures.
+
+\item	Designed for large systems. PP is not designed to run on your
+PC or even on a workstation. It is designed to be a central mail
+processing hub for a group of computers. It is not a small piece of
+software!
+\end{itemize}
+
+\section{MTA management issues}
+As indicated above, PP is designed to deal with a large variety of
+problems. The questions that comes to mind is ``why bother spending
+all those years doing this?''. 
+
+The answer is partly historical, but is still mostly relevant. When PP
+was first thought about, there was very little that could be picked up
+``off the shelf'' to deal with X.400 mail. Whats more, the products we
+had seen were just not suitable for the sort of environment we wanted
+to run a mail system in. Most of the products then, and still now to
+an extent, were what might be considered ``toy'' systems. Yes, they
+would take an X.400 message and deliver it to a recipient, but there
+is more to a reliable MTA than this. PP put management and monitoring
+of the MTA very high on its list of desirable features. The following
+sections illustrate why this is necessary.
+
+\subsection{Management}
+
+For reliability and robustness, as a manager of such a thing, you need
+to know the answers to many questions when the MTA is running in
+normal operation. Unfortunately, if you want reliable service, an MTA
+cannot be treated as a ``black box''. You need to be able to look
+inside the workings of the delivery system to be assured that all is
+working well.
+
+Some of the points that are crucial to a well run MTA are discussed here.
+
+\subsection{Is the mail being delivered?}
+This is the most crucial point. A manager must be confident that the
+MTA is doing it's job. To be sure of the answer, the manager typically
+needs to know.
+\begin{itemize}
+\item	How large is the queue of messages awaiting delivery? A
+manager will have some idea of the average number of messages that
+should normally be in the queue, if this figures varies too much, then
+something has probably changed which needs investigation.
+\item	How old is the oldest message?
+If the oldest message is very old, then clearly something somewhere is
+not working correctly.
+\item	When did the system last deliver a message to that host? This
+can help pinpoint problems with networks.
+\item	When did the system last receive a message? This can give an
+idea of whether the MTA is accepting mail still or not.
+\end{itemize}
+If the system does not provide a way of getting such information then
+there can be little confidence that the MTA is behaving properly.
+
+\subsection{Why is this message not being delivered?}
+Once it is discovered that a message is not being delivered, the next
+step is to discover why. Most often this is because of network or host
+failures. Occasionally though, there is something more serious wrong,
+and it is important that you can find out what this is.
+
+When a message is not being delivered, you need to be able to
+\begin{itemize}
+\item	examine the logging information to try and determine why it
+can't be delivered.
+\item	force an attempt at delivery if there is no logging
+information so you can watch what is happening.
+\item	increase the logging trace and retry the message.
+\end{itemize}	
+
+\subsection{Who am I going to let use my MTA?}
+To run an MTA as a service, you need to have control over who is using
+the MTA. It may be that you have expensive links to other MTA's that
+you would prefer not to send high volumes of traffic over. Maybe you
+charge (in some sense - not necessarily in money) for use of the
+system. Perhaps there are classes of users that should have high, or
+lower priority. 
+
+If any of these cases are true, then you will need some method for
+controlling the users. You need to be flexible in how you specify this
+control. The variables you need access to make policy decisions on
+probably include:
+\begin{itemize}
+\item	The recipient
+\item	The originator
+\item	The recipients hosts, and route to that host.
+\item	The originator host, and route from the host.
+\item	The size of the message
+\item	The content types of the message
+\end{itemize}
+
+With these facts at your disposal, you can make sensible decisions on
+what messages to allow and what to reject, and for those message you
+allow, what particular transmission you are going to allow. This
+allows you to make decisions like
+\begin{itemize}
+\item	Students will not be allowed international access.
+\item	Use of IPSS will only be allowed for messages under 5k,
+otherwise they will be routed by less direct and expensive means.
+\item	We will not relay messages from host h1 to host h2.
+\end{itemize}
+
+\subsection{What evidence have I got to prove this service works?}
+Once the service is running, it is very useful to gather statistics on
+usage. This can show where the main traffic is coming from and going
+to, which can feedback into improving the service. It is also useful
+for either generating, or predicting bills for the service.
+
+
+\section{The design of PP}
+
+The design of PP was influenced in part by the RFC-822 mail system
+MMDF\cite{MMDFII}. In this model, extensive use is made of separate
+processes to do different jobs. This allows each element to be built
+and tested separately and encourages modularity. A fuller description
+of the design of PP can be found in \cite{PP.MTA}.
+
+\subsection{The Process Structure}
+
+PP has a single queue of messages on which a number of processes
+operate.  There are two critical processes which undertake complex
+functions, the rest of the processes are essentially ``dumb''.
+
+\subsubsection{Submit}
+The first key process is that entitled {\em submit}. This process
+guards the entrance to the queue. All messages entering the queue pass
+through this process. It performs a variety of checks on the message
+to ensure it can either be delivered or returned; works out the
+routing for the message; calculates the reformatting of the message if
+necessary; and applies other criteria such as authorisation and
+authentication. By checking as much as possible at this point later
+processes have to do less and completely undeliverable messages can be
+stopped from entering the queue. 
+
+As all message must pass though submit, all messages are checked at
+this stage. This is where the authorisation policies are enforced.
+Where possible, submit will always try and accept a message and return
+it if necessary. Typically this leads to better error messages as
+submit can take complete charge of generating the delivery report. 
+
+Submit will refuse to accept a message when it can't parse or route
+back to the originator. In this case, submit attempts to signal back
+to the remote site that this message will not be accepted. In some
+protocols, such as X.400(84), this is not possible. IN this case,
+submit gives up and the message as a whole is forwarded to the
+postmaster to sort out. Fortunately, such occurrences are fairly rare.
+
+\subsubsection{Qmgr}
+The second key process is the {\em QMGR}, or queue manager. This
+process is responsible for all the scheduling operations of the
+messages in the queue. The QMGR holds a representation of the queue in
+memory and so can perform complex and optimal scheduling of messages.
+This scheduling consists of either delivering the message locally or
+remotely or else converting the message within the queue (e.g.
+gatewaying between protocols).
+
+As the QMGR holds a complete representation of the queue in memory it
+also provides an information service. It can be queried by suitable
+tools to display the state of the queue and such tools can even
+control the behaviour of the QMGR. This is the second half of the
+management framework. As the QMGR has a full overall picture of what
+is going on in the queue - on a second to second basis, good global
+decisions are possible.
+
+An X-windows based MTA console is provided with PP which can attach
+to remote qmgr's and display the status in graphic detail, where
+possible using colour to highlight problems. With suitable
+authentication, the MTA console can also control the qmgr's behaviour.
+
+\subsection{The Queue}
+
+The queue of messages is held in two components. The first is an
+address file which contains the envelope information about the
+message. This is held in a text encoded form and is a generic envelope
+structure which can hold both X.400 and RFC-822 messages. The text
+encoding is a big advantage as it allows manipulation of the queues in
+an emergency by a text editor. Whilst this should not normally be
+necessary it is much easier than providing special management tools
+to cover every eventuality.
+
+The second component is the message content. This includes the headers
+and body parts. If no processing is necessary for the message this is
+kept as a single file. However, if conversion is necessary, the
+content is broken up into parts, each part being placed in a separate
+file. Each time a message content is transformed, a new directory is
+created and the appropriate files are changed. This allows simple
+filters (such as {\em sed} even) to do the conversions.
+
+
+\subsection{Channels}
+
+Most other processes in PP are termed {\em channels}. A channel takes
+as input a message and outputs a different form of that message.
+Channels are controlled directly by the QMGR by means of a networked
+protocol. Each channel does a specific job. Channels come in three
+basic forms as described below.
+
+\subsubsection{Outbound Channels}
+This style of channel is usually a protocol engine. It takes a message
+out of the queue and delivers it. This delivery may be local as in the
+case of delivering to a mailbox; or remote such as driving the
+SMTP\cite{SMTP} or X.400 protocols. Each channel reads the internal
+format of the queued message and converts it to the protocol specific
+format. The QMGR informs a channel which message to deliver and the
+channel reports on the status of the message. This allows the QMGR to
+discover whether the delivery attempt was successful, the remote site
+did not respond or whether the message cannot be delivered. This
+information is then used by the QMGR to schedule further deliveries.
+
+\subsubsection{Inbound Channels}
+Inbound channels perform the opposite function to outbound channels.
+They take care of the various protocols necessary to receive a
+message, either from a user agent (local submission) or across a
+network. Their main task is mapping from the protocol specific form of
+the message to the form used withing the queue. This form is then
+passed by a private protocol to submit which enqueue the message and
+then informs the QMGR of the new message.
+
+\subsubsection{Formatting and protocol conversion channels}
+These channels transform the message in some way without delivering
+it. They are treated in exactly the same way as outbound channels and
+are scheduled by the QMGR. These channels come in two basic types.
+\begin{itemize}
+\item	Channels that change the directory structure. These either map
+from the single file into a directory hierarchy, or the reverse.
+
+\item	Simple reformatting. These channels might change, say, a teletex
+body part into an ascii body part. When gatewaying is being performed,
+such a channel might convert RFC-822 headers into X.400 headers.
+\end{itemize}
+
+\section{PP Status}
+
+PP currently contains the following parts.
+
+\begin{description}
+\item[Core]	The basic core of the system including the QMGR,
+submit and a number of support tools.
+
+\item[X.400 1984] The X.400 1984 protocols are supported.
+
+\item[SMTP]	Smtp protocols are supported, including use of the
+name server protocols for address resolution.
+
+\item[Grey Book] Grey book mail transfer is working, using  the
+unix-niftp blue book transfer system to provide non-spooled mail
+transfer over JANET.
+
+\item[List]	A list channel to offload the processing of
+distribution lists. This helps speed up submission to large
+distribution lists and allows list management.
+
+
+\item[MTA Console]	An X-windows based console display which
+interrogates the QMGR and displays the current state of the
+queues. It emphasises problems in the queue and allows parameters to
+be adjusted interactively.
+
+\item[Tools]	Various auxiliary programs to configure the system and
+provide debugging support.
+ 
+\end{description}
+
+PP also contains the following experimental modules.
+\begin{description}
+\item[X.400 1988]	The 1988 version of X.400 is in a beta test
+form. The 1988 version of X.400 is uncommon at present so interworking
+testing is limited. This will include secure messaging and extensions.
+
+\item[Directory Lists] An experimental channel that store distribution
+lists in the X.500 directory is provided. This will be emphasised more
+in future releases.
+
+\end{description}
+
+\subsection{The future}
+Work is already under way on the next version of PP. The next version
+has three main thrusts.
+
+\subsubsection {Reliability, robustness and efficiency}
+These are general goals, without any specific actions to be taken. In
+general we hope the level of reliability and robustness of the
+software to increase with each future release. At the same time, some
+effort will be expended on streamlining the code and improving
+throughput and decreasing machine load.
+
+\subsubsection {Use of directory}
+The next version of PP will make much larger use of the X.500
+directory. It will use the distribution list channel indicated above.
+it will also be able to map Directory Names into O/R names by use of
+the directory. Finally, work will be done on use of the directory for
+routing. 
+
+\subsubsection{Message Store}
+A Message Store for PP is currently being written. It will allow
+both P7 and P7+ access to messages. This will allow workstations and
+portable computers to retrieve and store messages remotely. A user
+agent for Unix with these features in mind is being written as a
+separate project.
+
+\bibliography{bcustom,networking,software}
+\bibliographystyle{alpha}
+
+\showsummary
+
+\end{document}

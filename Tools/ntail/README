@@ -1,0 +1,49 @@
+[ This is a copy of the program called xtail changed name to ntail for
+bizzare reasons. It has been changed around a little to work happily
+with PP but otherwise not changed much - JPO ]
+
+
+"ntail" watches the growth of files.  It is similar to "tail -f", but may
+watch many files at once.  The syntax is:
+
+	ntail pathname ...
+	
+"ntail" will monitor all the specified files and display information added
+to them.  If you specify a directory name, "ntail" will watch all the
+files in that directory - including those created after "ntail" was
+started.  If you give "ntail" a name which doesn't exist, it will watch
+for the creation of the named entry.  My favorite usage is:
+
+	ntail /usr/spool/uucp/.Log/*
+
+"ntail" is distributed with a configuration for SCO XENIX.  It has also
+been tested on MIPS System V.  I took a shot at BSD portability.  The
+main difference is how the "directory" support library is accessed.
+
+To build "ntail":
+
+	- edit the definitions in "ntail.h"
+	- run a "make"
+
+A version of "ntail" was originally posted in alt.sources a few months
+back.  There are several improvements between this version and the
+original:
+
+       - the ability to watch directories
+       - the ability to watch entries which don't exist yet
+       - the recently changed files display (given upon SIGINT)
+       - performance improvements
+       - portability improvements
+
+Many of these changes were suggested by David Dykstra <dwd@cbnewsc.ATT.COM>.
+The idea of keeping files open and use fstat() rather than stat() was
+suggested by changes by another poster (sorry, I lost the article so I
+can't provide credit).  However, that version kept *everything* open, and
+that just eats too many entries in the file table for me.  You can tweak
+the values in "ntail.h" to optimize the response/load characteristics of
+"ntail".
+
+Chip Rosenthal
+<chip@vector.Dallas.TX.US>
+
+@(#) README 2.1 89/07/26 19:16:34

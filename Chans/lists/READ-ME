@@ -1,0 +1,123 @@
+This directory contains code for an X.500 Directory based list channel.
+
+The binaries made by default are:
+
+dirlist		- the list channel itself.
+dl		- a Directory based replacement to mlist.
+lsd		- a version of Dish that knows about mail lists, and
+		  the various X.400 attribute syntaxes.
+
+The user interfaces uses the concept of User Friendly Naming (ufn).
+That is instead of using DN's you can enter strings such as
+	Robbins, UCL
+	Onions, Nottingham
+	Rose, Nyser, USA
+and the 'ufn' code will interactively try to establish the correct DN.
+UFN is described in full by an Steve Kille paper.
+(You will need a ufnrc file, in your ETCDIR, this is installed from
+the others/quipu/uips/fred directory of the ISODE source tree).
+
+The structure of the DIT:
+
+A directorty mail list needs 2 entries in the DIT.  There are many
+'working' examples of such lists under the X-Tel branch of the DIT.
+
+Fisrt off, there is the entry for the list itself. If the list is
+called 'foobar'.  Then the entry will have a commonName attribute of
+'foobar'. This must be unique at this level in the DIT but does not
+necassarily have to be the RDN.
+This entry has the objectclass 'ppDistributionList'.
+Attributes:
+
+	mhsDLMembers	-  The members to send the mail to !
+		Syntax is:  ORName ::= <DN> $ <ORAddress>
+		If you use the 'dl' interface, you don't need to specify the
+		ORaddress component as it is looked up in the DIT !
+		Typically you would enter a UFN, and the directory
+		will do the rest. 
+
+	dl-policy	-  The list delivery policy
+		It is generaly best to leave this to the default
+		value, but if you want to change it the syntax is:
+		<policy> ::= <expansion> $ <conversion> $ <priority>
+		<expansion> ::= 'TRUE' | 'FALSE'  
+			-- If TRUE sub lists are allowed.
+		<conversion> ::= 'ORIGINAL' | 'TRUE' | 'FALSE'
+			-- Is message content conversion allowed.
+			-- ORIGINAL implies use parameter fro original message
+		<priority> ::= 'ORIGINAL' | 'HIGH' | 'LOW' | 'NORMAL'
+			-- The priority to use when delivering the message
+
+	mhsDLSubmitPermissions - Defines who can send to the list.
+		The default is a special token 'ALL' which permits
+		anybody to send mail to the list.  However it is
+		possible to restrict the use of the list. The syntax is:
+		<permission> ::= <group> | <individual> | <member> | <pattern>
+		<group> ::= 'GROUP #' <DN>
+			-- Memeber of the X.500 group <DN> can send to the list
+		<individual> ::= 'INDIVIDUAL #' <ORName>
+			-- The individual defined by ORName may send.
+		<member> ::= 'MEMBER #' <ORName>
+			-- A Member of the named list may send.
+			-- Only works if the named list is also directory based.
+		<pattern> ::= 'PATTERN #' <ORName>
+			-- Anybody who's ORName Matches the <ORName> pattern can send.
+			-- E.g if <ORName> was 'c=GB', then only people in 'GB" could send
+
+	owner		- This is the DN of the manager of the list.
+		The manager should be represented by a pp-role entry.
+		In the foobar example it would have a commonName of
+		foobar-request.
+
+
+Pretty complex eh?
+Don't worry - there is a tool to do it all for you!
+
+First of all, in the pp-tailor file you will need someting like the
+following to configure the dirlist channel...
+
+chan     dirlist        prog=dirlist,
+                        show="via Directory List Channel",type=both
+			chanout=dr2rfc,adr=x400,
+
+You can also specify a name to bind with using the info field. e.g.,
+   info="dn= c=GB@o=X-Tel Serives Ltd@cn=foobar"
+optionally with a password:
+   info="dn= c=GB@o=X-Tel Serives Ltd@cn=foobar,password=Secret"
+
+
+Now to create a list itself.
+Say you want to create a list called 'foobar'.  The first step is to
+set up a local user 'foobar', to be expanded by the dirlist channel:
+
+    foobar: dirlist
+
+And an alias for foobar-request
+
+    foobar-request: alias somebody-else
+
+
+The rest is done by the 'dl' tools.
+Run 
+    dl -m -u MANAGER-DN
+Where MANAGER-DN is the DN of a user who as write access to the local
+part of the directory tree.
+At the prompt type 'c' for create.
+Having answered a questions, such as the name of the list manager
+the list will be created.
+The list manager can then add names using the dl tool.
+
+Instead of typing 'c', you can use the 'u' option to convert a PP
+tables list to a directory list.
+
+It is advisable to monitor the lists to see if any DNs or mail
+addresses change.  The dl tools can be used to check the list out, and
+make any changes.
+I run 'dl -f -m -q' from cron twice a week.
+This checks all local mail lists, mailing the list manager if there is
+a problem with the list.  Without the -m flag the errors are reported
+to stdout.
+
+The list manager can then update the list with the dl tool.
+
+Colin Robbins, xtel, GB

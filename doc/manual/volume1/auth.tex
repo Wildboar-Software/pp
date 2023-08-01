@@ -1,0 +1,244 @@
+\section{PP authorisation}\label{sect:auth}
+
+Authorisation is applied after address parsing and validation, to
+establish whether the message is permitted to be transferred on a per
+recipient basis.  Address lookup may establish several possible
+outbound channels for each recipient - authorisation selects one of
+these after applying tests based on entries in the three authorisation
+tables \file{auth.channel}, \file{auth.mta} and \file{auth.user}.
+
+\[\fbox{\begin{tabular}{l p{0.8\textwidth}}
+\bf NOTE: &
+It is intended that warnings may be sent to recipients and senders
+regardless of the channels status. This functionality is not yet
+available.
+\end{tabular}}\]
+
+Access policy for channel pairs ( inbound + outbound ) determines how
+the rights for the four entities : sender, recipient, sending MTA and
+destination MTA are to be interpreted.  ( `Rights' means one of the
+four values in/out/both/none and a fifth value `unset' to indicate
+that no table entry is present.)
+
+The intention is that one of these four may be shown to be authorising
+the message ( i.e., willing to pay for it ).
+
+It should be noted that authorisation is not applied to delivery report
+messages. 
+
+\subsection{Access policy}
+The access policy is one of the following:
+\begin{describe}
+\item[\verb|none|:]
+Message may not be transferred
+
+\item[\verb|free|:]
+No constraints on the four entities
+
+\item[\verb|block|:]
+( i.e., ``blockable'' ) - at least one of the four must enable the
+message by specifying `in' or `both' for the inbound channel and `out'
+or `both' for the outbound channel.  The message may not be
+transferred if none of the four methods enable it. Therefore the
+default is to not let messages through, the action on the configuration to
+enable it.
+
+\item[\verb|negative|:]
+Any one of the four may stop transfer by disabling the
+message. This implies the default state is to let everything through,
+and special cases are stopped by explicit configuration.
+
+\end{describe}
+
+When determining rights for a proposed transfer  the following
+algorithm is followed.
+\begin{itemize}
+\item	Determine the inbound and outbound channels and look up
+this pair in the \file{auth.channel}\index{auth.channel} file.
+
+If there is no entry in this file, take the default from the tailoring
+variable as the access policy for the channel.
+
+\item	If the access policy is free or none, then the message is
+allowed through or rejected respectively.
+
+\item	If the access policy is negative, check the mta and user
+tables, \file{auth.mta} and \file{auth.user} to see if this route is
+explicitly disabled.
+
+\item	If the access policy is block, check the user and mta tables
+to see if the route is explicitly enabled.
+\end{itemize}
+
+\subsection{Table formats}
+There are three tables associated with authorisation, plus the tailor
+variables. The first of these tables is the \file{auth.channel} table.
+This contains the overall policies for channel to channel relaying.
+As the key, the table has the syntax 
+
+\begin{quote}\small\begin{verbatim}
+<inchannel> "->" <outchannel>
+\end{verbatim}\end{quote}
+
+If no value is found for the above, then as a fall back the values
+\begin{quote}\small\begin{verbatim}
+<inchannel> "->" "*"
+"*" "->" <outchannel>
+\end{verbatim}\end{quote}
+are checked in that order.
+
+The values that the table can have are as follows
+
+\begin{describe}
+\item[\verb|<policy>|:] Any of the above mentioned policies
+(\verb|free|, \verb|block| etc.).
+
+\item[\verb|warnsender=<file>|:]	Send a warning message to the sender,
+with text taken from the given file.
+
+\item[\verb|warnrecipient=<file>|:]	Send a warning message to the
+recipient with text taken from the given file.
+
+\item[\verb|sizelimit=<digits>|:]	Enforce the given size
+limit on messages. No messages larger than this size will be relayed.
+This is obeyed regardless of the overall policy of the channel. (i.e.
+A channel may be marked as free with a sizelimit, and the sizelimit
+will still be enforced.)
+
+\item[\verb|test|:] This setting modifies the checking procedure to
+always allow the message through. However, all the checking is carried
+out and the result is logged. This is useful to test out the results
+of a setting for a while before fully applying them.
+\end{describe}
+
+An example of this format might look like the following:
+\begin{quote}\small\begin{verbatim}
+822-local->pss:free
+822-local->local:block
+822-local->slocal:free
+822-local->smtp:free, sizelimit=5000, warnsender=smtpwarnsender
+822-local->janet:block, sizelimit=4000
+x400in84->x400out84:none
+x400in84->local:free
+822-local->x400out84:block, sizelimit=10000, warnsender=restriction
+smtp->smtp:block, test
+\end{verbatim}\end{quote}
+
+The next table is the mta policy table in file \file{auth.mta}. This
+governs the policy for a given mta if the channel is not \verb|free|
+or \verb|none|. The key used in this table is the source mta and
+the destination mta. Each of these are looked up separately to
+determine policies.
+
+The allowed values for this field are any of the following in a comma
+separated list
+\begin{describe}
+\item[\verb|<channel>=<direction>|:]
+This specifies for given channels what directions are allowed for this
+mta. The possible directions are
+	\begin{describe}
+	\item[\verb|in|:] Allow inbound traffic for this channel.
+	\item[\verb|out|:]	Allow outbound traffic for this channel.
+	\item[\verb|both|:]	Allow both inbound and outbound
+		traffic for this channel.
+
+	\item[\verb|none|:]	Allow no access for this channel.
+	\end{describe}
+
+\item[\verb|default=<direction>|:]
+This specifies the default directions that traffic can flow in the
+absence of a particular channel being specified.
+
+\item[\verb|requires=<pattern>|:]
+This mta requires that the user being authorised to send to this
+matches the given pattern. This is a standard regular expression as
+specified in \man regex (3).
+
+\item[\verb|excludes=<pattern>|:]
+The mta requires that the user being authorised does not match the
+given pattern.
+
+\item[\verb|bodypart-excludes=<bodyparts>|:]
+This specifies a list of bodyparts that the mta will not accept.
+These bodyparts are taken from the list of standard bodyparts as
+described in the Section~\ref{tai:bodypart}.
+
+\item[\verb|sizelimit=<digits>|:]
+The mta will not relay messages larger than the given sizelimit.
+\end{describe}
+
+An example of this table might look like the following:
+\begin{quote}\small\begin{verbatim}
+vs2.cs.ucl.ac.uk:default=both, smtp=out, x400out84=out, \
+        822-local=in, excludes="A.DaCruz.*"
+localhost:default=in, x400in84=out, smtp=both, \
+        822-local=none, sizelimit=654321
+\end{verbatim}\end{quote}
+(Lines are folded for readability)
+
+Finally, the user table is where both the recipient and originator are
+looked up to determine access rights if none of the other tests proves
+conclusive. The key is either the full normalized name of the user, or
+if local, just the local part of the name.
+The values may contain any of the following:
+\begin{describe}
+\item[\verb|<channel>=<direction>|:]
+This specifies, much as for the mta, what directions are allowed for
+this user.
+
+\item[\verb|default=<direction>|:]
+This gives the default directions allowed for this user.
+
+\item[\verb|bodypart-excludes=<bodyparts>|:]
+A list of bodyparts that are not allowed to be sent to the user.
+
+\item[\verb|sizelimit=<digits>|:]
+Disallow messages larger than this sizelimit.
+
+\end{describe}
+
+An example of the user authorisation table is:
+\begin{quote}\small\begin{verbatim}
+j.taylor@cs.ucl.ac.uk:default=both
+/I=J/S=Taylor/OU=cs/O=ucl/PRMD=uk.ac/ADMD=gold 400/C=gb/:\
+  bodypart-excludes=g3fax|dmd, sizelimit=100000, 822-local=both
+a.dacruz@cs.ucl.ac.uk:default=both
+s.kille@cs.ucl.ac.uk:default=both
+p.cowen@computer-science.nottingham.ac.uk:default=both, \
+       822-local=in, x400out84=none
+j.onions@computer-science.nottingham.ac.uk:default=both
+\end{verbatim}\end{quote}
+
+\subsection{Statistical logging}
+
+Each line in the statistics log ( `stat' ) contains :
+\begin{itemize}
+\item	a success indicator ( e.g., `ok' or `failed' )
+\item	unique message id
+\item	inbound channel$\rightarrow$outbound channel
+\item	sender
+\item	sending MTA
+\item	recipient
+\item	destination MTA
+\item	message size
+\item	a diagnostic message
+\end{itemize}
+
+Fields are space delimited and double quoted where necessary.
+
+The possible diagnostic messages are shown in Table~\ref{table:authmsg}.
+
+\tagtable{authreasons}{Authorisation Disagnostics}{table:authmsg}
+
+The \verb+(%s %s)+ fields above are filled in with inbound and outbound
+rights i.e.,  in/out/both/none/unset
+
+Duplicate recipients are eliminated (second and subsequent) if there
+is an exact match on the 822 or X400 address (as appropriate) NOT the
+original entry.
+
+Channel binding is performed after all other tests have been passed - and
+takes into account any body parts actually received but not specified in the
+message header.
+
+Unsuccessful recipients are flagged to generate non-delivery reports.

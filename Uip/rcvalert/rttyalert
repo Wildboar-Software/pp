@@ -1,0 +1,40 @@
+#! /bin/sh 
+
+CMDLINE="/usr/local/bin/ttyalert"
+#CMDLINE="echo"
+HOST=""
+
+TMP=/tmp/rttyalert.pp.$$
+
+trap "rm $TMP" 0 1 2 3 15
+
+/bin/awk '
+BEGIN { eoh = 50 }  # at most 50 lines
+$0 ~ /^$/ { eoh = NR + 3}
+NR == eoh { print $0 ; exit }
+{ print $0 }
+' > $TMP
+
+while [ $# -gt 0 ]
+do
+	case  "$1" in
+	      -d) if [ $# -gt 0 ]
+	      then shift
+	      fi;;
+	      -f|-e|-s|-w) CMDLINE="$CMDLINE $1 $2"
+	      case $# in
+		   0)   ;;
+		   1)   shift ;;
+		   *)   shift; shift ;;
+	      esac ;;
+            *) HOST="$HOST$1 ";
+	      if [ $# -gt 0 ]
+	      then	shift
+	      fi;;
+	esac
+done
+
+for i in $HOST
+do
+	rsh $i "$CMDLINE" < $TMP&
+done

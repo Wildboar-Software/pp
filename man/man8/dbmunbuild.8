@@ -1,0 +1,49 @@
+.TH DBMUNBUILD 8
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man8/RCS/dbmunbuild.8,v 6.0 1991/12/18 20:44:03 jpo Rel $
+.\"
+.\" $Log: dbmunbuild.8,v $
+.\" Revision 6.0  1991/12/18  20:44:03  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+dbmunbuild \- dump the PP database
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+dbmunbuild \%[\-v] \%[\-d\ database] \%[\-t\ table] 
+\%[\-T\ table] directory
+.in -.5i
+.SH DESCRIPTION
+.I Dbmunbuild
+takes a PP database and recreates the files it was created from.
+.PP
+The options are:
+.TP
+\-v
+verbose mode. Print out a few messages. Normally \fIdbmunbuild\fP does
+it's work silently unless errors occur.
+.TP
+\-d database
+Read from the given database. Normally the default database is found
+from the tailor file.
+.TP
+\-t table
+Dump only the given table. Multiple of these flags may be given. It
+cannot be used with the \-T option.
+.TP
+\-T
+Dump all tables with the exception of this table. Multiple of these
+options may be given. It may not be used in conjunction with the \-t option.
+.SH FILES
+.nf
+.ta \w'ppdbm.dir\0\0'u
+ppdbm.dir	database directory
+ppdbm.pag	database pages
+ppdbm.lck	database locking file
+.fi
+.SH "SEE ALSO"
+dbm(3X), dbmedit(8), dbmbuild(8)
+.br
+\fIThe PP Manual: Volume 1 \- Installation and Operation\fP

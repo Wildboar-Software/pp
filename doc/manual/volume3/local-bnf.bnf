@@ -1,0 +1,39 @@
+
+<statementlist> ::= <statement>
+		| <statement> <statementlist>
+
+<statement> ::= <expression> ";"
+		| ";"
+		| "print" <prexp> ";"
+		| "if" <condition> <statement>
+		| "if" <condition> <statement> "else" <statement>
+		| "{" <statementlist> "}"
+
+<condition> ::= "(" <expression> ")"
+
+<expression> ::=  "(" <expression> ")"
+		| <expression> "==" <regex>
+		| <expression> "!=" <regex>
+		| <variable> "=" <expression>
+		| <expression> "==" <expression>
+		| <expression> "!=" <expression>
+		| <expression> "||" <expression>
+		| <expression> "&&" <expression>
+		| "!" <expression>
+		| [ "ignore" ] "file" <string>
+		| [ "ignore" ] "pipe" <string>
+		| "exit" [ <expression> ]
+		| <field>
+		| <variable>
+		| <string>
+
+<prexp> ::= <expression>
+		| <prexp> "," <expression>
+
+<string> ::= quoted string of characters (e.g., "abced")
+
+<variable> ::= list of characters of the form [a-zA-Z_][a-zA-Z0-9_]*
+
+<field> ::= "$(" list of characters and - ")"
+
+<regex> ::= "/" regular expression (see regexp(3)) "/"

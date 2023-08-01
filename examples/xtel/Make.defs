@@ -1,0 +1,188 @@
+# Default Configuration values for other Makefiles
+#
+# You should look through all of them, but in particular lines the first
+# too sections.
+#	Tailor this		May need to be tailored to your system
+#	Check this		Ensure that this is OK
+#
+# NOTE: SUN MAKE AND SOME NEWER MAKES TOO TAKE OF TRAILING SPACES IN A
+#  MACRO DEFINITION. HENCE YOU SHOULD EITHER REMOVE THE TRAILING COMMENTS
+#  OR MAKE SURE THE COMMENT STARTS DIRECTLY AFTER THE DEFINITION FOR THOSE
+#  MACROS WHERE THIS IS IMPORTANT (e.g pathnames).
+#
+#
+############################################################
+#
+# @(#) $Header$
+#
+# $Log$
+#
+############################################################
+#
+
+############################################################
+#
+# Things you really should tailor
+#
+############################################################
+
+# List of channels that you may require. Choose from those in the
+# Chans/ directory. Each should be a directory name within Chans.
+#OPTIONALCHANS	= shell lists 822-local smtp uucp \
+#		x40084 x40088 grey fax
+OPTIONALCHANS   = shell lists 822-local smtp uucp x40084 x40088\
+                decnet dr2rfc fax filtercontrol grey msg-clean qmgr-load \
+                slocal splitter testchan timeout trashman warnings
+# List of filters that you may require. Choose from those in the Format/
+# directory.
+#OPTIONALFILTERS= ascii2fax
+OPTIONALFILTERS = ascii2fax asn p2explode p2flatten p2norm \
+        rfc1148 rfc822norm rfc934
+
+# List of faxdrivers you want compiles. Choose from those in under the
+# Chans/fax directory
+FAXDRIVERS = ps250 dexNet200
+
+#size of page to produce when converting to g3fax encoding
+#not defined produces US size pages 216 mm by 273 mm (width, height)
+#-DA4 produces A4 size pages 210mm by 297mm
+FAXPAGESIZE = -DA4
+
+# This is the external libraries required by all programs. 
+# Should include isode at the least. dbm maybe also.
+LIBSYS          =  -ldsap -lisode -lm # -lgdbm
+
+#for nice xalert
+LIBPHOTO	= /usr/local/etc/g3fax/libphoto.a
+
+# Compilation things.
+# C compiler, cc or gcc.
+CC              = cc # cc
+# other cc if using gcc on sparc...
+OLDCC		= cc
+CCOPTIONS       = -g
+LIBCCOPTIONS	= -O
+LDOPTIONS       = -g
+
+
+############################################################
+#
+# These things may need changing
+#
+############################################################
+
+# The PP base directory from private binaries et al.
+PPDIR		= /xtel/u3/pp
+
+
+# A private directory for host specific files - set to PPDIR if you
+# are not sharing things.
+PRIDIR		= $(PPDIR)
+
+
+# The spool directory for mail.
+SPLDIR		= /xtel/u3/spool/pp
+
+
+# The base directory for Manual pages /usr/man or /usr/local/man or similar
+MANDIR          = /usr/local/man
+# options for installing manual pages...
+# includes -bsd42 -bsd44 -ros -sys5 -aix -local -l -hpux
+# see script man/inst-man.sh for more details
+MANOPTS		= -bsd42
+
+# The public access binary directory.
+USRBINDIR	= /usr/local/bin
+
+
+# The username to install PP binaries under
+PPUSER		= pp
+
+
+# Do we have X11 installed; leave blank otherwise
+X11		= true
+#The X libraries. May need -lXext for X11R4
+LIBX		= -lXaw -lXmu -lXext -lXt -lX11
+APPDEFAULTS	= /usr/local/lib/X11/app-defaults
+
+# SMTP DNS support - either empty or the resolver library
+LIBRESOLV	= #-lresolv
+
+
+# These commands have a habit of moving around
+CHOWN		= /etc/chown
+CHMOD		= chmod
+
+
+
+# If grey book is defined - these need to be correct - otherwise ignore
+# Niftp src directory - niftp should be built beforehand.
+NIFTPSRC	= /xtel/pp/niftp/src
+# The niftp interface in use.
+NIFTPINTERFACE	= sun
+
+############################################################
+#
+# These things are probably OK as they are...
+#
+############################################################
+
+MAKE		= ./make
+SHELL		= /bin/sh
+
+TXTDIR		= $(PPDIR)
+PRIDIR		= $(PPDIR)
+#
+#  These are all sub dirs
+TAILOR		= $(PRIDIR)/tailor
+BINDIR          = $(PPDIR)/bin
+CMDDIR          = $(PPDIR)/cmds
+TBLDIR          = $(TXTDIR)/tables
+LOGDIR          = $(SPLDIR)/logs
+QUEDIR		= $(SPLDIR)/queues
+CHANDIR         = $(CMDDIR)/chans
+FORMDIR         = $(CMDDIR)/format
+TOOLDIR		= $(CMDDIR)/tools
+
+# ISODE dependencies
+PEPY            = pepy
+PYFLAGS         =
+ROSY		= rosy
+RYFLAGS		=
+POSY		= posy
+POFLAGS		=
+PEPSY		= pepsy
+PEPSYHDRS	= /usr/local/include/isode/pepsy
+#PEPSY		= /xtel/isode/isode-beta/pepsy/xpepsy
+# Other Libraries and programs
+
+# Archive Configuration
+AR              = ar
+ARFLAGS         =
+RANLIB          = ranlib
+
+# Lint Config
+LINT            = lint
+LINTFLAGS       = -haxbc
+LINTISODE	= /usr/local/lib/lint/llib-lisode.ln
+
+# program protections?
+PGMPROT         = 755
+ROOTUSER	= root
+
+# Other things
+BACKUP		= :
+INSTALL		= cp
+
+# Documentation support
+LATEX           = latex
+TGRIND          = tgrind
+GRINDEFS        = grindefs
+WEAVE           = weave
+DVI2PS          = dvi2ps
+DVIIMP          = dviimp
+DVISP           = dvisp
+DFLAGS          =
+
+# misc
+DEPEND		= /xtel/pp/bin/depend

@@ -1,0 +1,112 @@
+\File{outbound.c},{11:14},{Aug 24 1990}
+\L{\LB{\Proc{main}main (argc, argv)}}
+\L{\LB{int     argc;}}
+\L{\LB{char    **argv;}}
+\L{\LB{\{}}
+\L{\LB{}\Tab{8}{sys\_init (argv[0]);   \C{}\/* init the channel \- and find out who we are *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{dirinit();              \C{}\/* get to the right directory *\/\CE{}}}
+\L{\LB{\#ifdef PP\_DEBUG}}
+\L{\LB{}\Tab{8}{if (argc \> 1 \&\& strcmp (argv[1], \S{}\"debug\"\SE{}) == 0)}}
+\L{\LB{}\Tab{16}{debug\_channel\_control (argc, argv, chaninit, process, endproc);}}
+\L{\LB{}\Tab{8}{else}}
+\L{\LB{\#endif}}
+\L{\LB{}\Tab{16}{channel\_control (argc, argv, chaninit, process, endproc);}}
+\L{\LB{}\Tab{8}{exit (0);}}
+\L{\LB{\}}}
+\L{\LB{}}
+\L{\LB{static int chaninit (arg)}}
+\L{\LB{struct type\_Qmgr\_Channel *arg;}}
+\L{\LB{\{}}
+\L{\LB{}\Tab{8}{char    *p = qb2str (arg);}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{if ((mychan = ch\_nm2struct (p)) == (CHAN *)0)}}
+\L{\LB{}\Tab{16}{err\_abrt (RP\_PARM, \S{}\"Channel \'\%s\' not known\"\SE{}, p);}}
+\L{\LB{}\Tab{8}{exam\_init (mychan);}}
+\L{\LB{}\Tab{8}{free (p);}}
+\L{\LB{}\Tab{8}{return OK;}}
+\L{\LB{\}}}
+\L{\LB{}}
+\L{\LB{static int endproc ()}}
+\L{\LB{\{}}
+\L{\LB{}\Tab{8}{if (cur\_host)}}
+\L{\LB{}\Tab{16}{exam\_close (OK);}}
+\L{\LB{\}}}
+\L{\LB{}}
+\L{\LB{static struct type\_Qmgr\_DeliveryStatus *process (arg)}}
+\L{\LB{struct type\_Qmgr\_ProcMsg *arg;}}
+\L{\LB{\{}}
+\L{\LB{}\Tab{8}{struct prm\_vars prm;}}
+\L{\LB{}\Tab{8}{struct type\_Qmgr\_UserList *up;}}
+\L{\LB{}\Tab{8}{Q\_struct        Qstruct, *qp = \&Qstruct;}}
+\L{\LB{}\Tab{8}{int     retval;}}
+\L{\LB{}\Tab{8}{ADDR    *ap,}}
+\L{\LB{}\Tab{16}{*ad\_sendr = NULLADDR,}}
+\L{\LB{}\Tab{16}{*ad\_recip = NULLADDR,}}
+\L{\LB{}\Tab{16}{*alp,}}
+\L{\LB{}\Tab{16}{*ad\_list = NULLADDR;}}
+\L{\LB{}\Tab{8}{int     ad\_count;}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{if (this\_msg) free (this\_msg);}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{this\_msg = qb2str (arg \-\> qid);}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{PP\_TRACE ((\S{}\"process msg \%s\"\SE{}, this\_msg));}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{bzero ((char *)\&prm, sizeof prm);}}
+\L{\LB{}\Tab{8}{bzero ((char *)qp, sizeof *qp);}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{(void) delivery\_init (arg \-\> users);}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{retval = rd\_msg (this\_msg, \&prm, qp, \&ad\_sendr, \&ad\_recip, \&ad\_count);}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{if (rp\_isbad (retval)) \{}}
+\L{\LB{}\Tab{16}{PP\_LOG (LLOG\_EXCEPTIONS, (\S{}\"rd\_msg err: \%s\"\SE{}, this\_msg));}}
+\L{\LB{}\Tab{16}{return delivery\_setall (int\_Qmgr\_status\_messageFailure);}}
+\L{\LB{}\Tab{8}{\}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{sender = ad\_sendr \-\> ad\_r822adr;}}
+\L{\LB{}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{for (ap = ad\_recip; ap; ap = ap \-\> ad\_next) \{}}
+\L{\LB{}\Tab{16}{for (up = arg \-\>users; up; up = up \-\> next) \{}}
+\L{\LB{}\Tab{24}{if (up \-\> RecipientId \-\> parm != ap \-\> ad\_no)}}
+\L{\LB{}\Tab{32}{continue;}}
+\L{\LB{}}
+\L{\LB{}\Tab{24}{if (chan\_acheck (ap, mychan,}}
+\L{\LB{}\Tab{40}{ ad\_list == NULL, \&cur\_mta) == NOTOK)}}
+\L{\LB{}\Tab{32}{continue;}}
+\L{\LB{}\Tab{16}{\}}}
+\L{\LB{}\Tab{16}{if (up == NULL)}}
+\L{\LB{}\Tab{24}{continue;}}
+\L{\LB{}}
+\L{\LB{}\Tab{16}{if (ad\_list == NULLADDR)}}
+\L{\LB{}\Tab{24}{ad\_list = alp = (ADDR *) calloc (1, sizeof *alp);}}
+\L{\LB{}\Tab{16}{else \{}}
+\L{\LB{}\Tab{24}{alp \-\> ad\_next = (ADDR *) calloc (1, sizeof *alp);}}
+\L{\LB{}\Tab{24}{alp = alp \-\> ad\_next;}}
+\L{\LB{}\Tab{16}{\}}}
+\L{\LB{}\Tab{16}{*alp = *ap;}}
+\L{\LB{}\Tab{16}{alp \-\> ad\_next = NULLADDR;}}
+\L{\LB{}\Tab{8}{\}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{if (ad\_list == NULLADDR) \{}}
+\L{\LB{}\Tab{16}{PP\_LOG (LLOG\_EXCEPTIONS, (\S{}\"No recipients in user list\"\SE{}));}}
+\L{\LB{}\Tab{16}{rd\_end ();}}
+\L{\LB{}\Tab{16}{return deliverystate;}}
+\L{\LB{}\Tab{8}{\}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{deliver (ad\_list, qp); \C{}\/* do what is required *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{rd\_end();}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{return deliverystate;}}
+\L{\LB{\}}}
+\L{\LB{}}
+\L{\LB{}}
+\L{\LB{static void dirinit()       \C{}\/* Change into pp queue space *\/\CE{}}}
+\L{\LB{\{}}
+\L{\LB{}\Tab{8}{if (chdir (quedfldir) \< 0)}}
+\L{\LB{}\Tab{16}{err\_abrt (RP\_LIO, \S{}\"Unable to change directory to \'\%s\'\"\SE{},}}
+\L{\LB{}\Tab{48}{quedfldir);}}
+\L{\LB{\}}}

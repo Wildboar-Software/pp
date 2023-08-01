@@ -1,0 +1,46 @@
+#! /bin/sh
+
+#
+# convert old style domain table to new style
+#
+
+sed 's/[ 	]*:[ 	]*/:/' $* | awk '
+/^#/ || NF == 0	{ print; next }
+	{
+		star = minmax = ""
+		n = split($1, parts, ":")
+		if (n != 2) {
+			print "Illegal key/value", $1 | "cat 1>&2"
+			next
+		}
+		key = parts[1]; value = parts[2]
+		type = "mta="
+		if (key != value) type= "synonym="
+		if (NF >= 2) {
+			star = "*."
+			rstar = star	
+			if ($2 != "1:*") {
+				n = split($2, parts, ":")
+				if (n == 1 && parts[1] == "*")
+					minmax = ""
+				else if (n == 1) {
+					if (parts[1] == 0)
+						rstar = star = ""
+					else
+						minmax = " max=" parts[1]
+				}
+				else {
+					minmax=" max=" parts[2] 
+					if (parts[1] != 1)
+						 minmax = minmax " min=" parts[1]
+				}
+			}
+		}
+		if (NF == 3)
+			type = "local " type
+		else if (NF == 4)
+			type = "local=" $4 " " type
+		if (key == value) rstar = ""
+		print star key ":" type rstar value minmax
+}
+'

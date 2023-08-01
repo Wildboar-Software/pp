@@ -1,0 +1,52 @@
+.TH MPP88 8
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man8/RCS/mpp88.8,v 6.0 1991/12/18 20:44:03 jpo Rel $
+.\"
+.\" $Log: mpp88.8,v $
+.\" Revision 6.0  1991/12/18  20:44:03  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+mpp88 \- message pretty printer
+.SH
+.in +.5i
+.ti -.5i
+mpp88 \%[-ps] \%[-pl] \%[-p1] \%[-p2] \%[-ipn] \%[-nounpack] \%[-p2hdr]
+.in -.5i
+.SH DESCRIPTION
+.I Mpp88
+is a diagnostic tool for examining X.4001988) message structures. It
+handles various types of structures either in raw asn.1 or in the
+presentation list abstraction of ISODE.
+.I Mpp88
+responds to the following flags:
+.TP
+\-ps
+indicates that the input is from a presentation stream abstraction
+(e.g raw ASN.1)
+.TP
+\-pl
+indicates that the input is from a presentation list abstraction.
+.TP
+\-p1
+Interpret the data as a P1 envelope with P2 encapsualted within.
+.TP
+\-p2
+Interpret the data as a P2 header and body parts.
+.TP
+\-ipn
+Interpret the data as a IPN.
+.TP
+\-nounpack
+Do not recursively unpack sub structures encoded as OCTET STRINGs.
+.TP
+\-p2hdr
+Interpret the data as a p2 header sequence.
+.SH FILES
+none
+.SH "SEE ALSO"
+mpp84(8)
+.br
+\fIThe PP Manual: Volume 1 \- Installation and Operation\fP
+

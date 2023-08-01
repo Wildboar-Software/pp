@@ -1,0 +1,37 @@
+.TH STRIP_ADDR 1
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man1/RCS/strip_addr.1,v 6.0 1991/12/18 20:43:41 jpo Rel $
+.\"
+.\" $Log: strip_addr.1,v $
+.\" Revision 6.0  1991/12/18  20:43:41  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+strip_addr \- reduce address to simple forms
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+strip_addr \%[-pr] \%[addrs...]
+.in -.5i
+.SH DESCRIPTION
+.I Strip_addr
+is a small utility that takes address either from the command line or
+from the standard input and removes extraneous features. In particular
+it removes comments, lists names and other name components leaving
+just the username, domain and any routes.
+.PP
+It has the following options
+.TP
+\-r
+Remove any routes in the address leaving just user@domain style
+addresses.
+.TP
+\-p
+Take the percent character (%) as equivalent to an "@" character.
+.SH FILES
+None
+.SH "SEE ALSO"
+\fIPP Manual \- Volume 3: User Manual\fP
+.SH "BUGS"
+Who knows, the address parser is full of suprises...

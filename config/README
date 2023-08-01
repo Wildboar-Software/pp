@@ -1,0 +1,7 @@
+Description of the files and directories found in the directory (config/)
+
+OPTIONS.h		- brief description of the .h defines
+OPTIONS.make		- brief description of the .make macros
+
+*.h			- sample .h files
+*.make			- sample .make files

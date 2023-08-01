@@ -1,0 +1,746 @@
+% -*- LaTeX -*-
+
+\chapter{Local delivery in PP}
+
+The local channel is the mechanism by which PP delivers mail to users.
+There may be several of these channels tailored to specific mailbox
+formats. A user may have more than one local channel associated with
+him/her where this is useful, such as having two formats of mail (e.g.,
+X.400 and RFC~822) delivered in different ways.
+
+
+\section{Local RFC~822-based Channel}
+
+The RFC~822 local channel has considerable control over the delivery
+of the message. In particular, the channel has a particular search
+path which is followed when the message is attempted to be delivered.
+If the message is considered delivered, or rejected by any one of these
+methods, then the further methods of delivery are attempted. The later
+methods of delivery are only attempted if the earlier ones are
+inconclusive. (This does not apply to the \file{.mailfilter}
+processing which normally processes the entire file.)
+
+\begin{enumerate}
+\item	If the user has a \file{.mailfilter}\index{.mailfilter}
+file in his/her home directory and the file is owned by that user and
+not writable by anyone other than that user, the commands within that
+file are obeyed.  The syntax is defined in Section~\ref{mailfilter}.
+If the user does not have a \file{.mailfilter} or the actions in it do
+not deliver, reject, or temporarily fail the message, the next method is
+attempted. 
+
+\item If there is a system defined \file{.mailfilter} then the
+commands in that are obeyed. Again if this does not exists, or the
+actions are not conclusive, the next method is tried.
+
+\item	If the above two methods appear inconclusive, the message is
+written to a file in a well-defined place (system configured)
+surrounded by delimiters.
+
+\end{enumerate}
+
+\subsection{Format of the .mailfilter File}\label{mailfilter}
+
+The \file{.mailfilter} file allows quite complex processing of
+incoming messages to be performed. The format takes the form of a
+small interpreted language in which expressions can be tested and
+evaluated prior to performing actions. In particular conditional
+actions are the most useful.
+
+The language is defined more formally in the grammar given in
+Figure~\ref{mailf:grammer}. However, a more gentle introduction is
+given here with some examples of usage.
+
+\subsubsection{Commands}
+
+There are two basic commands that can be performed on a message. These
+commands can be performed any number of times so the message can be
+delivered in several places and/or to several processes.
+
+The first command is \verb|file|\index{file}. This command takes an
+argument which is a string and the result is to attempt to copy the
+message surrounded by delimiters into the given file. This might be
+as in one of the following examples:
+
+\begin{quote}\small\begin{verbatim}
+file "mailbox";
+file "/archive/mailbox";
+\end{verbatim}\end{quote}
+
+A variant of this is the \verb|unixfile|\index{unixfile}. This writes
+into the given file, but in sendmail or traditional UNIX-style format;
+i.e., with a header line stating \verb*|From|.
+
+\begin{quote}\small\begin{verbatim}
+unixfile ".mail";
+\end{verbatim}\end{quote}
+
+Note that all statements in the \file{.mailfilter} file must be
+terminated with a semi-colon (``\verb+;+'').
+
+The second basic command is \verb|pipe|\index{pipe}. This command
+starts up a process and writes the message into it as standard
+input. This is shown in the next example.
+
+\begin{quote}\small\begin{verbatim}
+pipe "rcvstore +inbox";
+pipe "lpr -p -Ppostscript";
+\end{verbatim}\end{quote}
+
+The system can tell if these commands have succeeded by the following
+methods.  If the file writing works then a flag
+\verb|delivered|\index{delivered} is set to indicate success.
+Similarly, if the exit status from a \verb|pipe| is zero, the delivery
+is considered a success and the flag updated.  Additionally, as
+programs may report temporary failure, this is supported. A program
+may return a temporary failure by exiting with a value between 1 and
+127, in which case the delivery attempt is aborted and retried at a
+later date. An exit status greater than 127 is taken as permanent failure.
+
+Sometimes, though, you may wish to run a command and ignore the
+results; that is, to have the system not update the status of the delivery.
+This can be achieved by setting a variable as described later, but for
+simplicity, if you precede the command with the keyword
+\verb+ignore+\index{ignore}, then no notice will be taken of the return
+status.
+
+\begin{quote}\small\begin{verbatim}
+ignore pipe "echo hello";
+ignore file "/dev/null";
+ignore pipe "rcvalert 'you have new mail'";
+\end{verbatim}\end{quote}
+
+One last feature of these commands, header variables (described below)
+may be substituted in the strings associated with these commands. These
+are not too useful for \verb|file| commands, but can be useful as
+arguments for processes. Care must be taken that appropriate quoting
+of these is done in case they contain special characters. As any
+string containing a ``\verb|$|'' is substituted, a \$ must be inserted
+by doubling it, e.g., ``\verb|$$|''. If you require a
+quote ``\verb|"|'' character in the string, it must be preceeded by a
+backslash character: ``$\backslash$''.
+%%% Non printing characters may
+%%% also be included by use of the escape mechanism
+%%% ``$\backslash$\verb|nnn|'' where \verb|nnn| is an octal number.
+
+Normally, the commands are interpreted by
+\verb|/bin/sh -c <command>| but if the \pgm{822-local} channel is
+running in restricted mode, the command is directly executed.
+
+\subsubsection{Conditional Expressions}\index{conditionals}
+
+The real power of the \file{.mailfilter} comes with conditional
+expresssions. These allow the user to select particular rules
+depending, for instance, on certain attributes of the message.
+
+The most basic form of condition is an \verb+if+\index{if}\index{else}
+statement with a simple comparison. This allows you to compare two
+strings for equality. This takes the form of one of the following:
+
+\begin{quote}\small\begin{verbatim}
+if ( <string1> == <string2> )
+    <expression> ;
+
+if ( <string1> == <string2> ) {
+    <expression1> ;
+    <expression2> ;
+}
+
+if ( <string1> == <string2> )
+    <expression> ;
+else if ( <string1> == <string3> )
+    <expression> ;
+else
+    <expression> ;
+\end{verbatim}\end{quote}
+
+These examples show a number of things. First, where you can have a
+single expression, you may have several expressions by enclosing them
+in braces\footnote{Any resemblance to the {\em C} programming
+language is entirely intentional!}; this is an example of a compound
+expression\index{compound statement}.
+
+Second, by use of the else statement, default actions can be taken.
+Finally, the \verb+else if+\index{else if} allows a multi way
+branching construct.
+
+Conditional expressions may also contain Boolean operators. The list
+is described below\index{Boolean operators}.
+
+\[\begin{tabular}{|l | l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Operator} &
+		\multicolumn{1}{|c|}{\bf Meaning} \\
+\hline
+	\tt == &	Is equal to\\
+	\tt != &	Is not equal to\\
+	\tt \&\& &	Logical and \\
+	\tt || &	Logical or\\
+	\tt ! &		Logical not \\
+\hline
+\end{tabular}\]
+
+The conditional construct begs the question ``what conditions can be
+tested?'' These are discussed in the next section.
+
+\subsubsection{Variables}\index{variables}
+
+There are two basic types of variables that can be accessed:
+
+\begin{enumerate}
+\item	System variables\index{variables, system}\index{system
+variables}. These are variables maintained by the \pgm{822-local} channel
+and may be updated after actions are taken.
+
+\item	Header fields\index{header fields}. When delivering a message,
+all the current header fields are available for examination.
+\end{enumerate}
+
+The system variables are the simplest and there are very few of these.
+The most used system variable is \verb+delivered+\index{delivered}.
+This variable normally contains the status of the delivery attempt.
+This is what the system thinks the state of your message is. This may
+be one of the following values\index{delivery states}.
+
+\[\begin{tabular}{|l | p{0.6\linewidth} |}
+\hline
+	\multicolumn{1}{|c|}{\bf Value} &
+		\multicolumn{1}{|c|}{\bf Meaning} \\
+\hline
+	\tt TRUE &	The message has been delivered \\
+	\tt OK &	The same as above \\
+	\tt FALSE &	The message has not been delivered \\
+	\tt PERMFAIL &	The message has permanently failed to be delivered.
+			A delivery report should be sent back if required.\\
+	\tt TEMPFAIL &	The message has failed to be delivered for
+			some temporary reason. Another attempt may
+			succeed. \\
+\hline
+\end{tabular}\]	
+
+This may be used in conditional expressions to test for delivery, or
+in expressions to reset the delivery state. For example:
+
+\begin{quote}\small\begin{verbatim}
+if ( delivered == FALSE) file "foo";
+
+if ( delivered != TRUE ) file "bar";
+
+# If not delivered - reject the message
+if ( delivered == FALSE) delivered = PERMFAIL;
+\end{verbatim}\end{quote}
+
+Another system type variable is \verb+PATH+\index{PATH}. If this
+variable is assigned a value, then it is placed in the environment as the
+default path. This is used to search for commands when executing
+\verb|pipe| commands. It is initially set to nothing and the user's shell
+default search path is used. 
+
+Note: This variable is not used if the 822-local channel is configured
+in restricted mode.
+
+The second class of variables, which are more useful for automatic
+filing and delivery, are the variables derived from the messages
+header. These variables evaluate to the contents of the particular
+field, or to the null string if there is no such variable.  These
+variables can be compared against quoted strings, but such usage is
+not generally useful. Such comparisons require exact matches including
+white space with the exception of letter case  not being  significant.
+These variables are distinguished by always starting with a dollar
+symbol (``\verb+$+'') followed by the field name in parentheses. (e.g.,
+\verb+$(to)+ or \verb+$(from)+).
+
+Much more useful is comparison against a regular
+expression\index{regular expressions}. The regular
+\linebreak[3]expressions used
+are those in \man regexp (3). These match against substrings
+of the fields by default and more complex patterns can be built up.
+Regular expressions must always appear on the right hand side of the
+expression and are delimited by slash marks (``\verb+/+''). An example
+of such usage shows the real power of the \file{.mailfilter} file:
+
+\begin{quote}\small\begin{verbatim}
+if ( $(from) == /namedroppers/ ||
+     $(from) == /bind/) pipe "rcvstore +mailadmin";
+else pipe "rcvstore +inbox";
+\end{verbatim}\end{quote}
+
+Finally, there are some variables that may appear to be header fields
+but which are actually derived from other sources. These are:
+\[\begin{tabular}{l l}
+	\tt size	& The size of the message in bytes as a string.\\
+	\tt return-path	& The original sender of the message.\\
+	\tt mailbox	& The mailbox file associated with this user.\\
+	\tt recipient	& The address of this recipient.\\
+	\tt userid	& Either the username or userid of this
+recipient.\\
+	\tt groupid	& The group id of this recipient.\\
+	\tt channelname	& The name of this delivery channel.\\
+	\tt hostname	& The name of the host.\\
+\end{tabular}\]	
+
+\subsubsection{Other Features}
+
+There are a few other features that can be used in the
+\file{.mailfilter} file. These are summarised below:
+
+\begin{describe}
+\item[\verb|exit|:]	This\index{exit} statement exits the
+processing of the \file{.mailfilter} file. With no argument it exits
+with the current value of the \verb|delivered| variable. If an
+argument is given, then that is taken as the success or failure of the
+\linebreak[3]delivery attempt. The argument should be one of \verb|OK|,
+\verb|TEMPFAIL|, \verb|PERMFAIL| or a variable that evaluates to one
+of these.
+
+\item[\verb|print|:]	Normally, this\index{print} statement does nothing
+and is ignored. However when running the checking program, it
+will echo its arguments on the standard output. This may be useful in
+debugging.
+
+\item[\verb|\#|:]	This\index{\#}\index{comment} symbol starts a
+comment, which finishes at the end of the line.
+
+\end{describe}
+
+\subsection{Examples}
+
+The following are some simple examples of \file{.mailfilter} files.
+
+This first example shows just a simple delivery making use of the MH
+\man rcvstore (1) utility:
+
+\begin{quote}\small\begin{verbatim}
+pipe "rcvstore +inbox";
+\end{verbatim}\end{quote}
+
+The next example shows slightly more complex behaviour, whereby some
+mailfiltering occurs, and an alert is posted:
+\begin{quote}\small\begin{verbatim}
+if ($(to) == /jpo/)
+	pipe "rcvstore +to";
+else
+	pipe "rcvstore +inbox";
+ignore pipe "flagmail -s $(size)";
+\end{verbatim}\end{quote}
+
+A more complex example of a \file{.mailfilter} file is shown in
+Figure~\ref{local:examp}.
+
+\tagrind{local-examp}{Example .mailfilter File}{local:examp}
+
+The grammar is specified in Figure~\ref{mailf:grammer} on
+page~\pageref{mailf:grammer}.
+
+\tagrind{local-bnf}{Grammar for the .mailfilter File}{mailf:grammer}
+
+\section{Mailfilter Checkup Tool}\index{checking .mailfilter}
+
+As writing \file{.mailfilter} files can be error prone, a tool to
+check that the contents conform to the language is provided. This is
+invoked with a given filename and a message on the standard input. The
+file is parsed and then interpreted and the actions appropriate for
+the given message are indicated.
+
+\begin{quote}\small\begin{verbatim}
+ckmf ~/.mailfilter < msg
+\end{verbatim}\end{quote}
+
+It is {\em strongly} recommended that you check your
+\file{.mailfilter} file each time it is modified.
+This will certainly pick out syntax errors and the like, however it
+will not discover errors such as the following which may be common
+causes of problems:
+\begin{itemize}
+\pagebreak[3]
+\item	Unable to find the program to be run (not in search path).
+\item	The process that is executed aborts. This may be because some
+things in the environment are missing. If this is the case it is best
+to wrap the process in a shell script. Alternatively, the process may
+expect the standard input/ouput be connected to a terminal. This is
+difficult to get around.
+\end{itemize}
+
+An example run of \pgm{ckmf} might look like this:
+\begin{quote}\small\begin{verbatim}
+john% ckmf ~jpo/.mailfilter < /dev/null
+pipe into process 'rcvstore +inbox'
+pipe into process 'flagmail -s 0 -e 'inbox: ''
+Result: delivered OK
+john%
+\end{verbatim}\end{quote}
+
+\section{New Message Notification}
+
+PP provides a couple of simple tools for alerting the user of new
+messages arriving. Both methods share a lot of common features (and
+code, for that matter).
+
+The basic idea of the notification is to run a process from the
+delivery process which reads the message, extracts some information,
+formats it, and then gives it to the user. This may be either by
+displaying this formatted information on the user's terminal, or on a
+client of an \xwindows/
+display.
+
+There are four processes involved. They are:
+\begin{describe}
+
+\item[\verb|xalert|:]	This process runs as a client of an X
+windowing system server. It displays messages sent to it by
+\pgm{flagmail}. If it detects that the X windowing system is not in
+use, it captures messages and displays them on the terminal.
+
+\item[\verb|flagmail|:]	This process gathers the data from the
+message, formats it and \linebreak[3] attempts to pass it to
+\pgm{xalert} (or a similar process obeying the same protocol). If it
+fails it emulates the \pgm{ttyalert} program.
+
+\item[\verb|ttyalert|:]	This process gathers data from a
+message and simply displays it on the user's terminal if logged in.
+It is only intended for large sites where all people use the same
+host. 
+
+\item[\verb|ttybiff|:]	This process runs in the background normally.
+It displays messages sent to it by \pgm{flagmail}. 
+
+This program's use is deprecated as the functionality is subsumed by
+\pgm{xalert}. It will probably not appear in future releases.
+
+\end{describe}
+
+Both \pgm{flagmail} and \pgm{ttyalert} use the same method of preparing
+and formatting the data to be displayed. This is done by using a
+format string to indicate how the information should be laid out. The
+format string can contain verbatim text,  header fields, and other
+attributes of the message.
+
+Fields within the format string are indicated by percent (\verb|%|)
+symbols. The general format bares some relationship to the \man
+printf (3) format:
+
+\begin{quote}\small\begin{verbatim}
+%[digits]string
+\end{verbatim}\end{quote}
+
+The digits are optional and indicate how large the field should be
+padded out to or truncated to. The string is any message field, or
+one of a set of special fields. The case of the string is not sensitive.
+
+The special fields are:
+\[\begin{tabular}{l p{0.7\linewidth}}
+	\multicolumn{1}{c}{\bf Field} &
+		\multicolumn{1}{c}{\bf Meaning} \\
+	\tt body&	The first few characters of the body of the message\\
+	\tt size&	The size in bytes of the message\\
+	\tt extra&	A special field set on the command line\\
+	\tt from&	the from field is treated in a special way\\
+\end{tabular}\]
+
+The \verb|body|\index{body} field is the first few characters of the
+body with all new lines removed and multiple white space compressed to
+single spaces.
+
+The \verb|size|\index{size} is set on the command line by the use of
+an optional flag. This is usually done in the \file{.mailfilter} file
+by use of the \verb|$(size)| variable.
+
+The \verb|extra|\index{extra} field is used to allow simple changes to
+the default format string. This just allows a simple flag to adjust
+the output from the default format string rather than rewriting the
+format string. If not set, it defaults to the value \verb*|NEW: |.
+
+The \verb|From|\index{From} field is treated slightly specially, in
+that if there is a name component in front of the opening angle
+bracket, then the rest of the field is ignored.
+
+The default format string is the following:
+\begin{quote}\small\begin{verbatim}
+%extra(%size) %20from %subject << %50body
+\end{verbatim}\end{quote}
+
+This gives output something like the following
+\begin{quote}\small\begin{verbatim}
+NEW: (3402) Steve Kille  Re: state of unix-niftp? << I
+\end{verbatim}\end{quote}
+
+The whole output line is truncated to the number of characters set on
+the command line (defaulting to 80). This allows the later parts of
+the string to be large, in the assurance that they will get chopped off if
+they exceed the given size.
+
+An example usage in a \file{.mailfilter}\index{.mailfilter} file might
+look like the following:
+\begin{quote}\small\begin{verbatim}
+if (delivered)
+    ignore pipe "flagmail -s $(size)"
+\end{verbatim}\end{quote}
+See the example in Figure~\ref{local:examp} on
+page~\pageref{local:examp} for a more complex example of usage.
+
+\subsubsection{Flags}
+
+Both \pgm{flagmail} and \pgm{ttyalert} respond to a number of command
+line options to change the behaviour. These are:
+\begin{describe}
+\item[\verb|-d|:]	Runs the program in a debugging mode. This
+stops the program from running in the background. Only useful if you are
+trying to debug the program.
+
+\item[\verb|-e string|:] Sets the \verb|extra| variable. This is used
+to override the default extra information which is normally \verb|NEW:|.
+
+\item[\verb|-f format|:] Sets the entire format string to the given
+string. This is how you override the internal format string with
+something entirely different.
+
+\item[\verb|-s size|:] Sets the message size parameter.
+
+\item[\verb|-w width|:]	Sets the default output line width. The line
+produced will be truncated to this width (default 80 characters).
+
+\item[\verb|-x|:] Forces the use of protocol. In this mode it will not
+try and do its own notification if it fails to notify a server.
+\end{describe}
+
+In addition the \pgm{flagmail} program has two other options to tailor
+the interaction with \pgm{xalert} or other servers.
+
+\begin{describe}
+\item[\verb|-h hostfile|:] Use the given file to read the host and
+port to communicate with. This overrides the default of \file{.alert}
+in the home directory.
+
+\item[\verb|-p number|:] Use the following number to override the UDP
+port found in the file.
+\end{describe}
+
+\pgm{xalert} has only some command line switches.
+These are:
+\begin{describe}
+\item[\verb|-filename hostfile|:] use the given file to write the host and
+port number in instead of the default (\file{.alert}).
+\item[\verb|-user username|:] \pgm{xalert} filters out requests
+destined for the given user. Normally it will not receive messages
+destined for another user, but this will change \pgm{xalert}'s idea of
+the current user anyway.
+
+\item[\verb|-port number|:]	Set the UDP port number to the given
+number. The default is to choose a random unused UDP port.
+
+\item[\verb|-s|:] Only print to the standard output; do not display
+on all this user's login sessions.
+\item[\verb|-t|:] Do not attempt to use the X system.
+\item[\verb|-x|:] Allow use of X (default).
+\item[\verb|-w width|:] Use this width when displaying messages on the
+terminal. 
+\item[\verb|-bell/-nobell|:] Notify (or not) new message with a
+bell noise (the default is \verb|-bell|).
+
+\item[\verb|-autoraise/-noautoraise|:] Raise (or not) the window to
+the top of the stack when new messages arrive. The default is not to
+raise the window.
+\item[\verb|-photos/-nophotos|:] Display a photograph of the sender of
+the mail on reception. This depends on if the code is compiled to look
+up the entry in the directory.
+\end{describe}
+In addition it takes
+all the standard X command line arguments.
+
+\pgm{ttybiff} supports the following flags similar to \pgm{xalert}:
+\begin{describe}
+\item[\verb|-f hostfile|:] use the given file to write the host and port
+number in instead of the default.
+\item[\verb|-u username|:] as for \pgm{xalert}'s \verb|-username| switch.
+\item[\verb|-p port|:] as for \pgm{xalert}'s \verb|-port| switch.
+\item[\verb|-s|:] only display on the standard output, not on other
+terminals where the user is logged on.
+\end{describe}
+
+
+\subsection{Use of flagmail with xalert and ttybiff}
+
+\pgm{Xalert} works with \pgm{flagmail} or \pgm{ttybiff} to provide the
+notification. \pgm{Flagmail} is responsible for building up the
+format string and sending it to either \pgm{xalert} or \pgm{ttybiff}.
+This is achieved using a UDP connection. \pgm{flagmail} contacts the
+server program by looking for a file with a hostname and UDP port in
+(by default \file{.alert}\index{.alert}). If this exists then it
+attempts to contact a server on that host to display the message. If
+either of these steps fails, then it reverts to the behaviour of
+\pgm{ttyalert} except that there is a delay while it waits for UDP
+timeouts to occur.
+
+The \file{.alert} has the format
+\begin{quote}\small\begin{verbatim}
+<hostname> <udp-port-no>
+\end{verbatim}\end{quote}
+
+\pgm{flagmail} will use this information to contact the remote
+process, which can be any process which understands the \pgm{flagmail}
+protocol.
+
+The \pgm{xalert} program is just a display process that
+displays the messages sent by \pgm{flagmail}. It displays these message
+in a text widget which is scrollable. There are three buttons:
+\begin{describe}
+\item[\verb|Quit|:] which does the obvious thing.
+\item[\verb|Clear|:] which clears the message window.
+\item[\verb|Options|:] which pops up a menu with a number of
+sub-options. These are:
+    \begin{describe}
+    \item[\verb|Reset|:] rewrites the \file{.alert} file; it is used if
+    two xalerts are started or the \file{.alert} file is removed.
+    \item[\verb|Bell|:] Disable/enable use of the bell. The default
+can be overriden in the users X resource file by setting a boolean
+value for \verb|XAlert.bell|. 
+    \item[\verb|Autoraise|:] Disable/enable the autoraise mode. The
+default for this can be set via the boolean X resource \verb|XAlert.autoRaise|.
+    \item[\verb|Photos|:] Disable/enable display of photographs. The
+default for this can be set via the boolean X resource \verb|XAlert.photos|.
+    \end{describe}
+\end{describe}
+
+The \pgm{ttybiff} attempts to locate the user in the same manner as
+\pgm{ttyalert} or, if that fails, to display the message on the standard
+output.
+
+\subsection{Examples}
+
+Here are a few examples of use.
+
+First, the simple notification that should be put in the
+\file{.mailfilter} file:
+\begin{quote}\small\begin{verbatim}
+ignore pipe "flagmail -s $(size)";
+\end{verbatim}\end{quote}
+This does the most basic notification. If more control is required
+over the displayed message more complex strings can be built up:
+\begin{quote}\small\begin{verbatim}
+if ($(subject) == /request/) {
+    file "request-mbox";
+    ignore pipe "flagmail -s $(size) -e REQUEST";
+}
+\end{verbatim}\end{quote}
+
+Finally, if you are adventurous, you might like to play with the
+format of the message given. For instance:
+\begin{quote}\small\begin{verbatim}
+ignore pipe 
+ "flagmail -s $(size) -f '%5size %15from (%20subject) **%body'";
+\end{verbatim}\end{quote}
+
+This would give an output in the following format for a typical message
+\begin{quote}\small\begin{verbatim}
+1023  Julian Onions   (Re: Delivery Report ) ** Also 
+\end{verbatim}\end{quote}
+
+\section{Automatic Vacation Notices}
+
+PP provides a simple program to notify originators that the recipients
+will not read their messages for some time. This is typically installed
+when the recipient is expecting to be unable to read mail for some
+time, such as going on vacation.
+
+The program, \pgm{rcvtrip}, is installed in the \file{.mailfilter}
+file in a fashion similar to the following.
+
+\begin{quote}\small\begin{verbatim}
+ignore pipe "rcvtrip"
+\end{verbatim}\end{quote}
+
+The program reads the message and checks to see if the recipient is
+mentioned directly in either the \verb|to| or \verb|cc| line. If so,
+and the originator has not been replied to in a similar style before,
+then a reply is composed. This consists of some standard text,
+followed by the contents of the file \file{tripnote} in the user's home
+directory.
+
+There are several flags to this program.
+\begin{describe}
+\item[\verb|-F|:] Always reply to the user, even if the message is not
+sent directly to this user.
+\item[\verb|-e value|:] Set the exit code depending on this value. A
+value of 0 means the program always exits with failure (the default).
+If the value is 1, the exit code is always good. A value of 2 will
+give an exit status according to the following table:
+
+\begin{tabular}{|p{0.7\linewidth}|l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Condition} &
+		\multicolumn{1}{|c|}{\bf exit code} \\
+\hline\hline
+	A message was sent & 1 \\
+	A message was not sent as  this sender has already
+received a message & 2 \\
+	A message was not sent as this message was not sent directly
+to this user & 3 \\
+	A parse error was found & 4 \\
+	Anything else & 99 \\
+\hline
+\end{tabular}
+
+\item[\verb|-f|:] Set the text of the from field (defaults to
+\verb|MESSAGE AGENT|).
+\item[\verb|-l file|:] Set the database to this filename (default
+\file{triplog}).
+\item[\verb|-n|:] Use this file as the text of the message to send
+back after the standard preamble (default \file{ttripnote}).
+\item[\verb|-s|:] Use this file to determine the user's signature
+(default \file{.signature}).
+\item[\verb|-t text|:] Modify the preamble to use this line (several
+of these may be given).
+\item[\verb|-u user|:] Pretend to be this user when answering.
+\end{describe}
+		
+
+\section{Forwarding Mail}
+There is a simple program which will forward mail to other recipients.
+This is called \pgm{resend}. This program takes a message as standard
+input with extra recipients given on the command line. The program
+will then submit the message as a \verb|resent| message. The new
+recipients will appear in the \verb|resent-to| and \verb|resent-cc|
+lines as appropriate.
+
+There are two flags that control the operation of this program:
+\begin{describe}
+\item[\verb|-t|:] The next recipients should be specified as
+\verb|Resent-To:| recipients.
+\item[\verb|-c|:] The next recipients should be specified as
+\verb|Resent-Cc:| recipients.
+\item[\verb|-u username|:] Pretend to be this user (subject to
+authorisation checks).
+\end{describe}
+
+\section{Delivery Tools}
+There are one or two small tools that are provided to help with
+delivery processing.
+
+\subsection{strip\_addr}
+
+The \pgm{strip\_addr} utility takes a list of addresses either on the
+command line or on the standard input and issues those same addresses
+in a basic form. In particular all address comments are removed as are
+name and list constructs. This utility may be useful in processing
+mail where only the basic address is wanted.
+
+\pgm{strip\_addr} takes two optional flags. These are:
+\begin{describe}
+\item[\verb|-p|:] Interpret the \verb|%| character as a routing
+construct. If this flag is not present, the \verb|%| character will be
+taken as just another character. 
+\item[\verb|-r|:] Strip out routes as well.
+\end{describe}
+
+An example of use might be:
+\begin{quote}\small\begin{verbatim}
+strip_addr 'Julian Onions <jpo(thats me)@there.com>'
+jpo@there.com
+\end{verbatim}\end{quote}
+
+\subsection{flock}
+The \pgm{flock} utility takes a single file followed by a command. The
+file is first locked in the current PP locking style, and then the
+command is executed. When the command exits, the file is unlocked and
+\pgm{flock} exits with the returned status of the command.
+

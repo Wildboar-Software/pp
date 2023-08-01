@@ -1,0 +1,14 @@
+flagmail
+
+Runs on the machine mail is delivered on, attempts to connect to a
+xalert process running there and display its message.
+If it can't, it writes to the users logged in ttys (if any).
+
+xalert
+
+The alert program - beeps and displays a scan line.
+If an X screen can be found, use that, else use all the user's ttys,
+else use stdout
+
+Will make use of photographs stored in the directory unless configured with
+-DNOPHOTOS. If photos are desired, the libphoto.a library is required.

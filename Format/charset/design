@@ -1,0 +1,161 @@
+Guidelines for character mnemonics in a minimal character set.
+
+By Keld Simonsen, Danish UNIX User Group (DKUUG)
+Representative to SC22 WG on Character Set Usage
+for Danish Standards Association (DS), Denmark.
+
+Draft January 1991.
+
+Aim of Character Mnemonics 
+
+The aim of the mnemonics is to be able to represent all characters
+in all standard coded character sets in any standard coded
+character set. Thus all standard coded character sets will be
+related, and a conversion can take place.
+
+The usage of the character mnemonics is primarily intended
+within computer operating systems, programming languages and
+applications, and this work with character mnemonics is the current
+state of work which has been presented to the ISO working group
+responsible for these computer related issues, namely the
+ISO/IEC JTC1/SC22 special working group on character set usage.
+
+Covered Coded Character Sets
+
+Almost all characters in the standard coded character sets have been
+given a mnemonic name in the minimal character set.
+The minimal character set is defined as the basic character set
+of ISO 646, where 12 positions are left undefined. 
+The standard coded character sets are taken as the sum of
+all ISO defined or ISO registered character sets. 
+
+The most significant ISO coded character set is the 10646 coded character
+set, whose aim is to code in 32 bits all characters in the world.
+These guidelines can be seen as assigning mnemonic attributes 
+to most characters in 10646, currently at DIS stage.
+
+Other ISO coded character sets covered include all parts of
+ISO 8859, ISO 6937-2 and all ISO 646 conforming coded character
+sets in the ISO character set registry managed by ECMA
+according to ISO 4873.
+Some non-ISO character sets are also covered for convenience.
+
+The Character Mnemonics Classes
+
+The character mnemonics are classified into two groups:
+
+1. A group with two-character mnemonics
+   - Primarily intended for alphabetic scripts like Latin, Greek,
+     Cyrillian, Hebrew and Arabic, and special characters.
+2. A group with variable-length mnemonics
+   - primarily intended for non-alphabetic scripts like Japanese
+     and Chinese. 
+
+All mnemonics are given a long descriptive name, written in the
+reference character set and taken from ISO 10646, if possible.
+
+
+The Two-Character mnemonics
+     
+The two-character mnemonics include various accented Latin letters,
+Greek, Cyrillic, Hebrew, Arabic, Hiragana, Katakana and Bopomofo.
+Also quite some special characters are included.
+Almost all ISO or ISO registered 7- and 8-bit coded
+character sets are covered with these two-character mnemonics.
+Thus conversions between these character sets can be done via a
+two-character conversion table.
+
+The two characters are chosen so the graphical appearence in the
+reference set resembles as much as possible (within the posibilities
+available) the graphical appearance of the character. The basic character
+set of ISO 646 is used as the reference set, as mentioned above.
+
+The characters in the reference character set are chosen to represent
+themselves. You may consider them as two-character mnemonics where
+the second char is a space.
+
+Control characters mnemonics are chosen according to ISO 2047 and ISO 6429 .
+
+Letters, including Greek, Cyrillic, Arabic and Hebrew, are represented
+with the base letter as the first letter, and the second letter
+represents an accent or relation to a non-Latin script.
+Non-Latin letters are translitterated to Latin letters,
+following translitteration standards as closely as possible.
+
+After a letter, the second character signifies the following:
+
+  Exclamation mark           ! Grave
+  Apostrophe                 ' Acute accent
+  Greater-Than sign          > Circumflex accent
+  Question Mark              ? tilde
+  Hyphen-Minus               - Macron
+  Left parenthesis           ( Breve
+  Full Stop                  . Dot Above/Ring above
+  Colon                      : Diaeresis
+  Comma                      , Cedilla
+  Underline                  _ Underline
+  Solidus                    / Stroke
+  Quotation mark             " Double acute accent
+  Semicolon                  ; Ogonek
+  Less-Than sign             < Caron
+        
+  Equals                     = Cyrillian
+  Asterisk                   * Greek
+  Percent sign               % Greek/Cyrillian special
+  Plus                       + smalls: Arabic, capitals: Hebrew
+  Four                       4 Bopomofo
+  Five                       5 Hiragana
+  Six                        6 Katakana
+
+The ampersand & is reserved as an intro character, indicating that the
+following string is in the mnemonic character set. This character
+could also be another character, e.g. in the control character set.
+One common choice in the control character set is decimal 29,
+which seems to have no effect on almost all current equipment.
+The intro character can be negotiated between the communicating parties,
+but the default is the ampersand "&". Two intro characters in a row
+signifies the intro character itself.
+
+The underscore is reserved for the variable-length mnemonics.
+This use does not eliminate usage as an accent or language identifier.
+The right-pointing parenthesis ")" is not in use at the moment
+for accent or language identifying.
+This is also the case for some digits.
+
+Special characters are encoded with some mnemonic value.
+These are not systematic thruout, but most mnemonics start
+with a special character of the reference set.
+Special chars with some sort of reference to the reference
+character set normally have this character as the first character
+in the mnemonic.
+
+
+The Variable-length Character Mnemonics
+
+The Variable-length Character Mnemonics are primarily meant for the
+ideographic characters in larger Asian character sets.
+To have the mnemonics as short as possible, which both saves storage
+and is easier to type in, a quite short name is preferred.
+Considering the Chinese standard GB 2312-1980 and the Japanese standards
+JIS X0208 and JIS X0212, they are all given by row and  column
+numbers between 1 and 99. So two positions for row and column and
+a character set identifier of one character would be almost as short
+as possible. The following character set identifiers are defined:
+
+         c   GB 2312-1980
+         j   JIS X0208-1990
+         J   JIS X0212-1990
+         k   KS C 5601-1987
+
+The first idea was to have a name in Latin describing the pronunciation
+but that is not possible according to Asian sources.
+
+One prominent character in the reference character set is reserved
+for identifying variable-length mnemonics, namely the underscore "_". This character
+is intended as a delimiter both in the front and in the end
+of the mnemonic. An example of its use would be: (&=intro):
+
+          &_j3210_ &_j4436_&_j6530_
+
+The Variable-Length Character Mnemonics can also be used for less-used
+Latin letters with more than one accent or other less-used special characters.

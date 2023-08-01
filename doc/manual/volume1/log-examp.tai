@@ -1,0 +1,13 @@
+authlog		level=notice,	size=400
+operlog		level=all,	size=400
+normlog		level=notice,	size=400
+
+submit		normlog file=submit	level=notice, size=400
+qmgr		normlog file=qmgr	level=notice, size=400
+x400in84	normlog file=x400in84	level=notice, size=400
+x400out84	normlog file=x400out84	level=pdus,   size=400
+
+isodelog compatlevel	level=pdus
+isodelog tsaplevel	level=pdus
+isodelog ssaplevel	level=pdus
+isodelog rtsaplevel	level=pdus

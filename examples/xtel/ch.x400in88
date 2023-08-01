@@ -1,0 +1,12 @@
+default:lpass=pimms,lmta="UK.CO.XTEL"
+TELEX+00737346+RFC-1006+03+128.243.20.197:rmta="UK.AC.NOTT.CS",rpass="pimms",rname="UK.AC.NOTT.CS"
+TELEX+00728722+X.25(80)+02+00000511160080:rmta="UK.AC.UCL.CS",rpass=" ",rname=cs.ucl.ac.uk
+TELEX+00737346+RFC-1006+03+128.16.5.31:rmta="UK.AC.UCL.CS",rpass=" ",rname=cs.ucl.ac.uk
+"592"/TELEX+00728722+X.25(80)+02+00000511160080:rmta="UK.AC.UCL.CS",rpass=" ",rname=cs.ucl.ac.uk
+"592"/TELEX+00728722+X.25(80)+02+00000511168080:rmta="UK.AC.UCL.CS",rpass=" ",rname=cs.ucl.ac.uk
+TELEX+00737346+RFC-1006+03+128.243.9.1:rmta="UK.CO.XTEL",rpass=pimms,rname=xtel.co.uk
+TELEX+00737346+RFC-1006+03+128.250.90.100:rmta="MANTA.MEL.DIT.CSIRO.AU",rpass=" ",rname=mel.dir.csiro.au,lpass=" "
+TELEX+00737346+RFC-1006+03+144.110.64.15:rmta="MANTA.MEL.DIT.CSIRO.AU",rpass=" ",rname=mel.dir.csiro.au,lpass=" "
+TELEX+00728722+X.25(80)+02+00000511160010:rmta="UK.AC.UCL.CS",rpass=" ",rname=talikser.cs.ucl.ac.uk
+TELEX+00737346+RFC-1006+03+128.102.128.50:rmta="atlas.arc.nasa.gov",rname=atlas.arc.nasa.gov
+"597"/TELEX+00737346+RFC-1006+03+128.102.128.50:rmta="atlas.arc.nasa.gov",rname=atlas.arc.nasa.gov

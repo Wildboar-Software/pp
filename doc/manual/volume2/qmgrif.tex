@@ -1,0 +1,30 @@
+\File{qmgrif.h},{13:13},{Mar 25 1991}
+\L{\LB{struct type\_Qmgr\_ProcMsg \{}}
+\L{\LB{    struct type\_Qmgr\_QID *qid;}}
+\L{\LB{}}
+\L{\LB{    struct type\_Qmgr\_UserList *users;}}
+\L{\LB{}}
+\L{\LB{    struct type\_Qmgr\_Channel *channel;}}
+\L{\LB{\};}}
+\L{\LB{}}
+\L{\LB{struct type\_Qmgr\_DeliveryStatus \{}}
+\L{\LB{        struct type\_Qmgr\_IndividualDeliveryStatus *IndividualDeliveryStatus;}}
+\L{\LB{}}
+\L{\LB{        struct type\_Qmgr\_DeliveryStatus *next;}}
+\L{\LB{\};}}
+\L{\LB{}}
+\L{\LB{struct type\_Qmgr\_IndividualDeliveryStatus \{}}
+\L{\LB{    struct type\_Qmgr\_RecipientId *recipient;}}
+\L{\LB{}}
+\L{\LB{    integer     status;}}
+\L{\LB{\#define}\Tab{8}{int\_Qmgr\_status\_success}\Tab{32}{0}}
+\L{\LB{\#define}\Tab{8}{int\_Qmgr\_status\_successSharedDR}\Tab{40}{1}}
+\L{\LB{\#define}\Tab{8}{int\_Qmgr\_status\_failureSharedDR}\Tab{40}{2}}
+\L{\LB{\#define}\Tab{8}{int\_Qmgr\_status\_negativeDR}\Tab{40}{3}}
+\L{\LB{\#define}\Tab{8}{int\_Qmgr\_status\_positiveDR}\Tab{40}{4}}
+\L{\LB{\#define}\Tab{8}{int\_Qmgr\_status\_messageFailure}\Tab{40}{5}}
+\L{\LB{\#define}\Tab{8}{int\_Qmgr\_status\_mtaFailure}\Tab{40}{6}}
+\L{\LB{\#define}\Tab{8}{int\_Qmgr\_status\_mtaAndMessageFailure}\Tab{48}{7}}
+\L{\LB{}}
+\L{\LB{    struct}\Tab{16}{qbuf}\Tab{24}{*info;}}
+\L{\LB{\};}}

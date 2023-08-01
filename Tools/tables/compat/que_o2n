@@ -1,0 +1,31 @@
+#! /bin/sh
+
+# 
+# que_o2n - change queue format from old to new format.
+#
+# Usage: que_o2n queue-directory
+#
+
+#echo=echo
+case $# in
+	1) ;;
+	*) echo "Usage: $0 directory" >&2; exit 1;;
+esac
+
+if [ ! -d "$1" ]
+then
+	echo "$1 is not a directory" >&2; exit 1
+fi
+
+cd $1
+if [ ! -d addr -o ! -d msg -o ! -d tmp ]
+then	echo "$1 does not look like a PP directory" >&2; exit 1
+fi
+$echo mv tmp tmp.old
+for i in `cd addr; find . -name 'msg.*' -print`
+do
+	$echo mv addr/$i msg/$i/addr
+	$echo mv msg/$i $i
+done
+$echo rm -rf tmp.old
+$echo rmdir msg addr 

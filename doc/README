@@ -1,0 +1,37 @@
+[ PP documentation directory ]
+
+The PP documentaion, such as it is. This consists of the following
+directories at present.
+
+funet91/
+	A talk given at the FUNET meeting in spring 91. It contains
+	a paper, some slides and some ISODE/PP/QUIPU status notes.
+
+ifip6.5-88/
+	The PP talk given at the IFIP-6.5 meeting in October 1988 by
+	Steve Kille. There is a directory containing the paper in latex
+	and the slides of the presentation in slitex.
+
+manual/
+	The PP User manual.  Subdirectories:-
+		volume0/
+			Introduction and credits
+		volume1/
+			Installation and Operation
+		volume2/
+			Programmers Manual.
+		volume3/
+			PP user manual
+	
+nordunet/
+	A talk given at the nordunet conference in autumn 1990.
+
+sun-89/
+	A talk given at the sun users group in 1989
+
+tailor/
+	Document describing the yet to be introduced tailoring system.
+
+uknet90/
+	A talk given at the uknet meeting in 1990
+

@@ -1,0 +1,20 @@
+\File{chan\-examp.tai},{12:11},{Dec  3 1991}
+\L{\LB{chan}\Tab{8}{822\-local  prog=local,}}
+\L{\LB{}\Tab{8}{show=\S{}\"Local 822 Delivery channel\"\SE{},type=both,}}
+\L{\LB{}\Tab{8}{sort=\S{}\"user time\"\SE{},adr=822,adr\-order=ukpref,}}
+\L{\LB{}\Tab{8}{hdrout=822, bptout=ia5, content\-out=822,}}
+\L{\LB{}\Tab{8}{outtable=local,access=mts, drchan=dr2rfc}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{x40084  prog=x400out84,show=\S{}\"X400 1984 channel\"\SE{},}}
+\L{\LB{}\Tab{8}{type=both, adr=x400, adr\-order=ukpref,}}
+\L{\LB{}\Tab{8}{intable=x400in84, outtable=x400out84}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{qmgr\-load prog=qmgr\-load,show=\S{}\"Loading the QMGR\"\SE{},}}
+\L{\LB{}\Tab{8}{type=qmgrload}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{p2flatten prog=p2flatten,show=\S{}\"Structured body \-\> P2\"\SE{},}}
+\L{\LB{}\Tab{8}{type=shaper,content\-out=p2}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{g3faxtotxt}\Tab{24}{prog=fcontrol,type=shaper,bptin=g3fax,}}
+\L{\LB{}\Tab{8}{bptout=ia5,outinfo=f\-fax2txt,}}
+\L{\LB{}\Tab{8}{show=\S{}\"Fax \-\> Text mapper\"\SE{}}}

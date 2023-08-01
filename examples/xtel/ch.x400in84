@@ -1,0 +1,9 @@
+default:lpass="pimms",lmta="UK.CO.XTEL"
+TELEX+00737346+RFC-1006+03+128.243.20.197:rmta="UK.AC.NOTT.CS",rpass="pimms",rname="UK.AC.NOTT.CS"
+TELEX+00728722+X.25(80)+02+00000511160080:rmta="UK.AC.UCL.CS",rpass=" ",rname="UK.AC.UCL.CS"
+TELEX+00728722+X.25(80)+02+000040010250:rmta="UK.AC.MHS-RELAY",rpass="mhs",rname="mhs-relay.ac.uk"
+TELEX+00728722+X.25(80)+02+000010695800:rmta="UK.CO.SSS.E",rpass=pp,rname=e.sss.co.uk
+TELEX+00737346+RFC-1006+03+128.243.9.1:rmta="UK.CO.XTEL",rpass=pimms,rname=xtel.co.uk
+TELEX+00737346+RFC-1006+03+128.243.9.2:rmta="UK.CO.XTEL",rpass=pimms,rname=xtel.co.uk
+"597"/TELEX+00737346+RFC-1006+03+128.102.128.50:rmta="atlas.arc.nasa.gov",rname=atlas.arc.nasa.gov
+TELEX+00737346+RFC-1006+03+128.102.128.50:rmta="atlas.arc.nasa.gov",rname=atlas.arc.nasa.gov

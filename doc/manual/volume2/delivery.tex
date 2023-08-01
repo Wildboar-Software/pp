@@ -1,0 +1,16 @@
+\chapter {Delivery Formats}
+
+\section {Overview}
+
+In many cases, local delivery will proceed by delivery into a mailbox of
+well defined format.  These are defined here.  Where appropriate, standard
+library routines to facilitate manipulation of these formats are also given.
+
+\section {RFC~822/MMDF format}
+
+The standard RFC~822/MMDF mailbox format is a single file with
+messages in separated by delimeters. The delimeter is tailorable so
+may be any string - but normally it is a sequence of four control-A's
+and a newline. There are two delimeters, which may be the same string
+or may be different. This format is not expected to used much once
+suitable user agents have been written.

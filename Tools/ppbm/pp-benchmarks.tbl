@@ -1,0 +1,251 @@
+.TS H
+tab(@);
+c s s s s s s
+cfB cfB cfB cfB cfB cfB cfB
+l l n n n n a.
+PP Throughtput Benchmark Test Results
+.sp
+Model@Disk@Time@User@System@M/S@Notes
+=
+.TH
+.sp .5
+.T&
+cfB s s s s s s
+a a n n n n a.
+Julian Onions, XTEL
+=
+Sun SSII@ SCSI@105.96@0.22@7.28@1.42
+\^@\^@76.62@0.22@6.29@1.96@No fsync
+\^@NFS to SCSI@76.6@0.22@6.29@1.14
+\^@TMPFS@2.62@0.25@2.23@57.04
+_
+IBM RS/6000@???@35.89@0.41@7.81@4.18
+\^@\^@30.50@0.50@6.69@4.92@No fsync
+_
+ICL DRS6000@???@104@0.63@13.20@1.44
+\^@\^@93@0.67@11.23@1.61@No fsync
+_
+.sp .5
+.T&
+cfB s s s s s s
+a a n n n n a.
+Andrew Findlay, Brunel
+=
+Sun 4/460@T{
+IPI + Prestoserve
+T}@15.21@0.19@11.57@9.86
+\^@\^@13.66@0.17@9.32@10.98@No fsync
+\^@\^@15.73@0.25@11.53@9.53@No flock
+\^@\^@9.76@0.22@8.63@15.37@No fsync/flock
+\^@IPI@80.25@0.24@6.54@1.87
+\^@TMPFS@2.16@0.13@1.58@69.44
+_
+Sun SSII@SCSI@104.99@0.14@5.64@1.43
+\^@T{
+NFS to 4/470 with presto
+T}@56.77@0.22@10.66@2.64
+_
+Sun 4/280@SMD + SMD4@95.99@0.46@12.25@1.56
+_
+Sun IPC@SCSI@127.29@0.47@8.94@1.18
+_
+.sp .5
+.T&
+cfB s s s s s s
+a a n n n n a.
+Piete Brooks, Cambridge
+=
+Sun 4/330@SMD@221.84@0.38@20.39@0.68@Load Avrg 7
+\^@SCSI@244.56@0.48@10.19@0.61@Load Avrg 7
+_
+Sun 4/280@SMD@127.75@0.54@16.3@1.17@Load Avrg 7
+\^@TMPFS@24.92@0.4@7.44@6.02@Load Avrg 7
+_
+DEC 5400@RA90@133.21@0.42@12.1@1.13@Load Avrg 5
+_
+DEC MV 3600@RA82@116.09@0.95@21.35@1.29@Load Avrg 2
+_
+HP 9000/370@??@402@0.4@14.58@0.37@Load Avrg 6
+_
+DEC MV-II@RVD@278.24@1.81@38.52@0.54@Load Avrg 3
+_
+Sun 3/60@SCSI@142.78@0.58@18.4@1.05@Load Avrg 1
+_
+Sun 4/390@IPI@96.55@0.37@9.79@1.55@Load Avrg 2
+_
+.sp .5
+.T&
+cfB s s s s s s
+a a n n n n a.
+Valdis Kletnieks, Virginia Tech
+=
+IBM RS/6000@???@52.022@0.14@3.66@2.88
+\^@\^@34.61@0.18@3.07@4.22@No fsync
+\^@\^@51.43@0.22@3.51@2.92@No flock
+\^@\^@36.32@0.15@3.28@4.13@No flock/fsync
+_
+IBM 3090/300@???@82.41@0.21@3.17@1.82
+\^@\^@76.84@0.21@3.15@1.95@No fsync
+_
+.sp .5
+.T&
+cfB s s s s s s
+a a n n n n a.
+Anthony Starks, Merk & Co
+=
+Sun 386i@SCSI@237.38@0.66@18.9@0.63
+_
+Sony 3250@???@175@0.58@36.20@0.86@No flock
+_
+.sp .5
+.T&
+cfB s s s s s s
+a a n n n n a.
+John Andrews, University College London
+=
+Sun 4/330@SCSI@161.04@0.66@9.75@0.93@Busy machine
+\^@\^@94.9@0.53@9.43@1.58@Idle Machine
+\^@\^@162.46@0.46@10.29@0.92@Busy, no fsync
+\^@\^@78.5@0.45@8.29@1.91@Idle, no fsync
+\^@XD@137.03@0.61@11.33@1.09@Busy Machine
+\^@\^@132.57@0.53@9.63@1.13@Busy, no fsync
+_
+.sp .5
+.T&
+cfB s s s s s s
+a a n n n n a.
+George Michealson, University of Queensland
+=
+Dec ??@SCSI@109.60@0.14@6.33@1.37@
+\^@\^@138.39@0.17@5.97@1.08@No fsync
+.sp .5
+.T&
+cfB s s s s s s
+a a n n n n a.
+Havard Eidnes, runit.sintef.no
+=
+Sun 4/330@CDC Sabre@143.45@0.51@8.63@1.05@
+\^@\^@135.96@0.28@8.18@1.10@No fsync
+_
+Dec 5500@RZ57@113.18@0.08@5.03@1.33
+\^@\^@97.07@0.12@4.82@1.55@No fsync
+_
+Sun 4/490@SCSI@135.93@0.3@4.63@1.10
+\^@\^@128.81@0.23@4.58@1.16@No fsync
+_
+Sun 4/490@IPI@113.21@0.25@4.98@1.32
+\^@\^@91.04@0.20@4.73@1.65@No fsync
+_
+.sp .5
+.T&
+cfB s s s s s s
+a a n n n n a.
+Andi Karrer, ETH
+=
+Sun 4/490@TMPFS@1.77@0.15@1.59@84.75
+\^@IPI@127.95@0.26@5.16@1.17
+_
+Dec 5500@T{
+RA90 + Prestoserve
+T}@47.87@0.09@9.86@3.13
+_
+Dec 5000@RZ56@96.32@0.18@5.96@1.56
+_
+Convex C220@IPI@99.31@0.27@8.25@1.51
+_
+Sun 3/280@SMD@108.10@0.62@18.96@1.39
+_
+Dec 5849 (4cpu)@RA90@1.27@0.49@21.01@1.17
+_
+.sp .5
+.T&
+cfB s s s s s s
+a a n n n n a.
+Chris Moore, sooner.palo-alto.ca.us
+=
+Sun SLC@SCSI@133.08@0.54@11.22@1.13
+\^@\^@118.60@0.42@10.77@1.26@No fsync
+\^@\^@130.23@0.47@11.35@1.15@No flock
+\^@\^@115.51@0.40@10.26@1.30@No flock/fsync
+_
+
+.sp .5
+.T&
+cfB s s s s s s
+a a n n n n a.
+Per Andersson, Chalmers University
+=
+Sun IPC@SCSI@186.58@0.37@12.79@0.80
+\^@\^@154.41@0.36@11.79@0.97@No fsync
+_
+Sun 4/490@IPI@68.49@0.20@5.43@2.19
+\^@\^@54.18@0.20@4.87@2.77@No fsync
+_
+Dec 5000@SCSI@128.48@0.34@7.86@1.17
+\^@\^@108.72@0.37@7.71@1.38@No fsync
+_
+.sp .5
+.T&
+cfB s s s s s s
+a a n n n n a.
+Andrew Macpherson, BNR Europe
+=
+Sun SLC@NFS to IPI@360.60@0.47@18.13@0.42
+\^@\^@485.21@0.36@19.61@0.31@No flock/fsync
+HP 9000/720@???@150@0.25@3.18@1.00
+\^@\^@118@0.23@3.20@1.27@No fsync/flock
+_
+Sun 3@XY@124.08@0.68@15.96@1.21
+\^@\^@110.02@0.54@15.18@1.36@No fsync
+_
+Sun SS2@SCSI@69.23@0.32@5.19@2.17
+\^@\^@56.56@0.28@4.56@2.65@No fsync
+_
+Sun 4/330@SCSI@128.34@0.42@9.93@1.17@
+\^@\^@113.46@0.40@9.10@1.32@No fsync
+_
+.sp .5
+.T&
+cfB s s s s s s
+a a n n n n a.
+Paridaens Olivier, helios.iihe.rtt.be
+=
+Unisys U6000@SCSI@118@0.65@41.25@1.27@No fsync
+\^@\^@121@0.73@39.70@1.24
+_
+ICL DRS3000@SCSI@149@0.58@18.27@1.01
+\^@\^@127@0.75@18.07@1.18@No fsync
+_
+.sp .5
+.T&
+cfB s s s s s s
+a a n n n n a.
+Bill Nowicki, Legato.com
+=
+Sun SS2@T{
+SCSI + Presto
+T}@42.177@0.29@9.31@3.56
+\^@\^@39.99@0.29@8.503.75@3.75@No fsync
+\^@No presto@176.21@0.30@6.01@0.85
+_
+.sp .5
+.T&
+cfB s s s s s s
+a a n n n n a.
+Randy Grinstead, MIPS Computer Systems
+=
+MIPS Magnum 3000/33@SCSI@@@1.84
+\^@\^@@@2.04@No fsync
+_
+.sp .5
+.T&
+cfB s s s s s s
+a a n n n n a.
+rick@uunet.uu.net (Rick Adams)
+=
+Sun 4/470@IPI@14.6@0.14@11.66@10.27
+_
+Sequent S81 (20)@DCC@31.083@0.49@15.09@4.83
+\^@4way DCC@107.86@0.63@17.29@1.39
+_
+.TE

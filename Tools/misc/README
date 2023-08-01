@@ -1,0 +1,20 @@
+[ README for the Tools/misc directory - jpo Tue Mar 28 15:53:21 1989 ]
+
+The files in this directory are intended for use in debuging PP and
+for doing simple tasks. They are as follows.
+
+adrchk - does a variety of strange things with a given address to see
+	if it's parseable and if so in what manner.
+
+norm -	Attempts to normalise a list of addresses given as arguments
+	to the program. It has two flags -t type specifies the type of
+	ordering you want to try (pick from uk, us, ukpref, uspref)
+	and -a which syas try all address styles.
+
+testrfc - A program to check and see how the RFC/UTC time strings
+	interwork - if at all. Type in an RFC style string and it will
+	convert it to a UTC time structure, print that out as both
+	universal & generalised time - then convert it back to RFC and
+	you should have something similar to the input (except the
+	timezone may have been normalised).
+

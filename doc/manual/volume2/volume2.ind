@@ -1,0 +1,188 @@
+\begin{theindex}\makeatletter
+\raggedright
+\def\newindex#1{{\huge\hspace{-.5in}\parbox[t]{.5in}{\makebox[.35in][c]{\uppercase{#1}}}\vspace{-1.5ex}}}
+\newindex{a}
+\item addr/, 6
+\item ADDR, 20
+\item address structure, 20
+\item addressing, 17
+\item ad\_getlocal, 44
+\item ad\_parse, 44
+\item adr\_add, 18
+\item adr\_free, 18
+\item adr.h, 17
+\item adr\_init, 17
+\item adr\_new, 17
+\item adr\_tfree, 18
+\item ASN.1, 5
+\indexspace
+\newindex{b}
+\item /bin/mail, 28
+\indexspace
+\newindex{c}
+\item chan\_acheck, 40
+\item chan\_dcheck, 40
+\item channel\_control, 33
+\item Chans/, 7
+\item ch\_mta2struct, 10
+\item ch\_nm2struct, 10
+\indexspace
+\newindex{d}
+\item debugging, 30
+\item delivery\_init, 35
+\item delivery\_resetDRs, 35
+\item delivery\_set, 35
+\item delivery\_setall, 35
+\item doc/, 7
+\item dr.h, 38
+\indexspace
+\newindex{f}
+\item fcontrol, 45
+\item format/, 6
+\indexspace
+\newindex{h}
+\item h/, 7
+\indexspace
+\newindex{i}
+\item io/, 6
+\item io\_adend, 25
+\item io\_end, 26
+\item io\_init, 23
+\item io\_tdata, 26
+\item io\_tdend, 26
+\item io\_tend, 26
+\item io\_tinit, 25
+\item io\_tpart, 25
+\item io\_wadr, 25
+\item io\_wprm, 23
+\item io\_wrq, 25
+\item isode/logger.h, 2
+\indexspace
+\newindex{l}
+\item \LaTeX {}, 47
+\item lchan\_acheck, 40
+\item lconsole, 6
+\item Lib/, 6
+\item LINEconsole, 6
+\item link, 26
+\item list\_bpt\_add, 11
+\item list\_bpt\_dup, 11
+\item list\_bpt\_find, 11
+\item list\_bpt\_free, 11
+\item list\_bpt\_new, 10
+\item LIST\_RCHAN, 9
+\item list\_rchan\_add, 10
+\item list\_rchan\_free, 10
+\item list\_rchan\_new, 9
+\item list\unhbox \voidb@x \kern .06em \vbox {\hrule width.3em}rchan.h, 9
+\item LLog, 2
+\item ll\unhbox \voidb@x \kern .06em \vbox {\hrule width.3em}log.h, 3, 12
+\item log\_norm, 2
+\item log\_oper, 2
+\item log\_stat, 2
+\indexspace
+\newindex{m}
+\item man/, 7
+\item msg\_rend, 37
+\item msg\_rfile, 37
+\item msg\_rinit, 37
+\item MTAconsole/, 6
+\indexspace
+\newindex{o}
+\item or/, 6
+\indexspace
+\newindex{p}
+\item parameter structure, 11
+\item parse/, 6
+\item pp/, 6
+\item PP\_DBG, 5, 30
+\item PP\_DEBUG\_ALL, 5
+\item PP\_DEBUG\_SOME, 5
+\item pp\_initialise, 1
+\item pp/Lib/tai/tai\unhbox \voidb@x \kern .06em \vbox {\hrule width.3em}sys.c, 2
+\item PP\_LOG, 3
+\item PP\_NOTICE, 4, 30
+\item PP\_OPER, 4
+\item PP\_PDU, 5
+\item PP\_PDUS, 30
+\item pps\_1adr, 29
+\item pps\_adr, 28
+\item pps\_aend, 29
+\item pps\_cc, 28
+\item pps\_end, 30
+\item pps\_file, 30
+\item pps\_hdr, 29
+\item pps\_init, 28
+\item PP\_SLOG, 4
+\item PP\_STAT, 4
+\item pps\_tinit, 29
+\item pps\_to, 28
+\item pps\_txt, 30
+\item PP\_TRACE, 5, 30
+\item pptsapd/, 7
+\item pptsapd, 33
+\item prm, 11
+\item prm\_free, 11
+\item prm.h, 11
+\item prm\_init, 11
+\indexspace
+\newindex{q}
+\item q\_free, 14
+\item q.h, 12
+\item qid2dir, 37, 45
+\item q\_init, 14
+\item qmgr/, 6, 7
+\item Q\_struct, 14, 25
+\item queue structure, 14
+\indexspace
+\newindex{r}
+\item rd\_end, 36
+\item rd\_msg, 36
+\item Reply structure, 22
+\item retcode.h, 23
+\item RP\_Buf, 22, 23
+\item rp\_isbad, 23
+\item rp\_isgood, 23
+\indexspace
+\newindex{s}
+\item set\_1dr, 38
+\item SLOG, 5
+\item Src/, 6
+\item status\_failureSharedDR, 34
+\item status\_messageFailure, 34
+\item status\_mtaAndMessageFailure, 34
+\item status\_mtaFailure, 34
+\item status\_negativeDR, 34
+\item status\_positiveDR, 34
+\item status\_success, 34
+\item status\_successSharedDR, 34
+\item struct~prm\_vars, 11
+\item submit/, 7
+\item submit, 8, 11, 12, 22, 23, 25, 26, 28
+\item submit protocol, 8
+\item sys\_init, 1
+\indexspace
+\newindex{t}
+\item table/, 6
+\item tai/, 6
+\item tailor, 6
+\item Tools/, 7
+\item type\_Qmgr\_Channel, 31
+\item type\_Qmgr\_DeliveryStatus, 31
+\item type\_Qmgr\_ProcMsg, 31
+\item type\_Qmgr\_QID, 31
+\item type\_Qmgr\_RecipientId, 31
+\indexspace
+\newindex{u}
+\item Uip/, 7
+\item util/, 6
+\indexspace
+\newindex{w}
+\item wr\_ad\_rcntno, 36
+\item wr\_ad\_status, 36
+\item wr\_q2dr, 39
+\item wr\_stat, 39
+\indexspace
+\newindex{x}
+\item x400/, 6
+\end{theindex}

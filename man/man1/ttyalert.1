@@ -1,0 +1,58 @@
+.TH TTYALERT 1
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man1/RCS/ttyalert.1,v 6.0 1991/12/18 20:43:41 jpo Rel $
+.\"
+.\" $Log: ttyalert.1,v $
+.\" Revision 6.0  1991/12/18  20:43:41  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+ttyalert \- notification of new mail
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+ttyalert
+\%[-d] \%[-e\ string] \%[-f\ format] \%[-s\ size] \%[-w\ width]
+.in -.5i
+.SH DESCRIPTION
+Ttyalert attempts to alert users of new mail. It's task is to build up
+an alert message from a message and display it on the users terminal.
+.PP
+It has several options to control the format.
+.TP
+\-d
+Run in debug mode. This stops the process disappearing into the
+background at the first opportunity.
+.TP
+\-e string
+Set the \fIextra\fP variable. This is used in part of the display
+string and defaults to \*(lqNEW: \*(rq.
+.TP
+\-f format
+This allows overriding the default format of the message displayed.
+.TP
+\-s size
+This sets the \fIsize\fP variable which can be set in the
+\&\fI.mailfilter\fP delivery script (typically using the
+\*(lq$(size)\*(rq variable).
+.TP
+\-w width
+This sets the maximum width of the output line. The string is
+truncated to this width.
+.PP
+The default display string is the following
+.sp
+.ti +.5i
+.nf
+%extra(%size) %20from %subject << %50body
+.fi
+.sp
+.SH FILES
+none
+.SH "SEE ALSO"
+xalert(1), flagmail(1)
+.br
+\fIPP Manual \- Volume 3: User Manual\fP
+.SH "BUGS"
+The formatting string ought to be more general.

@@ -1,0 +1,21 @@
+This directory contains several configurations. This includes
+some real configurations, and some "unreal" configurations.
+
+Currently, the real configurations reflect what is being used
+at X-Tel.
+
+The unreal configurations are meant to help you get started the first
+time, they are not meant for serious use. They will get you started
+but after that you must hand configure to your specific requirements.
+The sample unreal configuration are targeted towards the following:
+
+LOCALSMTP - a site with local deliver and limited smtp capabilities.
+	Local mail will be delivered locally, all other mail will be
+	pushed by smtp to a site which can deal with it.
+
+JANET - a site on JANET with access to the NRS database and some local
+	smtp capability.
+
+INTERNET - a site on the internet with access to the full Domain Name
+	Server tree and full SMTP interconnectivity.
+

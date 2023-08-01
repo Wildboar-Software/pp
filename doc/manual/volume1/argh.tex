@@ -1,0 +1,245 @@
+% argh.tex	argument handler
+\documentstyle [twoside,11pt]{article}
+\title{Argument handler : argh}
+\author{John Taylor}            % Declares the author's name.
+\date{11th January 1989}        % no \date produces today's
+\begin{document}                % End of preamble and beginning of text.
+\maketitle                      % Produces the title.
+
+This provides a simple method of automatically scanning the command line
+to extract flags and their associated values.  The calling program must
+contain the line:\\
+
+\verb+#include "argh.h"+\\
+
+and must then initialise a structure array
+ \verb+arg+ as shown in this example :
+\small
+\begin{verbatim}
+static struct argdef arg[] = {
+
+flag            function        type    match
+
+"file",         NULL,           '1',    0,
+"value",        NULL,           '2',    0,
+"body",         NULL,           'a',    0,
+"all",          NULL,           '0',    0,
+"group",        NULL,           '1',    0,
+"lots",         NULL,           'm',    0,
+"zero",         NULL,           'z',    3,
+"nine",         NULL,           '9',    -1
+"help",         show_args,      '0',    0,
+"-",            show_args,      '0',    0,
+"",             NULL,           '?',    0
+};
+\end{verbatim}
+\normalsize
+the last entry \verb+"", ...+ is mandatory
+
+where :
+
+\begin{tabular}{llp{3.5in}}
+char &  *flag &         The command line flag to be preceded by FLAGCHAR
+                        ( `-' by default ). \\
+
+void &  (*function)() & The name of any function to be called automatically
+                        if one or more instances of the flag occur on the
+                        command line.  Parameters argc,argv and a pointer
+			to the appropriate flag structure are passed
+                        in the call (*function)().  In the example
+                        above, \verb+show_args+ (part of argh) is called if
+                        either `--\,--' or `--help' is on the command line.
+                        The function calls are invoked with \verb+call_args()+. \\
+
+char &  type &          Specifies the type of flag and the way zero or more
+                        arguments are to be associated with it. \\
+
+&&                      0 : lone ( no assoc. value ) \\
+&&                      1 : valued : adjacent or next \\
+&&                      2 : as v but takes 2 args \\
+&&                      3 : as v but takes 3 args \\
+
+&&                      \ldots\ etc. (up to 9) \\
+
+&&                      m : 1 or more ( up to next flag ) \\
+&&                      z : as m but zero args allowed \\
+
+&&                      a : valued : adjacent to flag (only) \\
+&&                      n : valued : next argument (only) \\
+
+&&                      ? : dummy last entry ( can be any character ) \\
+
+
+int &   match &         Used internally by {\em argh\/} to calculate the minimum
+                        length needed to uniquely identify each flag.
+                        Flags are sorted ( using quick sort ) for this --- 
+                        the sort sequence is also used to display in \verb+show_args+. \\
+
+&&                      Users may override this calculation by putting a
+                        non-zero value in the match field: \\
+
+&&                        $>0$ indicates match length to use \\
+&&                        $-1$ indicates exact match required \\
+
+\end{tabular}
+
+The command line is processed by the call \verb+scan_args(argc,argv)+.
+
+If ADJARGS is set to TRUE, arguments may appear adjacent to the flag
+if there is no ambiguity --- i.e., the whole flag is entered on the
+command line.  Alternatively, ( even if ADJARGS == FALSE ), the (first)
+value to be associated with a flag may be introduced with EQUCHAR (`=' by
+default).  In the latter case, only sufficient of the flag to uniquely
+distinguish it from other flags need be supplied.  This is also true when
+the (first) value follows as the next command line argument (i.e., separated
+by white space).
+ONECHARARGS may be set to TRUE in order to allow flags to be matched
+by a single character followed by an adjacent argument as long as the
+single character is an unambiguous abbreviation of the flag.  Any other
+partial matching would cause confusion and is disallowed.\\[2ex]
+
+To illustrate : ( flag sample )
+
+\footnotesize
+\begin{tabular}{ll}
+        -samplearg              &complete match (adj) ok  ( unless !ADJARGS )\\
+        -sample arg             &complete match (next) ok\\
+        -sample=arg             &complete match with = (adj) ok\\
+        -sample= arg            &complete match with = (next)\\
+                                &-- error -- ``value should be adjacent to `='\,''\\
+
+        -samarg                 &incomplete match (adj)\\
+                                &-- error -- ``ambiguous match''\\
+        -sam arg                &incomplete match (next) ok\\
+        -sam=arg                &incomplete match with =arg ok\\
+        -sam= arg               &incomplete match with = (next) arg\\
+                                &-- error -- ``value should be adjacent to `='\,''\\
+        -sarg                   & single character match (adj) ok\\
+                                & provided ONECHARARGS == TRUE \&\& \\
+                                & there are no other `s' flags \\
+
+\end{tabular}
+\normalsize
+
+Linked lists are generated for each flag, accumulating command line arguments
+in command line sequence.  Where a flag takes zero arguments, the list item
+points to the flag-invoking argument ( e.g., `-all' in the example above ).
+Otherwise, each link item points to the next argv-specified value, after the
+adjacent part has been skipped ( if necessary ).  A `count' field contains
+the total arguments taken from the command line.  Thus if a 3-valued flag 
+were declared four times on the command line, and all expected arguments were
+present, count would be set to 12.  The function \verb+char *next_arg(flag,argv)+
+returns each argument in turn for a specified flag, NULL if there are no more.
+To distinguish arguments gleaned from different sources, i.e., the 
+command line and an input file, a field {\em argsrc\/} is maintained in
+the link record to record the setting of {\em argsource\/} in force 
+when the the argument was obtained.
+
+Any command line arguments that do not match any flag specifications accumulate
+in the list pointed to by the dummy flag "".  These are retrieved with 
+\verb+next_arg("",argv)+ calls.\\[2ex]
+
+Errors are reported as follows :
+
+\footnotesize
+\begin{verbatim}
+"argh! :"   followed by :
+
+        "unknown error\n",                                              /* 0 */
+        "flag %s not known\n",                                          /* 1 */
+        "flag %s ambiguous match\n",                                    /* 2 */
+        "invalid type for flag %s  - fix source\n",                     /* 3 */
+        "limit of %s argument instances - aborted\n",                   /* 4 */
+        "flag %s value should be adjacent to '='\n",                    /* 5 */
+        "flag %s (type adjacent) not followed by value\n",              /* 6 */
+        "flag %s - adjacent arguments not allowed without '='\n",       /* 7 */
+        "flag %s (type next) must use next argument\n",                 /* 8 */
+        "flag %s (type next) has no next argument\n",                   /* 9 */
+        "flag %s (type 0 valued ) should not have value\n",             /*10 */
+        "flag %s (type %s valued) has no value%s\n",                    /*11 */
+        "flag %s (type %s valued) has only %s value%s\n",               /*12 */
+        "flag %s (type 1 or more) must have at least one value\n",      /*13 */
+        "duplicate flag %s in table - fix source\n",                    /*14 */
+        "ambiguous flags %s and %s - fix source\n"                      /*15 */
+\end{verbatim}
+\normalsize
+
+The following definitions are made :
+
+\footnotesize
+\begin{verbatim}
+
+#define ARGHVER		"argh v. 1.1"		/* Version number */
+#define MAXARGS		50			/* Maximum argument instances provided for */
+#define MAXFLAGS	50			/* Maximum number of flags
+						needed to size sorting array argsort[] */
+#define	FLAGCHAR	'-'			/* introduces a flag on command line */
+#define	EQUCHAR		'='			/* to separate a partial but
+						unambiguous flag from its value */
+#define	MAXFLAGLEN	30			/* max flag length */
+#define VALIDTYPES	"0123456789amnz"	/* allowed flag types */
+#define	ADJARGS		TRUE			/* allow adjacent args */
+#define	ONECHARARGS	FALSE			/* allow unambiguous one-byte flags without EQUCHAR */
+#define	ZEROCHECK	FALSE			/* test type '0' against next arg */
+
+\end{verbatim}
+\normalsize
+
+Note that an argument instance is the combination of one flag with one of the
+associated values ( adjacent or not ) --- or an `other' argument.\\[2ex]
+
+\verb+show_args()+ displays argh analysis of command line :
+
+\begin{verbatim}
+%program aaa bbb ccc -- -pr ddd eee -send -t fff 
+
+argh v. 1.1 : 15 flags  11 command line arguments
+others                  type ?  match 1 count 3 :  aaa bbb ccc
+flag   -                type 0  match 1 count 1 :  --
+flag   body             type z  match 1 count 0 : 
+flag   default          type 1  match 1 count 0 : 
+flag   file             type z  match 1 count 0 : 
+flag   group            type 1  match 1 count 0 : 
+flag   help             type 0  match 1 count 0 : 
+flag   prompt           type 2  match 1 count 2 :  ddd eee
+flag   r                type 0  match 1 count 0 : 
+flag   send             type 0  match 4 count 1 :  -send
+flag   sent             type 0  match 4 count 0 : 
+flag   servant          type 0  match 5 count 0 : 
+flag   serve            type 0  match 5 count 0 : 
+flag   service          type 0  match 5 count 0 : 
+flag   tree             type 1  match 1 count 1 :  fff
+flag   value            type 2  match 1 count 0 : 
+\end{verbatim}
+
+Note the calculated match lengths.\\[2ex]
+
+This version of argh expects to have a single command table whose
+entries are flags i.e., values introduced on the command line with
+FLAGCHAR ( `-' ). \\
+
+
+\end{document}
+% remember :
+%
+%       \documentstyle {article} {report} {book}
+%       \subsection and \subsubsection
+%       \ldots\                 ``quote''
+%       \$ \& \% \# \{ \}       {\em italic\/}
+%       \begin{em} ...  
+%               {\em Roman} 
+%       \end{em}
+%       ``Mr.~Jones''
+%       \mbox{\em itemnum\/} 
+%       \footnote{This is an example of a footnote.}
+%       \( a_{1} > x^{2n} / y^{2n} > x' \)              $x$
+%       \[  x' + y^{2} = z_{i}^{2}\]
+%       \begin{quote}
+%       \begin{quotation}
+%       \begin{itemize}
+%               \item  This is the first item of an itemized list.
+%               \begin{enumerate}
+%                       \item This is the first ...
+%               \end{enumerate}
+%       \end{itemize}
+%       \end{document}             % End of document.

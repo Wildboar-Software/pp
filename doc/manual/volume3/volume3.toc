@@ -1,0 +1,38 @@
+\contentsline {chapter}{\numberline {1}Introduction}{1}
+\contentsline {chapter}{\numberline {2}Local delivery in PP}{3}
+\contentsline {section}{\numberline {2.1}Local RFC\penalty \@M \ 822-based Channel}{3}
+\contentsline {subsection}{\numberline {2.1.1}Format of the .mailfilter File}{3}
+\contentsline {subsubsection}{Commands}{4}
+\contentsline {subsubsection}{Conditional Expressions}{5}
+\contentsline {subsubsection}{Variables}{6}
+\contentsline {subsubsection}{Other Features}{7}
+\contentsline {subsection}{\numberline {2.1.2}Examples}{7}
+\contentsline {section}{\numberline {2.2}Mailfilter Checkup Tool}{8}
+\contentsline {section}{\numberline {2.3}New Message Notification}{9}
+\contentsline {subsubsection}{Flags}{11}
+\contentsline {subsection}{\numberline {2.3.1}Use of flagmail with xalert and ttybiff}{12}
+\contentsline {subsection}{\numberline {2.3.2}Examples}{13}
+\contentsline {section}{\numberline {2.4}Automatic Vacation Notices}{13}
+\contentsline {section}{\numberline {2.5}Forwarding Mail}{14}
+\contentsline {section}{\numberline {2.6}Delivery Tools}{14}
+\contentsline {subsection}{\numberline {2.6.1}strip\unhbox \voidb@x \kern .06em \vbox {\hrule width.3em}addr}{15}
+\contentsline {subsection}{\numberline {2.6.2}flock}{15}
+\contentsline {chapter}{\numberline {3}Distribution List Maintenance}{17}
+\contentsline {section}{\numberline {3.1}File based Distribution Lists}{17}
+\contentsline {subsection}{\numberline {3.1.1}What you can and cannot do with \unhbox \voidb@x \hbox {\pit mlist}}{17}
+\contentsline {subsection}{\numberline {3.1.2}How \unhbox \voidb@x \hbox {\pit mlist} can run}{18}
+\contentsline {subsection}{\numberline {3.1.3}\unhbox \voidb@x \hbox {\pit malias}.}{19}
+\contentsline {section}{\numberline {3.2}X.500 Directory based distribution lists}{19}
+\contentsline {subsection}{\numberline {3.2.1}The Basics}{19}
+\contentsline {subsection}{\numberline {3.2.2}The DIT Entries for the list}{20}
+\contentsline {subsection}{\numberline {3.2.3}ORNames}{21}
+\contentsline {subsection}{\numberline {3.2.4}The DL tool}{22}
+\contentsline {subsection}{\numberline {3.2.5}Creating a List}{23}
+\contentsline {subsubsection}{Creating}{23}
+\contentsline {subsubsection}{Upgrading}{23}
+\contentsline {subsection}{\numberline {3.2.6}Managing a List}{23}
+\contentsline {subsection}{\numberline {3.2.7}Maintaining a List}{24}
+\contentsline {subsection}{\numberline {3.2.8}Printing a List}{25}
+\contentsline {chapter}{\numberline {4}Miscellaneous Utilities}{26}
+\contentsline {section}{\numberline {4.1}A /bin/mail Replacement}{26}
+\contentsline {section}{\numberline {4.2}Message Status Checkup}{26}

@@ -1,0 +1,69 @@
+.TH CKCONFIG 8
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man8/RCS/ckconfig.8,v 6.0 1991/12/18 20:44:03 jpo Rel $
+.\"
+.\" $Log: ckconfig.8,v $
+.\" Revision 6.0  1991/12/18  20:44:03  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+ckconfig \- configuration checker
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+ckconfig
+\%[\-f] \%[\-v] \%[\-n] \%[-t\ tailor]
+.in -.5i
+.SH DESCRIPTION
+The 
+.I ckconfig
+tool checks various configuration details of the PP message system.
+.TP
+1.
+It checks that all the required directories are in place.
+If a directory is missing, the user will be prompted for the creation
+of the directory.
+.TP
+2.
+It checks that all the channels mentioned in the tailor file
+reference existing executables in the correct directory (\fIchndfldir\fP).
+If a channel is the filtercontrol channel running a specified filter,
+it checks that the channel references an existing executable filter in
+the correct directory (\fIformdfldir\fP).
+.TP
+3.
+It checks that all the tables mentioned in the tailor file
+reference existing files in the correct directory (\fItbldfldir\fP).
+.TP
+4.
+There are certain channels and tables that the PP system
+refers to by explicit, known names.
+\fIckconfig\fP checks to see if these names have an appropriate entry
+in the tailor file.
+.PP
+\fIckconfig\fP responds to the following flags
+.TP
+\-v
+Verbose Mode.
+Switches the output to verbose mode, displaying correct
+as well as incorrect configuration details.
+By default, ckconfig only displays incorrect configuration details.
+.TP
+\-f
+Force Mode.
+Switches of any prompting to the user.
+Thus able to run independent of a user.
+.TP
+\-n
+No Execution Mode.
+Displays incorrect configuration details and what can be done to
+correct them, but does not attempt correction.
+.TP
+\-t tailor
+check the given tailor file rather than the system default one.
+.SH FILES
+PP tailor file
+.SH "SEE ALSO"
+\fIThe PP Manual: Volume 1 \- Installation and Operation\fP
+

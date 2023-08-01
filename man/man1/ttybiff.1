@@ -1,0 +1,53 @@
+.TH TTYBIFF 1
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man1/RCS/ttybiff.1,v 6.0 1991/12/18 20:43:41 jpo Rel $
+.\"
+.\" $Log: ttybiff.1,v $
+.\" Revision 6.0  1991/12/18  20:43:41  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+ttybiff \- display new mail alerts
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+ttybiff \%[-f\ file] \%[-u\ user] \%[-p\ number] \%[-s]
+.in -.5i
+.SH DESCRIPTION
+This program is subsimed by xalert and will probably disappear from
+future releases.
+.PP
+Ttybiff is a simple program designed to display new message alerts on
+a users terminal. It does very little else, relying on its client to
+do all the hard work. It is normally run in the background. it
+displays the message on all terminals the user is logged onto on the
+current machine, or if that fails to the standard output.
+.PP
+It has the following options
+.TP
+\-f file set the alert filename that \fIttybiff\fP and
+\fIflagmail\fP communicate via. This defaults to the file \fB.alert\fP
+in your home directory. This file is created by \fIttybiff\fP and read
+by \fIflagmail\fP
+.TP
+\-u username
+Allows you to pretend to be the given user. This does not really do
+much as you will generally only get notified of messages to you, but
+it may be useful.
+.TP
+\-p number
+Change the default udp port that \fIttybiff\fP and \fIflagmail\fP
+communicate via (normally assigned by the system).
+.TP
+\-s
+Only display on the standard output, not on all terminals that the
+user is logged into.
+.SH FILES
+.ta \w'~/.alert\0\0'u
+~/.alert	The default alert file.
+.SH "SEE ALSO"
+flagmail(1), ttyalert(1)
+.br
+\fIPP Manual \- Volume 3: User Manual\fP
+.SH "BUGS"

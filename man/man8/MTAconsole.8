@@ -1,0 +1,69 @@
+.TH CONSOLE 8
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man8/RCS/MTAconsole.8,v 6.0 1991/12/18 20:44:03 jpo Rel $
+.\"
+.\" $Log: MTAconsole.8,v $
+.\" Revision 6.0  1991/12/18  20:44:03  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+console \- qmgr monitor and controller
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+console
+\%[-Q\ host] \%[-N] \%[-r\ time] \%[-c\ number] \%[-m\ number] 
+\%[-v\ number] \%[-o\ time]
+.in -.5i
+.SH DESCRIPTION
+The 
+.I console
+tool enables a user to connect to, monitor and control a qmgr.
+The console runs on top of the X windowing system.
+.PP
+The \fIconsole\fP responds to various command line flags.
+.TP
+\-Q host
+The default host.
+The console attempts to automatically connect to the Qmgr on the given host.
+WARNING this may take a lot of time!
+.TP
+\-N
+Turn off confirmation popups for the quit and disconnect command buttons.
+.TP
+\-r time
+The amount of time between automatic refreshes of the display.
+By default, this time interval is five minutes.
+The time should be a console time string with no whitespace between
+elements of the string (i.e 5m or 5h3m2s).
+.TP
+\-c number
+The number of colours used in the display.
+The default is ten.
+.PP
+The following flags affect the heuristics used to determine the
+comparitive states of different channels, mtas or messages.
+.TP
+\-m number
+The highest number of messages on a channel or mta.
+Any channel or mta with more than this number is deemed to be in
+serious trouble.
+The default value is 50.
+.TP
+\-v number
+The largest volume of messages on a channel or mta.
+Any channel or mta with a volume greater than this is deemed to be in
+serious trouble.
+The default value is 10000.
+.TP
+\-o time
+The oldest message allowed.
+Any message older than this time or channel or mta containing a
+message older than this is deemed to be in serious trouble.
+The time should be given as a console time string with no intervening
+whitespace (e.g 2w5d).
+The default age is  four weeks.
+.SH FILES
+.SH "SEE ALSO"
+.SH BUGS

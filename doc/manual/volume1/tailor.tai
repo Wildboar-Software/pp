@@ -1,0 +1,425 @@
+############################################################
+#
+# Tailor file for PP
+#
+#      This version for sites with local smtp
+#
+############################################################
+
+############################################################
+#
+# The following variables will need tailoring 
+#
+############################################################
+#
+# The loc_dom_mta is the host that the MTA will reside on and execute from
+# It is a fully qualified domain name and represent the physical machine
+#	Examples might be
+#		cheetah.nyser.net
+#      		violet.berkeley.edu
+#		john.cs.nott.ac.uk
+#
+loc_dom_mta	lancaster.xtel.co.uk
+#
+# The Sitename is what the rest of the world sees you as. This is typically
+# a domain shorter than the full domain name. It is the name used to represent
+# your site or group as a whole. This name normally hides the individual 
+# machine names
+#	Examples might be
+#		berkeley.edu
+#		nyser.net
+#		cs.nott.ac.uk
+#
+loc_dom_site	xtel.co.uk
+#
+# The postmaster should include the local site name
+# e.g. postmaster@berkeley.edu or postmaster@cs.nott.ac.uk
+#
+postmaster	postmaster@xtel.co.uk
+#
+# The pplogin should be the username of the owner of pp.
+#
+pplogin		pp
+#
+# The qmgrhost should be the same as the name found in isoentities file.
+# This can be the same as loc_dom_mta name
+#
+pptsapd_addr	LOCAL-ETHER=lancaster+20001
+qmgrhost	lancaster
+#
+# The local or name should be the name of your site in X.400 terms.
+# This is attribute value based, and starts with organisational units and
+# works up to country. If you are unsure, leave it with just a country
+# component, e.g. "/C=GB/"
+#
+loc_or		"/o=xtel/prmd=X-Tel Services/admd= /c=GB/"
+############################################################
+#
+# That is the end of the things you must tailor - the rest are
+# probably ok - but you should check.
+#
+############################################################
+
+delim1		"\1\1\1\1\12"
+delim2		"\1\1\1\1\12"
+#returntime 36
+#queuestruct	100
+dap_user	"c=GB@o=X-Tel Services Ltd@cn=lancaster@cn=pp qmgr"
+
+
+authchannel	free
+authloglevel	high
+wrndfldir	warnings
+#submit_addr	lancaster:pp-submit
+
+# Body types
+
+headertype	822 822-jnt 822-us p2 822-uk p22 ipn g3fax ps
+bodypart	ia5 dmd odif g3fax ipm voice iso6937 ia5-dk ps ms
+bodypart	oid.0.9.2342.60200172.99.1.4
+
+
+#  **-- Mapping tables --**
+#
+# All of these table MUST have the names given here
+tbl	aliases		show="Aliases: mapping -> local id",
+			flags=dbm
+tbl	users		show="Users: mapping local id -> disposition",
+			flags=dbm
+tbl	x400-developers-aliases	show="Aliases: mapping -> local id",
+			flags=linear
+tbl	x400-developers-users	show="Users: mapping local id -> disposition",
+			flags=linear
+tbl	domain		show="Mapping domain key ->full domain/MTA",
+			flags=dbm
+tbl	or		show="Mapping O/R Address -> MTA",flags=dbm
+tbl	channel		show="Binding MTA -> Channels",flags=dbm
+tbl	or2rfc		show="RFC 987: X.400 -> RFC 822",flags=dbm
+tbl	rfc2or		show="RFC 987: RFC 822 -> X.400",flags=dbm
+tbl	rfc1148gate	show="Gateways that perform RFC 1148 conversions",
+			flags=dbm
+tbl	auth.channel	show="Authorisation: channel policy",flags=linear
+tbl	auth.mta	show="Authorisation: mta based",flags=linear
+tbl	auth.user	show="Authorisation: user based",flags=linear
+tbl	auth.qmgr	show="Authorisation: qmgr control",flags=dbm
+#  **-- Channel tables --**
+#
+# Needed by individual channels, not submit
+tbl	local		file="ch.local",
+			show="local id -> user id + home directory",
+			flags=dbm
+
+tbl	x400in84	file="ch.x400in84",
+			show="MTA -> connect info",flags=linear
+tbl	x400out84	file="ch.x400out84",
+			show="X.400(84) connect info -> MTA + other info",
+			flags=linear
+tbl	x400in88	file="ch.x400in88",
+			show="MTA -> connect info",flags=linear
+tbl	x400out88	file="ch.x400out88",
+			show="X.400(88) connect info -> MTA + other info",
+			flags=linear
+tbl	shell		file="ch.shell",
+			show="info for shell chan"
+			flags=dbm
+tbl	list		file="ch.list",
+			show="Lists: distribution lists",
+			flags=dbm
+tbl	uucp		file="ch.uucp"
+			show="UUCP: rfc822 -> uucp",
+			flags=dbm
+tbl     fax		file="ch.fax",
+                        show="FAX: mappings and info",
+                        flags=linear
+tbl	mslocal		file="ch.mslocal",
+			show="Message Store:local id -> user id,home directory",
+			flags=linear
+
+chan	822-local	    prog=local,
+	show="Local Delivery channel",type=both,
+	sort="user time",adr=822,adr-order=usapref,
+	hdrin=822,hdrout=822-us,
+	bptin=ia5,bptout=ia5,
+	content-out=822,outtable=local,access=mts,drchan=dr2rfc
+
+chan	bugs-local	    prog=local,
+	show="Local Delivery channel for Bug Reports",type=both,
+	sort="user time",adr=822,adr-order=usapref,
+	hdrin=822,hdrout=822-us,
+	bptin=ia5,bptout=ia5,
+	content-out=822,outtable=local,access=mts,drchan=dr2rfc
+
+chan	xua		show="XUA Submission Channel",type=in,
+			access=mts,adr-order=ukpref,
+			adr=x400, access=mts,
+
+chan	x400in84	prog=x400in84,show="X400 inbound",type=in,
+			content-in=p2,adr=x400,
+			adr-order=ukpref,intable=x400in84
+
+chan	x400in88	prog=x400in88,show="X400 inbound (1988)",type=in,
+			content-in=p22,adr=x400,
+			adr-order=ukpref,intable=x400in88
+
+chan	x400out84	prog=x400out84,show="X400 outbound",type=out,
+			adr=x400,adr-order=ukpref,
+			content-out=p2,
+			hdrout=p2,
+			bptout="ia5,g3fax,odif",
+			outtable=x400out84
+
+chan	x400out88	prog=x400out88,show="X400 outbound",type=out,
+			adr=x400,adr-order=ukpref,
+			content-out=p22,
+			hdrout=p22,
+			bptout="ia5,g3fax,voice,odif,iso6937,oid.0.9.2342.60200172.99.1.4",
+			outtable=x400out88
+
+chan	mslocal		prog=mslocal,show="MS local delivery",type=out,
+			hdrout="p22,p2,ipn",
+			bptout="ia5,g3fax,voice,iso6937",outtable=mslocal,
+			sort="user time",access=mts
+
+chan	mslocal-beta	prog=mslocalbeta,show="MS local delivery",type=out,
+			hdrout="p22,p2,ipn",
+			bptout="ia5,g3fax,voice,iso6937,oid.0.9.2342.60200172.99.1.4",outtable=mslocal,
+			sort="user time",access=mts
+
+chan	smtp		prog=smtp,show="with SMTP (PP)",type=both,
+			adr=822,adr-order=usapref,drchan=dr2rfc,
+			bptout=ia5,hdrout=822-us,content-out=822,
+
+chan    pac-janet	prog="greyout -P",show="via JANET with NIFTP (PP)",
+			type=in, adr=822,adr-order=ukpref,
+			hdrin=822-us,
+			outinfo=janet
+
+chan    gb-janet        prog="greyout -P",show="via JANET with NIFTP (PP)",
+			type=both, adr=822,adr-order=ukpref,
+			hdrout=822-jnt,
+			bptout=ia5,drchan=dr2rfc,
+			content-out=822,outinfo=janet
+#			mta=much.cs.nott.ac.uk,
+
+chan	gb-pss		prog=smtp,key=ipss,
+			show="via PSS with NIFTP (PP)",type=both,
+			adr=822,adr-order=ukpref,drchan=dr2rfc,
+			bptout=ia5,hdrout=822-jnt,
+			content-out=822,mta=much.cs.nott.ac.uk
+
+chan    fax             prog=G3Fax, show="Fax channel",type=both,
+                        content-in=p22, hdrout=g3fax, bptout=g3fax, 
+			drchan=dr2rfc,outtable=fax, sort="user time",
+#                       outinfo="in=/dev/ttyb,out=/dev/faxout,confirm,debug,master=gal@xtel.co.uk"
+                        outinfo="in=/dev/ttyb,out=/dev/faxout,confirm,softcar,debug"
+			ininfo="in=/dev/faxin,softcar,confirm,debug,master=gal@xtel.co.uk"
+
+chan    faxyuch         prog=G3Fax, show="Fax channel",type=both,
+			content-in=p22,
+                        bptout="g3fax,ia5", drchan=dr2rfc, outtable=fax,
+                        outinfo="in=/dev/ttyb,out=/dev/ttyb,master=faxmaster"
+
+chan	dirlist		prog=dirlist,show="Directory List channel",type=both,
+			drchan=dr2rfc,adr=x400,adr-order=usapref,
+			sort="user time", outinfo="dn=C=GB@O=X-Tel Services Ltd@CN=lancaster"
+
+chan	list		prog=list,show="List channel",type=both,
+			adr-order=usapref,outinfo="linked",
+			outtable=list,drchan=dr2rfc,sort="user time"
+
+chan	uucp		prog=uucp-out,key="uucp-out,rmail",
+			show="UUCP channel",type=both,
+			adr=822,adr-order=ukpref,outtable=uucp
+			outinfo="uux=/tmp/uux,host=nott-cs",drchan=dr2rfc
+
+chan	dr2rfc		prog=dr2rfc,show="Dr2rfc channel",type=both,
+			adr=822,adr-order=ukpref,
+			bptin=ia5,hdrin=822,
+			outinfo="return=all order=uk",
+			content-out=822
+
+chan	shell		prog=shell,type=out,access=mts
+			show="Shell channel",
+			outtable=shell,sort="user time",
+			bptout="ia5,ps",hdrout=822-uk
+
+# QMGR special channels (load/manage/clean)
+
+chan	qmgr-load	prog=qmgr-load,show="Loading the QMGR",
+			type=qmgrload,outinfo="5";
+
+chan	msg-clean	prog=msg-clean,show="Removing finished message"
+			type=delete
+
+chan	trash		prog=trash,show="Removing trash"
+			type=debris,outinfo=5h
+
+chan	timeout		prog=timeout,show="Timeout messages"
+			type=timeout
+
+chan    warning		prog=warnings,show="Send warning messages",
+			type=warn
+chan    splitter	prog=splitter,type=split,
+			show="Divide message into single"
+recipient messages
+#  **-- shaper channels --**
+
+#   Flatteners
+
+chan	p2flatten	prog=p2flatten,show="Structured message -> P2",
+			type=shaper,content-out=p2
+
+chan	822flatten	prog=rfc934,type=shaper,content-out=822
+
+chan	p22flatten	prog=p2flatten,show="Structured Message -> P22",
+			type=shaper,content-out=p22
+
+#   Unflatteners
+
+chan	p2explode	prog=p2explode,type=shaper,content-in=p2
+
+chan	p22explode	prog=p2explode,type=shaper,content-in=p22
+
+
+# Header Filters
+chan    822tofax        prog=fcontrol,type=shaper,
+                        hdrin=822-us,hdrout=g3fax,
+                        outinfo="hdr2fax -from $(400sender) -to $(400recip) -subject $(ua-id) -table $(outtable) -outmta $(outmta)",outtable=fax,
+                        cost=20,solo-proc=yes
+chan	822touk		prog=fcontrol,type=shaper,
+			hdrin=822,
+			hdrout=822-uk,
+			outinfo="rfc822norm -jnt -bigend"
+chan	822tojnt	prog=fcontrol,type=shaper,
+			hdrin=822,hdrout=822-jnt,
+			outinfo="rfc822norm -jnt -bigend -jntsender $(822SENDER)"
+chan	822tous		prog=fcontrol,type=shaper,hdrin=822,
+			hdrout=822-us,
+			outinfo="rfc822norm -822 -littleend"
+chan	822top2		prog=RFCtoP2,type=shaper,hdrin=822-us,conv=1148
+			hdrout=p2,cost=10,
+			show="RFC1148 RFC 822 -> P2"
+chan	822top22	prog=RFCtoP2,type=shaper,hdrin=822-us,conv=1148
+			hdrout=p22,cost=10,
+			show="RFC1148 RFC 822 -> P22"
+chan	p2to822		prog=P2toRFC,type=shaper,hdrout=822,conv=1148,
+			hdrin="ipn,p2",cost=10,
+			show="RFC1148 P2 -> RFC 822"
+chan	p22to822	prog=P2toRFC,type=shaper,hdrout=822,conv=1148
+			hdrin="ipn,p22",cost=10,
+			show="RFC1148 P22 -> RFC 822"
+chan	p22top2		prog=fcontrol,type=shaper,hdrout=p2,hdrin=p22,
+			show="P22 to P2 downgrade",
+			conv=conv,cost=10,outinfo="p2norm -downgrade"
+#identity map
+chan	p2top22		prog=fcontrol,type=shaper,hdrout=p22,hdrin=p2,
+			show="P2 to P22 upgrade",cost=1,
+			outinfo="/bin/cat"
+
+# Body part filters
+
+chan    ia5-dk2ia5	prog=fcontrol,type=shaper,bptin=ia5-dk,
+			bptout=ia5,show="Danish ia5 to ia5",
+			conv=loss,outinfo="charset DK 38 UK 29"
+			
+chan    iso6937totxt	prog=fcontrol,type=shaper,bptin=iso6937,
+			bptout=ia5,conv=loss,cost=15,
+			outinfo="asn -inchar iso_6937-2-add -outchar irv -inasn motis-86-6937 -outasn ia5",
+			show="ISO6937 -> IA5"
+
+chan	g3faxtotxt	prog=fcontrol,type=shaper,bptin=g3fax,
+			bptout=ia5,outinfo="removebp G3Fax",
+			show="Fax -> Text mapper",cost=100,conv=loss
+chan    txttofax        prog=fcontrol,type=shaper,bptin=ia5,
+                        bptout=g3fax,
+			outinfo="ia52fax -table $(outtable)",outtable=fax,
+                        show="ia5 -> g3fax mapper"
+
+chan    faxtops		prog=fcontrol,type=shaper,bptin=g3fax,
+			bptout=ps,outinfo="fax2ps",show="fax -> postscript"
+
+chan    mstops		prog=fcontrol,type=shaper,bptin=ms,
+			bptout=ps,outinfo="/usr/local/bin/psroff -ms -t",
+			show="ms macros -> postscript"
+
+chan    mstoia5		prog=fcontrol,type=shaper,bptin=ms,
+			bptout=ia5,outinfo="/bin/cat",
+			show="MS->Text mapper",cost=100,conv=loss
+
+chan    xxtotxt	prog=fcontrol,type=shaper,bptin=oid.0.9.2342.60200172.99.1.4,
+			bptout=ia5,outinfo="removebp oid.0.9.2342.60200172.99.1.4"
+			show="XXX -> Text mapper",cost=100,conv=loss
+
+chan    voicetotxt	prog=fcontrol,type=shaper,bptin=voice,
+			bptout=ia5,outinfo="removebp Voice"
+			show="Voice -> Text mapper",cost=100,conv=loss
+
+#  **-- Logging for the rest of the prog --**
+#
+authlog level=notice, size=400
+operlog level=notice, size=400
+normlog level=notice, size=400, sflags=zero
+
+822flatten	normlog	 file=filter
+p2flatten	normlog	 file=filter
+822touk		normlog	 file=filter
+822tous		normlog	 file=filter
+dr2rfc		normlog	 file=filter
+fcontrol	normlog	 file=filter
+odif2txt	normlog	 file=filter
+p2explode	normlog	 file=filter
+rfc822norm	normlog	 file=filter
+trash		normlog	 file=filter
+
+822top2		normlog	 file=rfc987
+p2to822		normlog	 file=rfc987
+
+list		normlog	 file=lists
+
+qmgr		normlog	 file=qmgr
+qmgr-load	normlog	 file=qmgr
+
+smtp		normlog	 file=smtp
+smtpsrvr	normlog	 file=smtp
+
+greyout		normlog	 file=greyout
+gb-janet	normlog  file=greyin
+submit		normlog	 file=submit dflags=close
+
+local		normlog	 file=local
+msg-clean	normlog	 file=msg-clean
+
+x400in84	normlog	 file=x400in84,level=pdus
+x400in84	isodelog rtsaplevel file=rts,level=all
+x400in84	isodelog ssaplevel file=ssap,level=all
+x400out84	normlog	 file=x400out84
+
+x400in88	normlog	 file=x400in88 level=pdus,level=trace
+x400out88	normlog	 file=x400out88 #level=all
+
+p7server	normlog	 file=p7server level=all
+
+xfax		normlog	 file=fax #level=debug
+xfaxd		normlog	 file=fax #level=debug
+G3Fax		normlog	 file=fax
+hdr2fax		normlog	 file=fax
+ia52fax		normlog	 file=fax
+
+#x400out88 isodelog	rtsaplevel file=rts-out	level=all
+#x400out88 isodelog	acsaplevel file=acsap-out	level=all
+#x400out88 isodelog	psap2level file=psap2-out	level=all
+#x400out88 isodelog	ssaplevel file=ssap-out	level=all
+
+
+#x400in88 isodelog	rtsaplevel file=proto-in	level=all
+#x400in88 isodelog	acsaplevel file=proto-in	level=all
+#x400in88 isodelog	psap2level file=proto-in	level=all
+
+pptsapd		normlog	 file=pptsapd,		dlevel=notice
+dirlist		normlog	file=dirlist	
+mslocal		normlog file=mslocal
+xprobe		normlog file=probe level=trace,level=pdus level=all
+p7server	isode ns_enable off
+xua		isode ns_enable off
+libmsattr		isode ns_enable off
+#xckadr normlog level=all file=ckadr

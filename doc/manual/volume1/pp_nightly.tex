@@ -1,0 +1,47 @@
+\File{pp\_nightly.sh},{14:28},{Jun 12 1990}
+\L{\LB{\C{}\#! \/bin\/sh}}
+\CE{}\L{\LB{}}
+\L{\LB{PATH=\/crg\/pp\/bin:\/crg\/pp\/cmds\/tools:\/usr\/local\/bin:\/usr\/ucb:\/bin:\/usr\/bin:\/usr\/5bin:}}
+\L{\LB{export PATH}}
+\L{\LB{\C{}\#}}
+\CE{}\L{\LB{\C{}\# Shell script run nightly to collect up things etc.}}
+\CE{}\L{\LB{\C{}\#}}
+\CE{}\L{\LB{set \-x}}
+\L{\LB{cd \/crg\/pp}}
+\L{\LB{L=logs}}
+\L{\LB{T=tables}}
+\L{\LB{STATDIR=\/crg\/pp\/logs\/statistics}}
+\L{\LB{}}
+\L{\LB{exec 1\> \$L\/pp\-nightly.log 2\>\&1}}
+\L{\LB{}}
+\L{\LB{freespace . 2000 \|\| \{ echo NO space left on device; exit 1; \}}}
+\L{\LB{}}
+\L{\LB{\C{}\#Save the stats files}}
+\CE{}\L{\LB{if [ \-f \$L\/stat ]}}
+\L{\LB{then}}
+\L{\LB{}\Tab{8}{DATE=`date +\%h\-\%d.\%T`}}
+\L{\LB{}\Tab{8}{[ \-d \$L\/tmp ] \|\| mkdir \$L\/tmp}}
+\L{\LB{}\Tab{8}{mv \$L\/stat \$L\/tmp\/stat.\$DATE}}
+\L{\LB{fi}}
+\L{\LB{}}
+\L{\LB{\C{}\# And then once a week...}}
+\CE{}\L{\LB{if [ `date +\%w` \-eq 0 ]}}
+\L{\LB{then}}
+\L{\LB{}\Tab{8}{YDATE=`date \S{}\"+\%h\-\%d\-\%y`}}
+\L{\LB{}\Tab{8}{[ \-d \$STATDIR ] \|\| mkdir \$STATDIR}}
+\L{\LB{}\Tab{8}{if pstat \$L\/tmp\/* \/dev\/null \| bin\/stat.awk \> \$STATDIR\/stats.\$YDATE}}
+\L{\LB{}\Tab{8}{then}}
+\L{\LB{}\Tab{16}{echo \'Sucessful \- removing old files\'}}
+\L{\LB{}\Tab{16}{rm \$L\/tmp\/*}}
+\L{\LB{}\Tab{8}{fi}}
+\L{\LB{fi}}
+\L{\LB{}}
+\L{\LB{\# This should be first building command, as it updates the DERFIL2 file}}
+\L{\LB{echo \'building the PP tables\'}}
+\L{\LB{(cd tables; make install)}}
+\L{\LB{}}
+\L{\LB{\# update the niftp stuff}}
+\L{\LB{echo \'building the niftp database\'}}
+\L{\LB{(cd niftp; make ) }}
+\L{\LB{}}
+\L{\LB{echo UPDATE complete}}

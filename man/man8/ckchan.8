@@ -1,0 +1,44 @@
+.TH CKCHAN 8
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man8/RCS/ckchan.8,v 6.0 1991/12/18 20:44:03 jpo Rel $
+.\"
+.\" $Log: ckchan.8,v $
+.\" Revision 6.0  1991/12/18  20:44:03  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+ckchan \- channel status checker
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+ckchan
+\%[-s] \%[-v] \%[all | channelname...]
+.in -.5i
+.SH DESCRIPTION
+The 
+.I ckchan
+tool outputs information on the status of the specified channels.
+Because it reads from the restricted access spool area, \fIckchan\fP
+can only be run by privileged users.
+If the key word \fIall\fP appears on the command line, \fIckchan\fP
+output information on all active channels.
+.PP
+\fIckchan\fP behaviour is effect by the following flags
+.TP
+\-v
+This flag prompts \fIckchan\fP to output a verbose form of information.
+By default, the information consists of a summary of the mtas that are
+queued on each channel.
+The verbose output consists of detailed information about all the messages
+queued on each channel.
+.TP
+\-s
+Give a short summary of the queue.
+.SH BUGS
+\fIckchan\fP interrogates the model of the mail queue stored on disc.
+For this reason, \fIckchan\fP must be run on a file system which
+has access to the relevant disc partitions.
+
+
+

@@ -1,0 +1,188 @@
+############################################################
+#
+# That is the end of the things you must tailor - the rest are
+# probably ok - but you should check.
+#
+############################################################
+
+delim1		"\1\1\1\1\12"
+delim2		"\1\1\1\1\12"
+
+authchannel	free
+authloglevel	high
+wrndfldir	warnings
+
+# Body types
+
+%BEGIN(J)%
+headertype	822 822-jnt 822-us 822-uk
+%END(J)%
+%BEGIN(I)%
+headertype	822 822-us
+%END(I)%
+%BEGIN(L)%
+headertype	822 822-us
+%END(L)%
+bodypart	ia5 
+
+
+#  **-- Mapping tables --**
+#
+# All of these table MUST have the names given here
+tbl	aliases		show="Aliases: mapping -> local id",
+tbl	users		show="Users: mapping local id -> disposition",
+tbl	domain		show="Mapping domain key ->full domain/MTA",
+tbl	or		show="Mapping O/R Address -> MTA",flags=dbm
+tbl	channel		show="Binding MTA -> Channels",flags=dbm
+tbl	or2rfc		show="RFC 987: X.400 -> RFC 822",flags=dbm
+tbl	rfc2or		show="RFC 987: RFC 822 -> X.400",flags=dbm
+tbl	rfc1148gate	show="Gateways that perform RFC 1148 conversions",
+tbl	auth.channel	show="Authorisation: channel policy",flags=dbm
+tbl	auth.mta	show="Authorisation: mta based",flags=dbm
+tbl	auth.user	show="Authorisation: user based",flags=dbm
+tbl	auth.qmgr	show="Authorisation: qmgr control",flags=linear
+#  **-- Channel tables --**
+#
+# Needed by individual channels, not submit
+tbl	local		file="ch.local",
+			show="local id -> user id + home directory",
+			flags=dbm
+tbl	shell		file="ch.shell", show="info for shell chan"
+			flags=dbm
+tbl	list		file="ch.list",
+			show="Lists: distribution lists",
+			flags=dbm
+tbl	uucp		file="ch.uucp" show="UUCP: rfc822 -> uucp", flags=dbm
+
+chan	822-local    prog=local,
+	show="Local Delivery channel",type=both,
+	sort="user time",adr=822,adr-order=usapref,
+	hdrin=822,hdrout=822-us bptin="ia5",bptout="ia5",
+	content-out=822,outtable=local,access=mts,drchan=dr2rfc
+
+chan	smtp	prog=smtp,show="with SMTP (PP)",type=both,
+		adr=822,hdrout=822-us, bptout="ia5",
+		content-out=822,drchan=dr2rfc
+
+%BEGIN(J)
+chan    gb-janet prog="greyout -P",show="via JANET with NIFTP (PP)",
+		type=out, adr=822,adr-order=ukpref,
+		hdrout=822-jnt, bptout="ia5",out-info=janet,
+		content-out=822,drchan=dr2rfc
+
+chan	gb-pss	prog="greyout -P",key=ipss,
+		show="via PSS with NIFTP (PP)",type=both,
+		adr=822,adr-order=ukpref,outinfo=pss,
+		hdrout=822-jnt, bptout="ia5",
+		content-out=822, drchan=dr2rfc
+%END(J)
+
+chan	list	prog=list,show="List channel",type=both,
+		outtable=list,drchan=dr2rfc,out-info=linked,sort="user time"
+
+chan	uucp	prog=uucp-out,key="uucp-out,rmail",
+		show="UUCP outbound channel",type=both,
+		adr=822,adr-order=usapref,outtable=uucp
+		out-info="uux=/tmp/uux,host=xtel"
+
+chan	dr2rfc	prog=dr2rfc,show="Dr2rfc channel",type=out,
+%BEGIN(J)%
+		adr=822,adr-order=ukpref,
+%END(J)%
+%BEGIN(I)%
+		adr=822,adr-order=usapref,
+%END(I)%
+%BEGIN(L)%
+		adr=822,adr-order=usapref,
+%END(L)%
+		bptin=ia5,hdrin=822
+		content-out=822,out-info="return=all"
+
+chan	shell	prog=shell,type=out,access=mts
+		show="Shell channel",
+%BEGIN(J)%
+		outtable=shell, hdrout=822-uk
+%END(J)%
+%BEGIN(I)%
+		outtable=shell, hdrout=822-us
+%END(I)%
+%BEGIN(L)%
+		outtable=shell, hdrout=822-us
+%END(L)%
+		bptout="ia5", content-out=822
+
+# QMGR special channels (load/manage/clean)
+
+chan	qmgr-load	prog=qmgr-load,show="Loading the QMGR",
+			type=qmgrload
+
+chan	msg-clean	prog=msg-clean,show="Removing finished message"
+			type=delete
+
+chan	trash		prog=trash,show="Removing trash"
+			type=debris,out-info=5h
+
+chan	timeout		prog=timeout,show="Timeout messages"
+			type=timeout
+
+chan    warning         prog=warnings,show="Send warning messages",
+                        type=warn
+
+chan    splitter        prog=splitter,type=split,
+                        show="Divide message into single"
+
+
+#  **-- shaper channels --**
+
+#   Flatteners
+
+chan	822flatten	prog=rfc934,type=shaper,content-out=822
+
+#   Unflatteners
+
+# Header Filters
+%BEGIN(J)%
+chan	822touk		prog=fcontrol,type=shaper,
+			hdrin=822, hdrout=822-uk,
+			out-info="rfc822norm -jnt -bigend"
+chan	822tojnt	prog=fcontrol,type=shaper,
+			hdrin=822,hdrout=822-jnt,
+			out-info="rfc822norm -jnt -bigend -jntsender $(822SENDER)"
+%END(J)%
+chan	822tous		prog=fcontrol,type=shaper,hdrin=822,
+			hdrout=822-us,
+			out-info="rfc822norm -822 -littleend"
+
+#  **-- Logging for the rest of the prog --**
+#
+authlog level=notice, size=-1
+operlog level=notice, size=400
+normlog level=notice, size=400, sflags=zero
+
+822flatten	normlog	 file=filter
+%BEGIN(J)%
+822touk		normlog	 file=filter
+%END(J)%
+822tous		normlog	 file=filter
+dr2rfc		normlog	 file=filter
+fcontrol	normlog	 file=filter
+rfc822norm	normlog	 file=filter
+trash		normlog	 file=filter
+
+list		normlog	 file=lists
+
+qmgr		normlog	 file=qmgr
+qmgr-load	normlog	 file=qmgr
+
+smtp		normlog	 file=smtp
+smtpsrvr	normlog	 file=smtp
+%BEGIN(J)%
+greyout		normlog	 file=greybook
+gb-janet	normlog  file=greybook
+%END(J)%
+submit		normlog	 file=submit
+
+local		normlog	 file=local
+msg-clean	normlog	 file=msg-clean
+
+pptsapd		normlog	 file=pptsapd,		dlevel=notice

@@ -1,0 +1,1010 @@
+% -*- LaTeX -*-
+\chapter {Message Submission}
+
+\section {Overview}
+
+This chapter describes the procedural interface for message
+submission.  This interface reflects the submission interface of both
+the message transfer abstract service and the MTA abstract service.
+It is therefore used for:
+
+\begin{itemize}
+\item User interfaces submitting messages (message transfer abstract
+service).
+
+\item Inbound channels submitting messages (MTA abstract service).
+\end{itemize}
+
+It is a generalised interface, with aspects beyond X.400, but it is
+broadly targeted for X.400 usage.  The general function of the
+interface is as follows:
+
+\begin{enumerate}\index{submit protocol}
+\item Initialise submission.
+
+\item Initialise Message (per-message parameters).
+
+\item Handshake on addresses.
+
+\item Transfer one or more body parts.
+
+\item Final handshake to lock message into the queue or abort.
+
+\item Goto 2, until no more messages.
+
+\item Terminate submission.
+\end{enumerate}
+
+\section {The io\_ Interface}
+
+The \verb|io_| interface is the full interface to PP. All routines
+have the prefix \verb|io_| and all return some type of status
+indicating success or failure.
+
+\subsection {Major Structures}
+
+The following are the key structures used in submission. These
+structures should be filled in and passed over to \pgm{submit} by the
+procedures defined below.
+
+\subsubsection{Channel Lists}
+
+A channel list is the structure used to keep channels and hosts. It is
+defined in file \file{list\_rchan.h} and the structure is shown in
+Figure~\ref{rchan:struct}
+
+\tagrind[hbtp]{rchan}{Channel List Structure}{rchan:struct}
+\index{LIST\_RCHAN}
+
+The use of the structure members are:
+\begin{describe}
+\item[\verb|li\_mta|:] The MTA name as a character string.
+\item[\verb|li\_chan|:] The associated channel structure.
+\item[\verb|li\_auth|:] Authorisation parameters. This should not
+normally be filled in.
+\item[\verb|li\_dir|:] A directory reference. This should not normally
+be used.
+\item[\verb|li\_next|:] The next element in the list.
+\end{describe}
+
+There are several routines to manipulate such structures.
+
+
+A new list element can be created by using the routine
+\verb|list_rchan_new|. This is defined as:
+\begin{quote}\index{list\_rchan\_new}\begin{verbatim}
+LIST_RCHAN *list_rchan_new (mta, chan)
+char *mta;
+char *chan;
+\end{verbatim}\end{quote}
+The parameters to this call are:
+\begin{describe}
+\item[\verb|mta|:] The name of the MTA. This parameter is copied intop
+heap storage.
+\item[\verb|chan|:] The name of a channel. This is converted to a
+channel structure internally.
+\end{describe}
+
+A new structure can be added onto the end of a list, or if the list is
+empty can be set as the first element by a call to
+\verb|list_rchan_add|. This is defined as:
+\begin{quote}\index{list\_rchan\_add}\begin{verbatim}
+void list_rchan_add (base, new)
+LIST_RCHAN **base;
+LIST_RCHAN *new;
+\end{verbatim}\end{quote}
+
+The linked list structure can be freed by calling
+\verb|list_rchan_free|, which is defined as:
+\begin{quote}\index{list\_rchan\_free}\begin{verbatim}
+void list_rchan_free (list)
+LIST_RCHAN *list;
+\end{verbatim}\end{quote}
+
+Two other useful routines are those to convert a string into a channel
+structure. The first one is a simple string to structure routine:
+\begin{quote}\index{ch\_nm2struct}\begin{verbatim}
+CHAN *ch_nm2struct (name)
+char *name;
+\end{verbatim}\end{quote}
+This converts from the given \verb|name| into a channel structure, or
+returns \verb|NULLCHAN| if there is no match.
+
+For inbound channels when filling in the queue structure with inbound
+parameters it is necessary first to allocate a channel list with one
+of the above functions, but not to fill in the channel part of it.
+This should be filled in with the routine:
+\begin{quote}\index{ch\_mta2struct}\begin{verbatim}
+CHAN *ch_mta2struct (name, mta)
+char *name, *mta;
+\end{verbatim}\end{quote}
+This routine returns a channel structure based on a name and an MTA.
+This allows the particular channel to be selected dependant upon the
+MTA the message is received from. This allows the channel pairing to
+take place.
+
+\subsubsection{Encoded Information Types}
+Encoded information types are used in several places in PP. They are
+kept internally as a linked list of strings which contain either the
+name of the information type, or a string representation of an object
+identifier. The structure is shown in Figure~\ref{eit:struct}.
+
+\tagrind[hbtp]{eit}{Encoded Information Type Structure}{eit:struct}
+
+There are some support routines to help construct these lists.
+A new structure can be allocated with a value stored in help space by
+using the function \verb|list_bpt_new|. This is defined as:
+\begin{quote}\index{list\_bpt\_new}\begin{verbatim}
+LIST_BPT *list_bpt_new (value)
+char *value;
+\end{verbatim}\end{quote}
+
+A linked list structure can be duplicated by using
+\verb|list_bpt_dup|. This returns a separate duplicate list. It is
+defined as:
+\begin{quote}\index{list\_bpt\_dup}\begin{verbatim}
+LIST_BPT *list_bpt_dup (list)
+LIST_BPT *list;
+\end{verbatim}\end{quote}
+
+A new element may be added to the end of a list, or become the first
+member if the list is empty, by calling \verb|list_bpt_add|. This is
+defined as:
+\begin{quote}\index{list\_bpt\_add}\begin{verbatim}
+void list_bpt_add (base, new)
+LIST_BPT **base;
+LIST_BPT *new;
+\end{verbatim}\end{quote}
+
+A list may be searched for a particular type of element by using
+\verb|list_bpt_find|. This returns either the first matching entry or
+\verb|NULLIST_BPT| if no such element is found.
+\begin{quote}\index{list\_bpt\_find}\begin{verbatim}
+LIST_BPT *list_bpt_find (list, item)
+LIST_BPT *list;
+char *item;
+\end{verbatim}\end{quote}
+
+Finally, a linked list may be deallocated up by calling the routine
+\verb|list_bpt_free|:
+\begin{quote}\index{list\_bpt\_free}\begin{verbatim}
+void list_bpt_free (list)
+LIST_BPT *list;
+\end{verbatim}\end{quote}
+
+
+\subsubsection{Management Parameters}
+
+The management parameters are defined in the file \file{prm.h} and the
+structure is shown in Figure~\ref{prm:struct}. These values are set
+before each message submission to change the general policies of
+\pgm{submit}.
+
+There are two support routines for manipulating this structure. The
+first, \verb|prm_init|, initialises the structure to its default
+state. The second, \verb|prm_free|, frees off all allocated variables
+within the structure.
+\begin{quote}\small\index{prm\_init}\index{prm\_free}\begin{verbatim}
+void prm_init (pp)
+struct prm_vars *pp;
+
+void prm_free (pp)
+struct prm_vars *pp;
+\end{verbatim}\end{quote}
+
+
+\tagrind{prmstruct}{Management Parameter Structure}{prm:struct}
+\index{struct~prm\_vars}
+
+The use of each of the members of this structure are:
+\begin{describe}\index{parameter structure}\index{prm}
+
+\item[\verb|prm\_logfile|:] A logfile to be used for this specific message.
+
+\item[\verb|prm\_loglevel|:]	A logging level to be used for this message.
+It should be one of the levels of logging specified in \file{ll\_log.h}.
+
+\item[\verb|prm\_opts|:]	A set of options to control \pgm{submit}.
+This should be one of the following:
+\[\begin{tabular}{|l|p{0.6\textwidth}|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value}&
+		\multicolumn{1}{|c|}{\bf Meaning}\\
+\hline
+	\tt PRM\_NONE&	No options\\
+	\tt PRM\_ACCEPTALL&
+		\pgm{submit} should accept bad recipient addresses
+			and generate error reports itself\\
+	\tt PRM\_NOTRACE &
+		\pgm{submit} should not generate Received: or Via:
+			lines. \\
+\hline
+\end{tabular}\]
+
+\item[\verb|prm\_passwd|:]	A password to authenticate the local
+user's submission (not used as yet).
+\end{describe}
+
+\subsubsection{The Per-Message Information}
+
+The per-message information is defined in the file \file{q.h} and the
+structure is shown in Figure~\ref{q:struct}. Only the fields which
+should or may be filled in by interface programs are
+described in detail. The rest are calculated by \pgm{submit} if
+necessary.
+
+\tagrindfile{qstruct}{Queue Structure}{q:struct}\index{Q\_struct}
+
+The queue structure controls most of the per message parameters. There
+are a number of utility routines to help manipulate these structures.
+
+The routine \verb|q_init| can be used initialise an empty structure.
+The routine \verb|q_free| can be used to free off allocated fields
+within the structure.
+\begin{quote}\index{q\_init}\index{q\_free}\begin{verbatim}
+int q_init (qp)
+Q_struct *qp;
+
+int q_free (qp)
+Q_struct *qp;
+\end{verbatim}\end{quote}
+
+Typically an inbound channel will only fill in one or two parameters,
+most can be safely defaulted unless required. It is important to set
+the \verb|inbound| parameter and to fill in the list of encoded
+information types and possible the content type. The rest are all
+optional.
+
+The elements of the queue structure are now described. Some elements
+have an associated flag with the name ending with \verb|crit|. This
+refers to an element in the structure with a similar name. This
+element indicates what the criticality constraints on the element
+are. Values for the settings of these are shown in
+Table~\ref{tbl:crit}. These values may be logically or'd together to
+set several critical values.
+
+\tagtable{crit}{Criticality Codes}{tbl:crit}
+
+\begin{describe}\index{queue structure}\index{Q\_struct}
+
+\item[\verb|msgtype|:]	The type of message being submitted. This
+should be one of the following:
+\[\begin{tabular}{|l|l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value}&
+		\multicolumn{1}{|c|}{\bf Meaning}\\
+\hline
+	\tt MT\_UMPDU&	Normal message\\
+	\tt MT\_DMPDU&	A delivery report\\
+	\tt MT\_PMPDU&	A Probe \\
+\hline
+\end{tabular}\]
+The \verb|q_init| routine defaults this value to \verb|MT_UMPDU|.
+
+\item[\verb|cont\_type|:]	The content type of the message. This
+should be one of the defined types; normally one of the following:
+\[\begin{tabular}{|l|l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value}&
+		\multicolumn{1}{|c|}{\bf Meaning}\\
+\hline
+	\tt "822"&	An RFC~822 content\\
+	\tt "p2"&	A P2 1984 content\\
+	\tt "p22" &	A P2 1988 content \\
+\hline
+\end{tabular}\]
+As these values are common, they are available via the following
+string variables. 
+\begin{quote}\small\begin{verbatim}
+extern char *cont_822;
+extern char *cont_p2;
+extern char *cont_p22;
+\end{verbatim}\end{quote}
+
+An empty content implies that the message will be submitted in
+structured form (usually the default for RFC~822 messages).
+
+\item[\verb|encodedinfo|:]	A list of encoded information types.
+This should include all the encoded types that are in the message, and
+should be a member of the list defined in the bodypart tailor
+variable.
+Although any encoded information type present in the bodypart list is
+allowed, PP knows about some special cases. These are:
+\[\begin{tabular}{|l|l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value}&
+		\multicolumn{1}{|c|}{\bf Meaning}\\
+\hline
+	\tt "ia5"&	An Ia5 (ascii) body part\\
+	\tt "hdr.822"&	An RFC~822 header\\
+	\tt "hdr.p2" &	A P2 1984 header \\
+	\tt "hdr.p22" & A P2 1988 header \\
+	\tt "hdr.ipn" & An IPN header \\
+\hline
+\end{tabular}\]
+These definitions are available in the external variables as follows:
+\begin{quote}\small\begin{verbatim}
+extern char *hdr_822_bp;
+extern char *hdr_p2_bp;
+extern char *hdr_p22_bp;
+extern char *hdr_ipn_bp;
+extern char *ia5_bp;
+\end{verbatim}\end{quote}
+\end{describe}
+
+The following variables can all be safely defaulted to those
+initialised by \verb|q_init|, but can be varied as required.
+
+\begin{describe}
+
+\item[\verb|defertime|:]	The time the message should wait for
+before being delivered (for deferred delivery): optional.
+
+\item[\verb|latest\_time|:]	The latest delivery time this message
+should be delivered by.
+
+\item[\verb|nwarns|:]	The number of warning messages to be sent if
+the message is delayed.
+
+\item[\verb|warninterval|:]	The interval of time between
+successive warnings.
+
+\item[\verb|retinterval|:]	The time to wait before returning the
+message as undeliverable.
+
+
+\item[\verb|priority|:]		The priority associated with the
+message. This takes one of the following values:
+\[\begin{tabular}{|l|l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value}&
+		\multicolumn{1}{|c|}{\bf Meaning}\\
+\hline
+	\tt PRIO\_NORMAL&	The default\\
+	\tt PRIO\_NONURGENT&	A low priority message\\
+	\tt PRIO\_URGENT&	A high priority message\\
+\hline
+\end{tabular}\]
+
+\item[\verb|disclose\_recips|:]	A true/false flag indicating whether
+recipients should be disclosed.
+
+\item[\verb|implicit\_conversion|:]	A true/false flag indicating
+if implicit conversion can be performed.
+
+\item[\verb|alternate\_recip\_allowed|:]	A true/false flag indicating
+if the message can be sent to an alternate recipient.
+
+\item[\verb|content\_return\_request|:]	A true/false flag indicating
+if the message content should be returned on delivery failure.
+
+\item[\verb|recip\_reassign\_prohibited|:] A flag indicating if the
+recipient may reassign the message to a new recipient.
+
+\item[\verb|dl\_expansion\_prohibited|:]	A flag indicating if the
+message may not be expanded into a distribution list.
+
+\item[\verb|conversion\_with\_loss\_prohibited|:]	A flag indicating if
+conversion is allowed even if it loses information.
+
+\item[\verb|ua\_id|:]	The user agent ID. This is a string that
+identifies the message to a user agent.
+
+\item[\verb|pp\_content\_correlator|:]	The internal version of the
+content correlator.
+
+\item[\verb|general\_content\_correlator|:]	The content correlator
+of the message.
+
+\item[\verb|originator\_return\_address|:]	The postal return
+address of the originator.
+
+\item[\verb|forwarding\_request|:]	An indication of whether
+the physical forwarding address should be returned to the originator.
+
+\item[\verb|originator\_certificate|:]	This element conveys the
+certificate of the originator when secuure messaging is being used.
+
+\item[\verb|algorithm\_identifier|:]	An indication of the
+encryption algorithm used for message encryption.
+
+\item[\verb|message\_origin\_auth\_check|:]	This element allows
+MTAs and recipients to \linebreak[3] authenticate the message origin.
+
+\item[\verb|security\_label|:]	A label indicating the security policy.
+
+\item[\verb|proof\_of\_submission|:]	An indication of whether proof
+of submission is \linebreak[3] required.
+
+\item[\verb|per\_message\_extensions|:]	A holder for any additional
+elements of the message.
+
+\item[\verb|Oaddress|:]	Should be empty for submission.
+
+\item[\verb|Raddress|:]	Should be empty for submission.
+
+\item[\verb|inbound|:]	The inbound channel/mta pair
+This is important as this controls authentication and authorisation.
+
+\item[\verb|msgid|:]	The MTS identifier of this message (P1 level).
+
+\item[\verb|trace|:]	The trace fields.
+
+\item[\verb|dl\_expansion\_history|:]	A trace of the distribution
+lists this message has been expanded by.
+
+\end{describe}
+
+\subsubsection{The Address structure}\index{addressing}
+
+The address structure contains all the information about each address.
+The structure is defined in the file \file{adr.h}.  The same structure
+is used for both Recipient and Originator address. The structure is
+shown in Figure~\ref{adr:struct}. There are a number of support
+routines that help construct addresses.
+
+The routine \verb|adr_new| creates a new address structure with some
+of the values filled in. This structure is the minimum necessary set
+of values to submit a recipient. To create an Originator, the
+responsibility bit \verb|ad_resp| should be set to false, and the
+status (\verb|ad_stat|) should be set to \verb|AD_STAT_DONE|.
+The routine is defined as:
+\begin{quote}\small\index{adr\_new}\begin{verbatim}
+ADDR *adr_new (str, type, rno)
+char *str;
+int type;
+int rno;
+\end{verbatim}\end{quote}
+The arguments to this call are
+\begin{describe}
+\item[\verb|str|:] The address in string format, either RFC~822 or the
+string form of the O/R name.
+\item[\verb|type|:] This is the type of address; it should be one of
+the values suitable for \verb|ad_type|.
+\item[\verb|rno|:] The recipient number. Set this to 0 if you do not
+care about this value.
+\end{describe}
+
+The routine \verb|ad_init| will initialise an \verb|ADDR| structure to
+its default values. It is defined as:
+\begin{quote}\small\index{adr\_init}\begin{verbatim}
+void adr_init (ap)
+ADDR *ap;
+\end{verbatim}\end{quote}
+
+The routine \verb|adr_add| adds an address onto the end of a linked
+list of addresses, or allocates the first node if the list is empty.
+\begin{quote}\small\index{adr\_add}\begin{verbatim}
+void adr_add (base, new)
+ADDR **base;
+ADDR *new;
+\end{verbatim}\end{quote}
+
+The routine \verb|adr_tfree| frees a list of addresses freeing of all
+allocated elements and the structures themselves.
+\begin{quote}\small\index{adr\_tfree}\begin{verbatim}
+void adr_tfree (ap)
+ADDR *ap;
+\end{verbatim}\end{quote}
+
+The routine \verb|adr_free| frees off all the allocated elements
+within a single address structure but does not free the structure
+itself.
+\begin{quote}\small\index{adr\_free}\begin{verbatim}
+void adr_free (ap)
+ADDR *ap;
+\end{verbatim}\end{quote}
+
+\bigskip
+
+\tagrindfile{adrstruct}{Address Structure}{adr:struct}
+
+Only the non-internal fields are described here:
+\begin{describe}\index{address structure}\index{ADDR}
+
+\item[\verb|ad\_extension|:]	The extension identifier for this address.
+
+\item[\verb|ad\_status|:]	The status of this address, one of:
+\[\begin{tabular}{|l|l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value}&
+		\multicolumn{1}{|c|}{\bf Meaning}\\
+\hline
+	\tt AD\_STAT\_PEND&	for recipients awaiting delivery\\
+	\tt AD\_STAT\_DONE&	for recipients not to be delivered to\\
+\hline
+\end{tabular}\]
+
+\item[\verb|ad\_dn|:]	The distinguished name component of the address.
+
+\item[\verb|ad\_usrreq|:]	This maps to the X.400 user request
+bits. It has the one of the following values:
+\[\begin{tabular}{|l|l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value}&
+		\multicolumn{1}{|c|}{\bf Meaning}\\
+\hline
+	\tt AD\_USR\_NOREPORT& 	No delivery reports requested\\
+	\tt AD\_USR\_BASIC& 	Delivery failutes should be reported\\
+	\tt AD\_USR\_CONFIRM&	Deliveries should be confirmed\\
+	\tt AD\_USR\_NONE&	Undefined value\\
+\hline
+\end{tabular}\]
+
+\item[\verb|ad\_explicitconversion|:]	Is explicit conversion
+required. It should be one of the values defined in
+Table~\ref{tbl:explicit}.
+
+\tagtable{explicit}{Table of Explicit Conversion Values}{tbl:explicit}
+
+\item[\verb|ad\_type|:]	The address type. This is one of the following
+values: 
+\[\begin{tabular}{|l|l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value}&
+		\multicolumn{1}{|c|}{\bf Meaning}\\
+\hline
+	\tt AD\_X400\_TYPE&	An X.400 format address\\
+	\tt AD\_822\_TYPE&	An RFC~822 format address\\
+	\tt AD\_ANY\_TYPE&	An address in any of the above formats\\
+\hline
+\end{tabular}\]
+
+\item[\verb|ad\_orig\_req\_alt|:]	The originator requested alternate
+recipient, if supplied.
+
+\item[\verb|ad\_req\_del|:]	The requested delivery method. This is
+an array of delivery method alternatives.
+
+\item[\verb|ad\_phys\_forward|:] If physical forwarding is allowed.
+
+\item[\verb|ad\_phys\_fw\_ad\_req|:]	A request to supply the
+physical forwarding address of the recipient.
+
+\item[\verb|ad\_phys\_modes|:] Specifies the type of delivery required.
+
+\item[\verb|ad\_reg\_mail\_type|:]	The type of registered mail in
+use.
+
+\item[\verb|ad\_recip\_number\_for\_advice|:]	The number for advice
+to call for delivery.
+
+\item[\verb|ad\_phys\_rendition\_attribute|:]	The physical rendition
+attributes for the \linebreak[3] address when transfered to the postal service.
+
+\item[\verb|ad\_pd\_report\_request|:] An option to supply a physical
+delivery report.
+
+\item[\verb|ad\_redirection\_history|:]	The redirection history for
+this address.
+
+\item[\verb|ad\_message\_token|:] A security parameter for message tokens.
+
+\item[\verb|ad\_content\_integrity|:]	A content integrity check parameter.
+
+\item[\verb|ad\_proof\_delvery|:]	Proof of delivery is requested.
+
+\item[\verb|ad\_resp |:]	The responsibility bit. This should be
+set to either \verb|TRUE| or \verb|FALSE|.
+
+\item[\verb|ad\_mtareq|:]	This maps to the X.400 MTA 
+report request bits. It should be set to one of the following:
+\[\begin{tabular}{|l|l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value}&
+		\multicolumn{1}{|c|}{\bf Meaning}\\
+\hline
+	\tt AD\_MTA\_NONE&	Undefined value\\
+	\tt AD\_MTA\_BASIC& 	Generate Delivery failures\\
+	\tt AD\_MTA\_CONFIRM&	Generate Delivery confirmations\\
+	\tt AD\_MTA\_AUDIT\_CONFIRM&	Generate full trace confirmations\\
+\hline
+\end{tabular}\]
+
+\item[\verb|ad\_subtype|:]	The subtype of the address if
+appropriate. This is only used for RFC~822 addresses at present. The
+values are:
+\[\begin{tabular}{|l|l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value}&
+		\multicolumn{1}{|c|}{\bf Meaning}\\
+\hline
+	\tt AD\_NOSUBTYPE&	No particular sub type\\
+	\tt AD\_JNT&		JANET style address\\
+	\tt AD\_REAL733&	RFC~733 style address\\
+	\tt AD\_REAL822&	RFC~822 style address\\
+\hline
+\end{tabular}\]	
+
+\item[\verb|ad\_pre\_recip\_ext\_list|:]	A list of extension
+attributes. 
+
+\item[\verb|ad\_value|:]	This is the address submitted.
+
+\item[\verb|ad\_next|:]	The link to the next address if they are in a
+linked list.
+\end{describe}
+
+\subsection{Reply Value Structure}
+
+The reply value buffer structure is shown in
+Figure~\ref{rpbuf:struct}. This is used in all handshakes with \pgm{submit}
+to return a status and an explanatory string.
+
+\tagrind[hbp]{rpbstruct}{Reply Structure}{rpbuf:struct}
+
+The structure here is:
+
+\begin{describe}\index{Reply structure}\index{RP\_Buf}
+\item[\verb|rp\_val|:]	The value returned; this is one of those
+defined in \file{retcode.h}.
+
+\item[\verb|rp\_line|:]	An optional explanatory string.
+\end{describe}
+
+\subsection {Procedure Calls}
+
+The submission interface is procedural and has a handshake at most of
+the interaction points. This interaction is reasonably complex but
+allows the submission to be flexible; this interface can be used to
+validate address as well as to submit message.
+
+Most of these routines return a set of codes as defined in
+\file{retcode.h} to indicate success or failure of the operation. The
+codes indicate detailed status and are shown in
+Table~\ref{tab:rpcodes}. Two macros are useful for determining the
+general status of the reply. The behave as though they were defined as:
+\begin{quote}\index{rp\_isgood}\index{rp\_isbad}\begin{verbatim}
+int rp_isgood (code)
+int code;
+
+int rp_isbad (code)
+int code;
+\end{verbatim}\end{quote}
+where ``code'' is the return code. The macros return boolean values of
+\verb|TRUE| if the code is generally good or bad respectively.
+
+\tagtable[hbtp]{rpcodes}{Return Codes}{tab:rpcodes}
+
+Along with other parameters, these routines usually take an
+\verb|RP_Buf|\index{RP\_Buf} structure which is updated with the code
+and an explanatory string if the routine fails in some way.
+
+\subsubsection{Initialisation}
+
+To initialise the submission system it is first necessary to call the
+routine \verb|io_init|:
+\begin{quote}\index{io\_init}\begin{verbatim}
+int io_init (rp)
+RP_Buf *rp;
+\end{verbatim}\end{quote}
+This call initialises the submission by either invoking \pgm{submit}
+as a child process or by connecting to a \pgm{submit} daemon. It
+returns a good or bad status, and fills in the \verb|rp| structure if
+the response is bad.
+
+\subsubsection{Message Management Parameters}
+
+The first set of parameters to negotiate with \pgm{submit} are the
+management parameters. These are defined in the structure in
+Figure~\ref{prm:struct} on page~\pageref{prm:struct}. This structure
+is passed over using the \verb|io_wprm| routine:
+\begin{quote}\index{io\_wprm}\begin{verbatim}
+int io_wprm (prm, rp)
+struct prm_vars *prm;
+RP_Buf *rp;
+\end{verbatim}\end{quote}
+The parameter structure is often only sparsely filled (or even empty),
+as the default values assumed are usually correct for most common
+submissions.
+
+\subsubsection{Per-Message Parameters}
+
+The next stage is the per-message parameters. This is achieved by
+filling in a \verb|Q_struct|\index{Q\_struct} structure and passing it
+to \pgm{submit}.
+Once the structure is complete it can be written to \pgm{submit} using the
+\verb|io_wrq| routine:
+\begin{quote}\index{io\_wrq}\begin{verbatim}
+io_wrq (qp, rp)
+Q_struct *qp;
+RP_Buf *rp;
+\end{verbatim}\end{quote}
+
+
+\subsubsection{Originator and Recipient Addresses}
+
+After the general parameters have been passed by the above routines,
+the send is passed over in the standardised address structure.
+The call to achieve this is the \verb|wr_adr| routine:
+\begin{quote}\index{io\_wadr}\begin{verbatim}
+int io_wadr (ap, type, rp)
+ADDR *addr;
+int  type;
+RP_Buf *rp;
+\end{verbatim}\end{quote}
+The type parameter is either \verb|AD_ORIGINATOR| or
+\verb|AD_RECIPIENT|.  First the originator address is passed over and
+checked followed by the list of recipients. This is then followed by
+each of the recipient addresses.  In this way, each address is checked
+and any failures can be pinpointed. 
+
+When all the addresses have been submitted, the address list is
+terminated with the call:
+\begin{quote}\index{io\_adend}\begin{verbatim}
+int io_adend (rp)
+RP_Buf *rp;
+\end{verbatim}\end{quote}
+This concludes the preliminaries, and the body of the message can be
+transferred.
+
+\subsubsection{Body Part Submission}
+
+The body parts presented are dependent on the type of message being
+transferred.  To initialise for body part submission, the following
+function is called:
+\begin{quote}\index{io\_tinit}\begin{verbatim}
+io_tinit (rp)
+RP_Buf *rp;
+\end{verbatim}\end{quote}
+This initialises for text submission.
+
+Following this call it is necessary to initialise for the first body
+part.  This is done by:
+\begin{quote}\index{io\_tpart}\begin{verbatim}
+int io_tpart (name, link, rp)
+char    *name;
+int     link;
+RP_Buf *rp;
+\end{verbatim}\end{quote}
+The name is the name of this part, for an RFC~822 body part it is
+usually something like \verb|hdr.822| and \verb|2.ia5| for the two
+parts of the message.  For X.400, it is more often just a single file
+\verb|p2| or similar with the whole of the message in. The link
+parameter is a Boolean value to indicate whether the name is actually
+a secret link to another file in the queue to be linked with \man
+link (2); this is only for use by special channels and normally will be
+rejected by \pgm{submit}. If the link is false, then the data stream
+is read for the body part contents.
+
+All Data is passed with the following routine:
+\begin{quote}\index{io\_tdata}\begin{verbatim}
+io_tdata (buffer, length)
+char *buffer;
+int  length;
+\end{verbatim}\end{quote}
+The buffer is a pointer to an array of characters of length \verb|length|,
+which are written into the file created by the \verb|io_tpart| call.
+
+Once the body part has been written, the
+data stream is terminated by the call:
+\begin{quote}\index{io\_tdend}\begin{verbatim}
+io_tdend (rp)
+RP_Buf  *rp;
+\end{verbatim}\end{quote}
+which closes the stream and returns the status in rp.
+
+\subsubsection{Termination}
+
+Once all the body parts have been passed over the message is finally
+submitted with the following call:
+\begin{quote}\index{io\_tend}\begin{verbatim}
+io_tend (rp)
+RP_Buf  *rp;
+\end{verbatim}\end{quote}
+This puts the message into the queue and allows it to be delivered.
+
+
+Finally, the whole session with \pgm{submit} can be terminated using
+the \verb|io_end| call. The termination can either be graceful, or a
+program can, upon detecting an error, call an abort to the submission
+process at any time with this function:
+\begin{quote}\index{io\_end}\begin{verbatim}
+int io_end (type)
+int type;
+\end{verbatim}\end{quote}
+The \verb|type| parameter is set to one of the following:
+\[\begin{tabular}{|l|l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value}&
+		\multicolumn{1}{|c|}{\bf Meaning}\\
+\hline
+	\tt OK&		The submission is successful\\
+	\tt NOTOK&	The submission should be aborted\\
+\hline
+\end{tabular}\]
+
+
+\subsection {Example}
+
+An example interaction with submit is shown in Figure~\ref{example:io}.
+
+\tagrindfile{io}{Example Interaction with Submit}{example:io}
+
+\section {The RFC~822 Interface}
+
+PP provides a full service interface, most of which is not needed by
+RFC~822-based systems.  A simplified interface is provided on top of
+the \verb|io_| interface.  This interface is characterised by procedure
+calls with the prefix \verb|pps_| for PP simple interface. 
+
+It assumes a large number of default parameters and does not allow for
+much variation.  It does provide an easy route for constructing
+\pgm{/bin/mail}-like programs and can be used within programs to fire off
+system generated messages.  This interface runs as a state machine,
+and the procedures must be called in the correct order to get the
+correct results.
+
+All routines return the constant \verb|NOTOK| on failure and \verb|OK|
+on success.  The \verb|NOTOK| is unrecoverable, and the interface must
+be started again from the beginning. All routines in addition take an
+\verb|RP_Buf| pointer which is updated if the call fails. This may be
+used to give better diagnostics.
+
+\subsection{Initialisation}
+
+To initialise this interface, a client program calls the
+\verb|pps_init| routine. This attempts to initialise the association
+with \pgm{submit}.
+\begin{quote}\index{pps\_init}\small\begin{verbatim}
+pps_init (subject, rp)
+char    *subject;
+RP_Buf  *rp;
+\end{verbatim}\end{quote}
+The parameters to this routine are:
+\begin{describe}
+
+\item[\verb|subject|:]	the subject line of the message, the constant
+\verb|NULLCP| may be used if no subject line is required.
+
+\item[\verb|rp|:] An \verb|RP_Buf| structure pointer that is updated
+if the call fails.
+\end{describe}
+
+The errors produced by this call are usually the result of some deep
+system problem, such as failing to connect with the \pgm{submit} process.
+
+\subsection{Addresses and Headers}
+
+To supply recipient addresses for the message, the routines
+\verb|pps_adr|, \verb|pps_to| and \verb|pps_cc| are called. The
+\verb|pps_adr| supplies a new address to the system for this message.
+Use of the \verb|pps_to| and \verb|pps_cc| routines switches the
+status of the address between that of primary recipient and secondary
+recipient (i.e., the To and CC header lines).
+\begin{quote}\index{pps\_adr}\index{pps\_to}\index{pps\_cc}\begin{verbatim}
+pps_adr (address, rp)
+char    *address;
+RP_Buf *rp;
+
+pps_to(rp)
+RP_Buf *rp;
+
+pps_cc(rp)
+RP_Buf *rp;
+\end{verbatim}\end{quote}
+The arguments are:
+\begin{describe}
+\item[\verb|address|:]	The recipient address as a legal RFC~822
+format address.
+
+\item[\verb|rp|:] An \verb|RP_Buf| structure pointer that is updated
+if the call fails.
+\end{describe}
+The possible errors from these calls usually arise from the failure to
+call \verb|pps_init|. The \verb|pps_to| and \verb|pps_cc| calls are
+entirely optional and may be interspersed with the \verb|pps_adr|
+calls in any order.
+
+Finally, when the addresses have all been submitted, the address phase
+is ended by calling \verb|pps_aend|.
+\begin{quote}\index{pps\_aend}\begin{verbatim}
+pps_aend (rp)
+RP_Buf *rp;
+\end{verbatim}\end{quote}
+
+At this stage, other headers may optionally be added by the
+\verb|pps_hdr| routine. This is normally not necessary as the header
+fields \verb|To|, \verb|Cc|, \verb|From|, and \verb|Date| will
+automatically be generated.
+\begin{quote}\index{pps\_hdr}\begin{verbatim}
+pps_hdr (name, contents, rp)
+char    *name,
+        *contents;
+RP_Buf *rp;
+\end{verbatim}\end{quote}
+
+If the message is only being submitted to one recipient, there is a
+shorthand form which replaces the routines from \verb|pps_init| up to
+and including the \verb|pps_tinit| call. This routine, \verb|pps_1adr|,
+is occasionally useful for submitting error reports to the system
+administrator or similar.
+\begin{quote}\index{pps\_1adr}\begin{verbatim}
+pps_1adr (subject, address, rp)
+char   *subject,
+       *address;
+RP_Buf *rp;
+\end{verbatim}\end{quote}
+The parameters to this routine are:
+\begin{describe}
+\item[\verb|subject|:] The subject of the message. As above this can
+be the constant \verb|NULLCP| for no subject.
+
+\item[\verb|address|:] The RFC~822 format recipient address
+\end{describe}
+
+\subsection{Text Submission}
+
+To add the body of the message, the routine \verb|pps_tinit| is called
+first to initialise for text. This terminates the header part of the
+message and prepares for the text to be submitted.
+\begin{quote}\index{pps\_tinit}\begin{verbatim}
+pps_tinit (rp)
+RP_Buf *rp;
+\end{verbatim}\end{quote}
+
+The text is then submitted in two ways. The first method is as a
+sequence of null terminated character strings using the \verb|pps_txt|
+routine. The second method is by passing an open file descriptor to
+the routine \verb|pps_file|.
+\begin{quote}\index{pps\_txt}\index{pps\_file}\begin{verbatim}
+pps_txt (string, rp)
+char *string;
+RP_Buf *rp;
+
+pps_file (fp, rp)
+FILE *fp;
+RP_Buf *rp;
+\end{verbatim}\end{quote}
+The parameters to these calls are:
+\begin{describe}
+\item[\verb|string|:]	A null terminated string of characters.
+
+\item[\verb|file|:] A stdio file stream opened for reading. This is
+read up to the end of file.
+\end{describe}
+These calls may be freely intermixed in any fashion.
+
+\subsection{Termination}
+
+To finally submit the message, it is necessary to call the routine
+\verb|pps_end|. This terminates the interaction for this message and
+resets the state. 
+\begin{quote}\index{pps\_end}\begin{verbatim}
+pps_end (status, rp)
+int status;
+RP_Buf *rp;
+\end{verbatim}\end{quote}
+The status parameter is either \verb|OK| if the submission 
+is satisfactory and \verb|NOTOK| if the submission is to be
+aborted. The \verb|NOTOK| version may be called at any point to
+abort the submission and return to the \verb|pps_init| state.
+
+\section {Debugging}\index{debugging}
+
+Most of the debugging can be done through the logs. Typically turning
+the logging levels to include trace and debug will give large amounts
+of information and will slow the processes down considerably! The
+system should not normally be run with full logging for these reasons.
+
+The use of the \verb|PP_TRACE|\index{PP\_TRACE} and
+\verb|PP_DBG|\index{PP\_DBG} macros described in Section~\ref{logging}
+on page~\pageref{logging} are very useful for inclusion in program
+text. the \verb|PP_TRACE| should be used to indicate the flow of
+control. Usually a \verb|PP_TRACE| call is included in each
+significant procedure call and typically displays the procedure name
+and any useful information about procedure arguments.
+
+The \verb|PP_DBG| macro is used anywhere that very detailed tracing
+might be needed such as printing out individual variables or similar.
+In particular, library routines usually use this macro to log tracing,
+as this sort of logging is not required as often as the tracing in
+programs.
+
+The \verb|PP_NOTICE|\index{PP\_NOTICE} call should be used when
+interesting events happen to allow the progress of the program to be
+monitored.
+
+The \verb|PP_PDUS|\index{PP\_PDUS} macro and the \verb|LLOG_PDUS|
+logging level should be used to log any protocol exchanges that might
+be of interest.

@@ -1,0 +1,40 @@
+\File{local\-bnf.bnf},{10:56},{Jul  4 1991}
+\L{\LB{}}
+\L{\LB{\<statementlist\> ::= \<statement\>}}
+\L{\LB{}\Tab{16}{\| \<statement\> \<statementlist\>}}
+\L{\LB{}}
+\L{\LB{\<statement\> ::= \<expression\> \S{}\";\"\SE{}}}
+\L{\LB{}\Tab{16}{\| \S{}\";\"\SE{}}}
+\L{\LB{}\Tab{16}{\| \S{}\"print\"\SE{} \<prexp\> \S{}\";\"\SE{}}}
+\L{\LB{}\Tab{16}{\| \S{}\"if\"\SE{} \<condition\> \<statement\>}}
+\L{\LB{}\Tab{16}{\| \S{}\"if\"\SE{} \<condition\> \<statement\> \S{}\"else\"\SE{} \<statement\>}}
+\L{\LB{}\Tab{16}{\| \S{}\"\{\"\SE{} \<statementlist\> \S{}\"\}\"\SE{}}}
+\L{\LB{}}
+\L{\LB{\<condition\> ::= \S{}\"(\"\SE{} \<expression\> \S{}\")\"\SE{}}}
+\L{\LB{}}
+\L{\LB{\<expression\> ::=  \S{}\"(\"\SE{} \<expression\> \S{}\")\"\SE{}}}
+\L{\LB{}\Tab{16}{\| \<expression\> \S{}\"==\"\SE{} \<regex\>}}
+\L{\LB{}\Tab{16}{\| \<expression\> \S{}\"!=\"\SE{} \<regex\>}}
+\L{\LB{}\Tab{16}{\| \<variable\> \S{}\"=\"\SE{} \<expression\>}}
+\L{\LB{}\Tab{16}{\| \<expression\> \S{}\"==\"\SE{} \<expression\>}}
+\L{\LB{}\Tab{16}{\| \<expression\> \S{}\"!=\"\SE{} \<expression\>}}
+\L{\LB{}\Tab{16}{\| \<expression\> \S{}\"\|\|\"\SE{} \<expression\>}}
+\L{\LB{}\Tab{16}{\| \<expression\> \S{}\"\&\&\"\SE{} \<expression\>}}
+\L{\LB{}\Tab{16}{\| \S{}\"!\"\SE{} \<expression\>}}
+\L{\LB{}\Tab{16}{\| [ \S{}\"ignore\"\SE{} ] \S{}\"file\"\SE{} \<string\>}}
+\L{\LB{}\Tab{16}{\| [ \S{}\"ignore\"\SE{} ] \S{}\"pipe\"\SE{} \<string\>}}
+\L{\LB{}\Tab{16}{\| \S{}\"exit\"\SE{} [ \<expression\> ]}}
+\L{\LB{}\Tab{16}{\| \<field\>}}
+\L{\LB{}\Tab{16}{\| \<variable\>}}
+\L{\LB{}\Tab{16}{\| \<string\>}}
+\L{\LB{}}
+\L{\LB{\<prexp\> ::= \<expression\>}}
+\L{\LB{}\Tab{16}{\| \<prexp\> \S{}\",\"\SE{} \<expression\>}}
+\L{\LB{}}
+\L{\LB{\<string\> ::= quoted string of characters (e.g., \S{}\"abced\"\SE{})}}
+\L{\LB{}}
+\L{\LB{\<variable\> ::= list of characters of the form [a\-zA\-Z\_][a\-zA\-Z0\-9\_]*}}
+\L{\LB{}}
+\L{\LB{\<field\> ::= \S{}\"\$(\"\SE{} list of characters and \- \S{}\")\"\SE{}}}
+\L{\LB{}}
+\L{\LB{\<regex\> ::= \S{}\"\/\"\SE{} regular expression (see regexp(3)) \S{}\"\/\"\SE{}}}

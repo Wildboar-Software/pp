@@ -1,0 +1,40 @@
+.TH PPTSAPD 8
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man8/RCS/pptsapd.8,v 6.0 1991/12/18 20:44:03 jpo Rel $
+.\"
+.\" $Log: pptsapd.8,v $
+.\" Revision 6.0  1991/12/18  20:44:03  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+pptsapd \- server for PP channels.
+.SH
+.in +.5i
+.ti -.5i
+/usr/lib/pp/pptsapd
+\%[-c\ address] \%[\-t\ tailor]
+.in -.5i
+(under rc.local)
+.SH DESCRIPTION
+.I Pptsapd
+is a server that listens for requests from the \fIqmgr\fP to start up
+particular channels. It is a PP specific version of the \fItsapd\fP(8)
+in actuality. Once the channel is identified, the program part of the
+channel is executed in standard ISODE style.
+.PP
+\fIPptsapd\fP responds to the following flag:
+.TP
+\-c address
+Specifies a different presentation address to listen on. It defaults
+to the value given in the PP tailor file.
+.TP
+\-t tailor
+Use the given file as a tailor file rather than the default.
+.SH FILES
+The PP tailor file
+.SH "SEE ALSO"
+qmgr(8), tsapd(8)
+.br
+\fIThe PP Manual: Volume 1 \- Installation and Operation\fP
+

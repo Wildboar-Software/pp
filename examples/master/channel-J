@@ -1,0 +1,59 @@
+############################################################
+#
+# This is an example channel table file for a JANET site. it contains
+# mappings of the basic top level domains to some relays. It is almost
+# certainly out of date and is incomplete. It should be replaced by
+# an NRS generated one as soon as possible
+# 
+############################################################
+#
+# If you have local smtp capabilities - change the following name to
+# a suitable host. Add more if required.
+#
+local-smtp-host-name:local-smtp-host-name(smtp)
+#
+#
+#Add some more local janet sites here!
+#
+cs.nott.ac.uk:cs.nott.ac.uk(gb-janet)
+cs.ucl.ac.uk:cs.ucl.ac.uk(gb-janet),cs.ucl.ac.uk(gb-pss)
+#
+# Top level relays
+#
+ie:earn-relay.ac.uk(gb-janet)
+arpa:nsf.ac.uk(gb-janet)
+nz:nsf.ac.uk(gb-janet)
+at:ean.ac.uk(gb-janet)
+au:ean.ac.uk(gb-janet)
+bitnet:earn-relay.ac.uk(gb-janet)
+ca:ean.ac.uk(gb-janet)
+cdn:ean.ac.uk(gb-janet)
+cern:ean.ac.uk(gb-janet)
+ch:ean.ac.uk(gb-janet)
+cern.ch:ean.ac.uk(gb-janet)
+chunet:ean.ac.uk(gb-janet)
+com:nsf.ac.uk(gb-janet)
+de:ean.ac.uk(gb-janet)
+dunet:ean.ac.uk(gb-janet)
+earn:earn-relay.ac.uk(gb-janet)
+edu:nsf.ac.uk(gb-janet)
+es:ean.ac.uk(gb-janet)
+fi:ean.ac.uk(gb-janet)
+fr:cs.ucl.ac.uk(gb-janet)
+funet:ean.ac.uk(gb-janet)
+gb:cs.ucl.ac.uk(gb-janet)
+gov:nsf.ac.uk(gb-janet)
+iris:ean.ac.uk(gb-janet)
+isanet:ean.ac.uk(gb-janet)
+kr:ean.ac.uk(gb-janet)
+mil:nsf.ac.uk(gb-janet)
+net:nsf.ac.uk(gb-janet)
+org:nsf.ac.uk(gb-janet)
+osiride:ean.ac.uk(gb-janet)
+pt:ean.ac.uk(gb-janet)
+riup:ean.ac.uk(gb-janet)
+se:ean.ac.uk(gb-janet)
+sunet:ean.ac.uk(gb-janet)
+surfnet:ean.ac.uk(gb-janet)
+uninett:ean.ac.uk(gb-janet)
+us:nsf.ac.uk(gb-janet)

@@ -1,0 +1,17 @@
+#!/bin/sh 
+#set -x
+
+CURR=`pwd`
+
+cd $CURR
+pwd
+
+TYPE=`ls $CURR | egrep "orig."`
+
+for x in $TYPE
+do
+	xnew=`echo $x | sed 's/orig.//'`
+	../progs/translate < $x > $xnew 
+done
+
+exit 0

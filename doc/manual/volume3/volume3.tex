@@ -1,0 +1,77 @@
+% -*- LaTeX -*-
+% run this through LaTeX
+
+% SEK - this is a PP document, designed to be easy to convert to 
+% an ISODE Manual Section if we want to
+
+\input lcustom
+
+\documentstyle[11pt,sfwmac,tgrind,twoside,a4]{report}
+
+\makeindex
+
+\input{dist-params}
+
+\newcount\volnum
+\volnum=3
+
+\pagenumbering{roman}
+
+\begin{document}
+
+\title{{\Huge\bf PP}\vskip 1.5em
+	\LARGE\sl Volume 3: Users Guide}
+\author{Pete Cowen \\
+X-Tel Services Ltd \and Julian Onions \\ X-Tel Services Ltd}
+
+
+\date{\ifdraft \versiondate/\\ \tt Draft Version \versiontag/
+	\else \today\\
+	(Version \ppversion/)\fi}
+
+\maketitle
+\newpage
+
+\thispagestyle{empty}
+\setcounter{page}{0}
+\mbox{}
+\newpage
+
+\tableofcontents
+
+%\listoftables
+
+\listoffigures
+
+% \include{preface}
+
+\newpage
+\ifodd\value{page} \else
+    \mbox{}
+    \newpage
+\fi
+\pagenumbering{arabic}
+
+% \part	{Introduction}
+% \include{introduction}
+
+% \part	{Using PP}
+\include{intro}
+\include{local}
+\include{lists}
+\include{utility}
+
+% \bibliography{bcustom,sfwdoc,networking}
+% \bibliographystyle{alpha}
+
+\input volume3.ind
+
+\clearpage
+\ifodd\value{page} \else
+    \mbox{}
+    \newpage
+\fi
+
+%\typeout{you can usually ignore the message about Label(s) may have changed}
+
+\end{document}

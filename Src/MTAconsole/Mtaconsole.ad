@@ -1,0 +1,670 @@
+Mtaconsole.normalfont:		-adobe-new century schoolbook-medium-r-normal--14-*
+Mtaconsole.activefont:		-adobe-new century schoolbook-bold-r-normal--14-*
+Mtaconsole.disabledfont:	-adobe-new century schoolbook-medium-i-normal--14-*
+
+Mtaconsole.mtsboth_chan:	last<2h,age<2h,vol<1M,num<100
+
+
+!configuration details
+
+!general
+Mtaconsole*top:	ChainTop
+Mtaconsole*bottom: ChainTop
+Mtaconsole*left:   ChainLeft
+Mtaconsole*right:   ChainLeft
+Mtaconsole*Form.borderWidth:	0
+Mtaconsole*Viewport.borderWidth:	0
+Mtaconsole*Box.borderWidth:		0
+Mtaconsole*Command.shapeStyle:		oval
+Mtaconsole*List.pasteBuffer:		  True
+
+#ifdef COLOR
+Mtaconsole*StripChart.foreground: red
+#endif
+
+Mtaconsole*StripChart*jumpScroll:	1
+Mtaconsole*StripChart*height:	75
+Mtaconsole*StripChart*width:	100
+Mtaconsole*runChansStripChart.minScale: 3
+
+!specfic
+
+Mtaconsole*mainvpane.right:		ChainRight
+Mtaconsole*mainvpane.bottom:		ChainBottom
+
+!command widgets
+
+Mtaconsole*generalCommands.showGrip:	False
+Mtaconsole*generalCommands.skipAdjust:	True
+
+Mtaconsole*refreshCommand.resizable:	True
+Mtaconsole*refreshCommand.accelerators:	#override\n\
+Meta<Key>R:				set() notify() unset()\n
+
+Mtaconsole*quitCommand.fromHoriz:	refreshCommand
+Mtaconsole*quitCommand.accelerators:	#override\n\
+Meta<Key>Q:				set() notify() unset()\n
+
+Mtaconsole*connectCommand.resizable:	True
+Mtaconsole*connectCommand.fromHoriz:	quitCommand
+Mtaconsole*connectCommand.accelerators: #override\n\
+Meta<Key>D:				set() notify() unset()\n\
+Meta<Key>C:				set() notify() unset()\n
+
+Mtaconsole*modeCommand.resizable:	True
+Mtaconsole*modeCommand.fromHoriz:	connectCommand
+Mtaconsole*modeCommand.accelerators:	#override\n\
+Meta<Key>M:				set() notify() unset()\n
+
+Mtaconsole*configCommand.fromHoriz:	modeCommand
+Mtaconsole*configCommand.accelerators:	#override\n\
+Meta<Key>F:				set() notify() unset()\n
+
+Mtaconsole*qcontrolCommand.fromHoriz:	configCommand
+
+!status form
+
+Mtaconsole*statusForm.showGrip:		False
+Mtaconsole*statusForm.skipAdjust:	True
+
+Mtaconsole*statusMainPane.orientation:	vertical
+Mtaconsole*statusMainPane.bottom:	ChainBottom
+
+Mtaconsole*statusMainPane*showGrip:	False
+Mtaconsole*statusMainPane*skipAdjust:	True
+
+Mtaconsole*statusPane.borderWidth:	0
+Mtaconsole*statusPane.orientation:	horizontal
+
+Mtaconsole*runChans.label:		runable chans
+Mtaconsole*runChans.borderWidth:	0	
+
+Mtaconsole*runChansStripChart.fromVert:	runChans
+
+Mtaconsole*.label:			qmgr ops/sec
+Mtaconsole*qOps.borderWidth:		0
+
+Mtaconsole*qOpsStripChart.fromVert:	qOps
+
+!status pane 2
+
+Mtaconsole*statusPane2.borderWidth:	0
+Mtaconsole*statusPane2.orientation:	horizontal
+!Mtaconsole*statusPane2.fromVert:	statusPane
+
+Mtaconsole*msgInPs.label:		msg in/sec
+Mtaconsole*msgInPs.borderWidth:		0	
+
+Mtaconsole*msgInPsStripChart.fromVert:	msgInPs
+
+Mtaconsole*msgOutPs.label:		msg out/sec
+Mtaconsole*msgOutPs.borderWidth:	0
+
+Mtaconsole*msgOutPsStripChart.fromVert:	msgOutPs
+
+Mtaconsole*statusFormEnd.fromHoriz:	statusMainPane
+Mtaconsole*statusFormEnd.borderWidth:	0
+Mtaconsole*statusFormEnd.right:		ChainRight
+Mtaconsole*statusFormEnd.bottom:	ChainBottom
+
+Mtaconsole*totalVolume.resizable:	True
+
+Mtaconsole*totalNumber.resizable:	True
+Mtaconsole*totalNumber.fromVert:	totalVolume
+
+Mtaconsole*timeLabel.resizable:		True
+Mtaconsole*timeLabel.borderWidth:	0
+Mtaconsole*timeLabel.fromVert:		totalNumber
+Mtaconsole*timeLabel.mappedWhenManaged: False
+
+Mtaconsole*headerLabel.resizable:	True
+Mtaconsole*headerLabel.borderWidth:	0
+Mtaconsole*headerLabel.fromVert:	timeLabel
+
+Mtaconsole*errorLabel.resizable:	True
+Mtaconsole*errorLabel.borderWidth:	0
+Mtaconsole*errorLabel.fromVert:		headerLabel
+Mtaconsole*errorLabel.mappedWhenManaged: False
+
+Mtaconsole*statLabel.resizable:		True
+Mtaconsole*statLabel.borderWidth:	0
+Mtaconsole*statLabel.fromVert:		errorLabel
+Mtaconsole*statLabel.mappedWhenManaged:	False
+
+!channel widgets
+
+Mtaconsole*channelForm.showGrip:	False
+Mtaconsole*channelForm.skipAdjust:	True
+
+Mtaconsole*channelHeader.borderWidth:	0
+Mtaconsole*channelHeader.label:		Channel commands
+
+Mtaconsole*channelCommands.width:	600
+Mtaconsole*channelCommands.vSpace:	0
+Mtaconsole*channelCommands.fromHoriz:	channelHeader
+
+Mtaconsole*channelNext.label:		++
+
+Mtaconsole*channelPrev.label:		--
+
+Mtaconsole*channelClear.label:		clear delay
+
+Mtaconsole*channelCacheadd.label:	add delay
+
+Mtaconsole*channelDownforce.label:	downward force attempt
+
+Mtaconsole*channelLabel.borderWidth:	0
+Mtaconsole*channelLabel.resizable:	True
+Mtaconsole*channelLabel.fromVert:	channelCommands
+
+Mtaconsole*channelForm2.defaultDistance: 0
+
+Mtaconsole*channelViewport.width:	 600
+Mtaconsole*channelViewport.height:	 120
+Mtaconsole*channelViewport.hSpace:	 0
+Mtaconsole*channelViewport.allowVert:	 True
+Mtaconsole*channelViewport.right:	 ChainRight
+Mtaconsole*channelViewport.bottom:	 ChainBottom
+
+Mtaconsole*channels.width:		 600
+Mtaconsole*channels*Label.translations:	 #override\n\
+<Btn1Up>:				 curChan() readChan()\n\
+<Btn2Up>:				 excl_curChan()\n\
+<Btn3Up>:				 readChan()\n
+
+Mtaconsole*channelAllViewport.width:	 600
+Mtaconsole*channelAllViewport.height:	 120
+Mtaconsole*channelAllViewport.hSpace:	 0
+Mtaconsole*channelAllViewport.allowVert: True
+Mtaconsole*channelAllViewport.right:	 ChainRight
+Mtaconsole*channelAllViewport.bottom:	 ChainBottom
+Mtaconsole*channelAllViewport.mappedWhenManaged: False
+
+!Mtaconsole*channelAll.mappedWhenManaged: False
+
+Mtaconsole*channelAllList.resizable:	  True
+Mtaconsole*channelAllList.forceColumns:	  True
+Mtaconsole*channelAllList.borderWidth:	  0
+Mtaconsole*channelAllList.right:	  ChainRight
+Mtaconsole*channelAllList.bottom:	  ChainBottom
+
+Mtaconsole*switchForm.defaultDistance:	 0
+
+!control widgets
+
+Mtaconsole*controlForm.defaultDistance:	0
+Mtaconsole*controlForm.right:		ChainRight
+Mtaconsole*controlForm.bottom:		ChainBottom
+
+Mtaconsole*controlVpane.resizable:	True
+Mtaconsole*controlVpane.borderWidth:	0
+Mtaconsole*controlVpane.bottom:		ChainBottom
+Mtaconsole*controlVpane.right:		ChainRight
+
+!mta widgets
+
+Mtaconsole*mtaForm.vSpace:		0
+Mtaconsole*mtaForm.hSpace:		0
+Mtaconsole*mtaForm.showGrip:		False
+Mtaconsole*mtaForm.skipAdjust:		True
+
+Mtaconsole*mtaDivider.borderWidth:	0
+Mtaconsole*mtaDivider.label:		Mta commands
+
+Mtaconsole*mtaCommands.width:		600
+Mtaconsole*mtaCommands.vSpace:		0
+Mtaconsole*mtaCommands.fromHoriz:	mtaDivider
+
+Mtaconsole*mtaNext.label:		++
+
+Mtaconsole*mtaPrev.label:		--
+
+Mtaconsole*mtaClear.label:		clear delay
+
+Mtaconsole*mtaCacheadd.label:		add delay
+
+Mtaconsole*mtaForce.label:		force attempt
+
+Mtaconsole*mtaDownforce.label:		downward force attempt
+
+Mtaconsole*mtaLabel.borderWidth:	0
+Mtaconsole*mtaLabel.resizable:		True
+Mtaconsole*mtaLabel.fromVert:		mtaCommands
+
+Mtaconsole*mtaForm2.defaultDistance:	0
+
+Mtaconsole*mtaViewport.width:		600
+Mtaconsole*mtaViewport.height:		120
+Mtaconsole*mtaViewport.hSpace:		0
+Mtaconsole*mtaViewport.allowVert:	True
+!commented out to stop flickering 
+!Mtaconsole*mtaViewport.allowHoriz:	True
+Mtaconsole*mtaViewport.right:		ChainRight
+Mtaconsole*mtaViewport.bottom:		ChainBottom
+
+Mtaconsole*mtas.width:			1
+Mtaconsole*mtas.height:			1
+Mtaconsole*mtas*Label.translations:	#override\n\
+<Btn1Up>:				curMta() readMta()\n\
+<Btn2Up>:				excl_curMta()\n\
+<Btn3Up>:				readMta()\n
+
+Mtaconsole*mtaAllViewport.width:	 600
+Mtaconsole*mtaAllViewport.height:	 120
+Mtaconsole*mtaAllViewport.hSpace:	 0
+Mtaconsole*mtaAllViewport.allowVert:	 True
+Mtaconsole*mtaAllViewport.right:	 ChainRight
+Mtaconsole*mtaAllViewport.bottom:	 ChainBottom
+Mtaconsole*mtaAllViewport.mappedWhenManaged: False
+
+!Mtaconsole*mtaAll.mappedWhenManaged: False
+
+Mtaconsole*mtaAllList.resizable:	  True
+Mtaconsole*mtaAllList.forceColumns:	  True
+Mtaconsole*mtaAllList.borderWidth:	  0
+Mtaconsole*mtaAllList.right:	  ChainRight
+Mtaconsole*mtaAllList.bottom:	  ChainBottom
+
+!msg widgets
+
+Mtaconsole*msgForm.showGrip:		False
+Mtaconsole*msgForm.skipAdjust:		True
+
+Mtaconsole*msgDivider.borderWidth:	0
+Mtaconsole*msgDivider.label:		Msg commands
+
+Mtaconsole*msgCommands.width:		600
+Mtaconsole*msgCommands.vSpace:		0
+Mtaconsole*msgCommands.fromHoriz:	msgDivider
+
+Mtaconsole*msgNext.label:		++
+
+Mtaconsole*msgPrev.label:		--
+
+Mtaconsole*msgShowall.label:		show all
+Mtaconsole*msgShowall.mappedWhenManaged: False
+Mtaconsole*msgClear.label:		clear delay
+
+Mtaconsole*msgCacheadd.label:		add delay
+
+Mtaconsole*msgForce.label:		force attempt
+
+Mtaconsole*msgLabel.borderWidth:	0
+Mtaconsole*msgLabel.resizable:		True
+Mtaconsole*msgLabel.fromVert:		msgCommands
+
+Mtaconsole*msgForm2.defaultDistance:	0
+
+Mtaconsole*msgViewport.width:		600
+Mtaconsole*msgViewport.height:		120
+Mtaconsole*msgViewport.hSpace:		0
+Mtaconsole*msgViewport.allowHoriz:	True
+Mtaconsole*msgViewport.allowVert:	True
+Mtaconsole*msgViewport.bottom:		ChainBottom
+Mtaconsole*msgViewport.right:		ChainRight
+
+Mtaconsole*msgs.width:			1
+Mtaconsole*msgs.height:			1
+Mtaconsole*msgs*Label.translations:	#override\n\
+<Btn1Up>:				curMsg() readMsg()\n\
+<Btn2Up>:				excl_curMsg()\n\
+<Btn3Up>:				readMsg()\n
+
+Mtaconsole*msgAllViewport.width:	 600
+Mtaconsole*msgAllViewport.height:	 120
+Mtaconsole*msgAllViewport.hSpace:	 0
+Mtaconsole*msgAllViewport.allowVert:	 True
+Mtaconsole*msgAllViewport.allowHoriz:	 True
+Mtaconsole*msgAllViewport.right:	 ChainRight
+Mtaconsole*msgAllViewport.bottom:	 ChainBottom
+Mtaconsole*msgAllViewport.mappedWhenManaged: False
+
+!Mtaconsole*msgAll.mappedWhenManaged: False
+
+Mtaconsole*msgAllList.resizable:	  True
+Mtaconsole*msgAllList.forceColumns:	  True
+Mtaconsole*msgAllList.borderWidth:	  0
+Mtaconsole*msgAllList.right:	  ChainRight
+Mtaconsole*msgAllList.bottom:	  ChainBottom
+
+!monitor widgets
+
+Mtaconsole*monitorViewport.allowVert:	True
+Mtaconsole*monitorViewport.allowHoriz:	True
+Mtaconsole*monitorViewport.right:	ChainRight
+Mtaconsole*monitorViewport.bottom:	ChainBottom
+
+Mtaconsole*monitorForm.defaultDistance:	0
+
+Mtaconsole*monitorForm.Form.Label.translations:	#override\n\
+<Btn1Up>:					chanModeRead()\n\
+<Btn2Up>:					chanMode()\n\
+<Btn3Up>:					chanRefresh()\n
+
+Mtaconsole*monitorForm.Form.Form.Label.translations:	#override\n\
+<Btn1Up>:						mtaModeRead()\n\
+<Btn2Up>:						mtaMode()\n\
+<Btn3Up>:						mtaRefresh()\n
+
+Mtaconsole*MonitorMTAForm.horizDistance:		20
+!popup widgets
+
+!qcontrol popup
+
+Mtaconsole*qcontrol.translations:	#override\n\
+<BtnUp>:				mymenupopdown()\n\
+<Leave>:				mymenupopdown()\n
+
+Mtaconsole*increaseMaxChannels.label:		++maximum channels
+Mtaconsole*decreaseMaxChannels.label:		--maximum channels
+
+Mtaconsole*enableSubmission.label:	enable submission
+
+Mtaconsole*disableSubmission.label:	disable submission
+
+Mtaconsole*enableAll.label:		enable all
+
+Mtaconsole*disableAll.label:		disable all
+
+Mtaconsole*rereadQ.label:		reread Q
+
+Mtaconsole*restartQmgr.label:		restart Qmgr
+
+Mtaconsole*gracefulStop.label:		graceful stop
+
+Mtaconsole*emergencyStop.label:		emergency stop
+
+!yesno popup
+
+Mtaconsole*yesnoOK.label:		ok
+Mtaconsole*yesnoOK.accelerators:	#override\n\
+<Key>Return:				set() notify() unset()\n
+
+Mtaconsole*yesnoNotok.label:		notok
+Mtaconsole*yesnoNotok.fromHoriz:	yesnoOK
+Mtaconsole*yesnoNotok.accelerators:	#override\n\
+Ctrl<Key>C:				set() notify() unset()\n
+
+!one popup
+
+Mtaconsole*oneOk.label:			ok
+Mtaconsole*oneOk.accelerators:		#override\n\
+<Key>Return:				set() notify() unset()\n
+
+Mtaconsole*oneNotok.label:		notok
+Mtaconsole*oneNotok.fromHoriz:		oneOk
+Mtaconsole*oneNotok.accelerators:	#override\n\
+Ctrl<Key>C:				set() notify() unset()\n
+
+Mtaconsole*oneForm*Label.borderWidth:	0
+Mtaconsole*oneForm*Label.resizable:	True
+
+Mtaconsole*oneLabelOne.fromVert:	oneOk
+
+Mtaconsole*oneTextOne.fromVert:		oneOk
+Mtaconsole*oneTextOne.fromHoriz:	oneLabelOne
+Mtaconsole*oneTextOne.resizable:	True
+Mtaconsole*oneTextOne*editType:		edit
+
+!two popup
+
+Mtaconsole*twoOk.label:			ok
+Mtaconsole*twoOk.accelerators:		#override\n\
+<Key>Return:				set() notify() unset()\n
+
+Mtaconsole*twoNotok.label:		notok
+Mtaconsole*twoNotok.fromHoriz:		twoOk
+Mtaconsole*twoNotok.accelerators:	#override\n\
+Ctrl<Key>C:				set() notify() unset()\n
+
+Mtaconsole*twoForm*Label.borderWidth:	0
+Mtaconsole*twoForm*Label.resizable:	True
+
+Mtaconsole*twoForm*Text*editType:	edit
+Mtaconsole*twoForm*Text.resizable:	True
+Mtaconsole*twoForm*Text*translations:	#override\n\
+<Key>Up:				previousField()\n\
+<Key>Down:				nextField()\n\
+<Key>Tab:				nextField()\n\
+<Btn1Down>:				thisField() select-start()\n
+
+Mtaconsole*twoLabelOne.fromVert:	twoOk
+
+Mtaconsole*twoTextOne.fromVert:		twoOk
+Mtaconsole*twoTextOne.fromHoriz:	twoLabelOne
+
+Mtaconsole*twoLabelTwo.fromVert:	twoLabelOne
+
+Mtaconsole*twoTextTwo.fromVert:		twoTextOne
+Mtaconsole*twoTextTwo.fromHoriz:	twoLabelOne
+
+!three popup
+
+Mtaconsole*threeForm*Label.borderWidth:	0
+Mtaconsole*threeForm*Label.resizable:	True
+
+Mtaconsole*threeForm*Text*editType:	edit
+Mtaconsole*threeForm*Text*resizable:	True
+Mtaconsole*threeForm*Text*translations:	#override\n\
+<Key>Up:				previousField()\n\
+<Key>Down:				nextField()\n\
+<Key>Tab:				nextField()\n\
+<Btn1Down>:				thisField() select-start()\n
+
+Mtaconsole*threeOk.label:		ok
+Mtaconsole*threeOk.accelerators:	#override\n\
+<Key>Return:				set() notify() unset()\n
+
+Mtaconsole*threeNotok.label:		notok
+Mtaconsole*threeNotok.fromHoriz:	threeOk
+Mtaconsole*threeNotok.accelerators:	#override\n\
+Ctrl<Key>C:				set() notify() unset()\n
+
+Mtaconsole*threeLabelOne.fromVert:	threeOk
+
+Mtaconsole*threeTextOne.fromVert:	threeOk
+Mtaconsole*threeTextOne.fromHoriz:	threeLabelOne
+
+Mtaconsole*threeLabelTwo.fromVert:	threeLabelOne
+
+Mtaconsole*threeTextTwo.fromVert:	threeTextOne
+Mtaconsole*threeTextTwo.fromHoriz:	threeLabelTwo
+
+Mtaconsole*threeLabelThree.fromVert:	threeLabelTwo
+
+Mtaconsole*threeTextThree.fromVert:	threeTextTwo
+Mtaconsole*threeTextThree.fromHoriz:	threeLabelThree
+
+!config popup
+
+Mtaconsole*configForm*Label.borderWidth:	0
+Mtaconsole*configForm*Label.resizable:	True
+
+Mtaconsole*configForm*Command.resizable:	True
+
+Mtaconsole*configForm*Text*editType:	edit
+Mtaconsole*configForm*Text.resizable:	True
+Mtaconsole*configForm*Text*translations:	#override\n\
+<Key>Up:					previousField()\n\
+<Key>Down:					nextField()\n\
+<Key>Tab:					nextField()\n\
+<Btn1Down>:					thisField() select-start()\n
+
+Mtaconsole*configOk.label:		ok
+Mtaconsole*configOk.accelerators:	#override\n\
+<Key>Return:				set() notify() unset()\n
+
+Mtaconsole*configNotok.label:		notok
+Mtaconsole*configNotok.fromHoriz:	configOk
+Mtaconsole*configNotok.accelerators:	#override\n\
+Ctrl<Key>C:				set() notify() unset()\n
+
+Mtaconsole*versionLabel.label:		This console is running
+Mtaconsole*versionLabel.fromVert:	configOk
+
+Mtaconsole*configVersion.fromVert:	configOk
+Mtaconsole*configVersion.fromHoriz:	versionLabel
+
+Mtaconsole*qmgrVersionLabel.label:	The qmgr is running
+Mtaconsole*qmgrVersionLabel.fromVert:	configVersion
+
+Mtaconsole*qmgrVersion.fromVert:	configVersion
+Mtaconsole*qmgrVersion.fromHoriz:	qmgrVersionLabel
+Mtaconsole*qmgrVersion.label:		???
+
+Mtaconsole*autoRefreshLabel.label:	Auto-Refresh
+Mtaconsole*autoRefreshLabel.fromVert:	qmgrVersionLabel
+
+Mtaconsole*autoRefreshToggle.fromVert:	qmgrVersionLabel
+Mtaconsole*autoRefreshToggle.fromHoriz:	autoRefreshLabel
+
+Mtaconsole*refreshIntervalLabel.fromHoriz:	autoRefreshToggle
+Mtaconsole*refreshIntervalLabel.fromVert:	qmgrVersionLabel
+Mtaconsole*refreshIntervalLabel.label:		Interval
+
+Mtaconsole*refreshIntervalText.fromVert:	qmgrVersionLabel
+Mtaconsole*refreshIntervalText.fromHoriz:	refreshIntervalLabel
+
+Mtaconsole*inactiveLabel.fromVert:		refreshIntervalText
+Mtaconsole*inactiveLabel.label:			Inactive timeout
+
+Mtaconsole*inactiveText.fromVert:		refreshIntervalText
+Mtaconsole*inactiveText.fromHoriz:		inactiveLabel
+
+Mtaconsole*autoReconnectLabel.label:		Auto-Reconnect
+Mtaconsole*autoReconnectLabel.fromVert:		inactiveText
+
+Mtaconsole*autoReconnectToggle.fromVert:	inactiveText
+Mtaconsole*autoReconnectToggle.fromHoriz:	autoReconnectLabel
+
+Mtaconsole*arStartLabel.label:			Interval
+Mtaconsole*arStartLabel.fromVert:		inactiveText
+Mtaconsole*arStartLabel.fromHoriz:		autoReconnectToggle
+
+Mtaconsole*arStartText.fromVert:		inactiveText
+Mtaconsole*arStartText.fromHoriz:		arStartLabel
+
+Mtaconsole*backOffLabel.label:			Back off
+Mtaconsole*backOffLabel.fromVert:		arStartText
+
+Mtaconsole*backOffToggle.fromVert:		arStartText
+Mtaconsole*backOffToggle.fromHoriz:		backOffLabel
+
+Mtaconsole*boIncLabel.fromVert:			arStartText
+Mtaconsole*boIncLabel.fromHoriz:		backOffToggle
+Mtaconsole*boIncLabel.label:			back off increment
+
+Mtaconsole*boIncText.fromVert:			arStartText
+Mtaconsole*boIncText.fromHoriz:			boIncLabel
+
+Mtaconsole*maxRCIntLabel.fromVert:		boIncText
+Mtaconsole*maxRCIntLabel.label:			Maximum reconnect interval
+
+Mtaconsole*maxRCIntText.fromVert:		boIncText
+Mtaconsole*maxRCIntText.fromHoriz:		maxRCIntLabel
+
+Mtaconsole*confPopupLabel.fromVert:		maxRCIntText
+Mtaconsole*confPopupLabel.label:		Confirmation popups
+
+Mtaconsole*confPopupToggle.fromVert:		maxRCIntText
+Mtaconsole*confPopupToggle.fromHoriz:		confPopupLabel
+
+Mtaconsole*compatPopupLabel.fromVert:		confPopupLabel
+Mtaconsole*compatPopupLabel.label:		Compatiblity with 5.0
+
+Mtaconsole*compatPopupToggle.fromVert:		confPopupLabel
+Mtaconsole*compatPopupToggle.fromHoriz:		compatPopupLabel
+
+Mtaconsole*inboundPopupLabel.fromVert:		compatPopupLabel
+Mtaconsole*inboundPopupLabel.label:		Badness for Inactive Inbounds
+
+Mtaconsole*inboundPopupToggle.fromVert:		compatPopupLabel
+Mtaconsole*inboundPopupToggle.fromHoriz:	inboundPopupLabel
+
+Mtaconsole*heurLabel.label:			Display heuristic used
+Mtaconsole*heurLabel.fromVert:			inboundPopupLabel
+
+Mtaconsole*heurToggle.fromVert:			inboundPopupLabel
+Mtaconsole*heurToggle.fromHoriz:		heurLabel
+Mtaconsole*heurToggle.accelerators:		#override\n\
+Meta<Key>H:					set() notify() unset()\n
+
+Mtaconsole*percentForm.fromVert:		heurToggle
+Mtaconsole*percentForm.right:			ChainRight
+Mtaconsole*percentForm.bottom:			ChainBottom
+
+Mtaconsole*percentLabel.label:			Percentage of bad mtas to display
+
+Mtaconsole*percentText.fromHoriz:		percentLabel
+
+Mtaconsole*numBadMtasLabel.label:		Minimum number of bad mtas to display
+Mtaconsole*numBadMtasLabel.fromVert:		percentText
+
+Mtaconsole*numBadMtasText.fromVert:		percentText
+Mtaconsole*numBadMtasText.fromHoriz:		numBadMtasLabel
+
+Mtaconsole*lineForm.fromVert:			heurToggle
+Mtaconsole*lineForm.right:			ChainRight
+Mtaconsole*lineForm.bottom:			ChainBottom
+
+Mtaconsole*lineLabel.label:			Maximum number of vertical lines per channel
+
+Mtaconsole*lineText.fromHoriz:			lineLabel
+
+!connect popup
+
+Mtaconsole*connectForm*Label.borderWidth:	0
+Mtaconsole*connectForm*Label.resizable:	True
+
+Mtaconsole*connectForm*Command.resizable:	True
+
+Mtaconsole*connectForm*Text*editType:	edit
+Mtaconsole*connectForm*Text*resizable:	True
+Mtaconsole*connectForm*Text*translations:	#override\n\
+<Key>Up:					previousField()\n\
+<Key>Down:					nextField()\n\
+<Key>Tab:					nextField()\n\
+<Btn1Down>:					thisField() select-start()\n
+
+Mtaconsole*connectOk.label:		ok
+Mtaconsole*connectOk.accelerators:	#override\n\
+<Key>Return:				set() notify() unset()\n
+
+Mtaconsole*connectNotok.label:		notok
+Mtaconsole*connectNotok.fromHoriz:	connectOk
+Mtaconsole*connectNotok.accelerators:	#override\n\
+Ctrl<Key>C:				set() notify() unset()\n
+
+Mtaconsole*connectToLabel.label:	Connect to
+Mtaconsole*connectToLabel.fromVert:	connectOk
+
+Mtaconsole*connectToText.fromVert:	connectOk
+Mtaconsole*connectToText.fromHoriz:	connectToLabel
+
+Mtaconsole*taiFileLabel.fromVert:	connectToText
+Mtaconsole*taiFileLabel.label:		Tailor file
+
+Mtaconsole*taiFileText.fromVert:	connectToText
+Mtaconsole*taiFileText.fromHoriz:	taiFileLabel
+
+Mtaconsole*authLabel.label:		Authentication
+Mtaconsole*authLabel.fromVert:		taiFileText
+
+Mtaconsole*authToggle.fromVert:		taiFileText
+Mtaconsole*authToggle.fromHoriz:	authLabel
+Mtaconsole*authToggle.accelerators:	#override\n\
+Meta<Key>A:				set() notify() unset()\n
+
+Mtaconsole*userLabel.label:		User name
+Mtaconsole*userLabel.fromVert:		authToggle
+
+Mtaconsole*userText.fromVert:		authToggle
+Mtaconsole*userText.fromHoriz:		userLabel
+
+Mtaconsole*passwdLabel.label:		User passwd
+Mtaconsole*passwdLabel.fromVert:	userText
+
+Mtaconsole*passwdText.fromHoriz:	passwdLabel
+Mtaconsole*passwdText.fromVert:		userText
+!wide enough for up to eight characters in normalfont (see above)
+Mtaconsole*passwdText.width:		120

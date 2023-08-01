@@ -1,0 +1,39 @@
+\begin{thebibliography}{CCI88}
+
+\bibitem[CCI84]{MHS}
+{Message Handling Systems: System Model-Service Elements}, October 1984.
+\newblock International Telegraph and Telephone Consultative Committee.
+
+\bibitem[CCI88]{CCITT.MHS}
+{Message Handling: System and Service Overview}.
+\newblock International Telegraph and Telephone Consultative Committee, 1988.
+\newblock Recommendation X.400.
+
+\bibitem[Cro82]{RFC822}
+David~H. Crocker.
+\newblock {Standard for the Format of ARPA Internet Text Messages}.
+\newblock Request for Comments 822, DDN Network Information Center, SRI
+  International, August 1982.
+
+\bibitem[Kil86]{ARPA.MHS}
+Stephen~E. Kille.
+\newblock {Mapping between X.400 and RFC822}.
+\newblock Request for Comments 987, DDN Network Information Center, SRI
+  International, June 1986.
+\newblock Also available as UCL Technical Report number~120 and Mailgroup Note
+  number~19.
+
+\bibitem[Kil88]{IFIP.PP}
+S.E. Kille.
+\newblock {PP} - a message transfer agent.
+\newblock In {\em IFIP WG 6.5 Conference on Message Handling Systems and
+  Distributed Applications}, pages 115--118. North Holland Publishing, October
+  1988.
+
+\bibitem[Kil89]{RFC1148}
+Stephen~E. Kille.
+\newblock {Mapping between X.400(1988)/ISO10021 and RFC822}.
+\newblock Request for Comments 1148, DDN Network Information Center, SRI
+  International, July 1989.
+
+\end{thebibliography}

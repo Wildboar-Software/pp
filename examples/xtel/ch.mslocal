@@ -1,0 +1,29 @@
+# 
+# This file maps names to accounts and directories for the message store
+##################################################
+#x-tel members
+P.Pat:pp
+c.robbins:cjr
+j.onions:jpo
+g.lunt:gal
+g.a.lunt:gal
+a.roadknight:avr
+a.v.roadknight:avr
+p.hennessy:pah
+p.a.hennessy:pah
+p.cowen:pac
+a.whitaker:antonia
+a.worsley:aworsley
+ms-aworsley:aworsley /tmp
+ms-avr:aworsley /tmp
+ms-gal:aworsley /tmp
+ms-g.a.lunt:gal
+ms-a.v.roadknight:avr
+ms-hugh:hugh
+ms-p.a.hennessy:pah
+ms-j.p.kitchen:jason
+ms-n.l.cook:nlc
+m.roe:mrr
+pactest:pp
+adam:local,username=pac
+activitymonitor:gas,home=/xtel/users/gas/actmon

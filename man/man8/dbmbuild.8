@@ -1,0 +1,49 @@
+.TH DBMBUILD 8
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man8/RCS/dbmbuild.8,v 6.0 1991/12/18 20:44:03 jpo Rel $
+.\"
+.\" $Log: dbmbuild.8,v $
+.\" Revision 6.0  1991/12/18  20:44:03  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+dbmbuild \- database builder for PP
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+dbmbuild \%[-nvdk] \%[database\ [table ...]] 
+.in -.5i
+.SH DESCRIPTION
+.I Dbmbuild
+reads the tables specified in the PP tailor file into a hashed
+database for use in quickly verifying addresses and efficiently assigning
+channels to submitted messages.  If no database file is specified, the
+default dbm filename is used from the PP tailor file.  If no table files
+are specified, all tables listed in the tailor file are used. 
+.PP
+The options are:
+.IP n
+Don't create a new database, attempt to add to an existing database.
+.IP v
+Verbose mode.  Print out each table as it is processed.
+.IP d
+Debug mode.  Report everything that happens (verbose).
+.IP k
+Keep going.  If a file is mentioned that doesn't exist, ignore it.
+It might be appropriate to make this the default at some sites.
+.PP
+Appropriate locks are placed on the database so that
+.I dbmbuild
+can safely be run while PP is in operation.
+.SH FILES
+.nf
+.ta \w'ppdbm.dir\0\0'u
+ppdbm.dir	database directory
+ppdbm.pag	database pages
+ppdbm.lck	database locking file
+.fi
+.SH "SEE ALSO"
+dbm(3X), dbmedit(8), dbmunbuild(8)
+.br
+\fIThe PP Manual: Volume 1 \- Installation and Operation\fP

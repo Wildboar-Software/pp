@@ -1,0 +1,24 @@
+\File{local\-examp.mf},{10:52},{Oct  5 1990}
+\L{\LB{PATH=\S{}\"\/\SE{}usr\S{}\/local\/\SE{}lib\S{}\/mh:\/\SE{}usr\S{}\/local\/\SE{}bin:\S{}\/usr\/\SE{}bin:\S{}\/bin:\/\SE{}usr\S{}\/ucb\"\SE{};}}
+\L{\LB{folder = FALSE;}}
+\L{\LB{if (\$(to) == \S{}\/jpo\/\SE{} \|\| \$(to) == \S{}\/onions\/\SE{}) \{}}
+\L{\LB{}\Tab{8}{pipe \S{}\"rcvstore +to\"\SE{}; folder = \S{}\"to\"\SE{};}}
+\L{\LB{\} else if (\$(sender) == \S{}\/bind\-request\/\SE{}) \{}}
+\L{\LB{}\Tab{8}{pipe \S{}\"rcvstore +bind\"\SE{}; folder = \S{}\"bind\"\SE{};}}
+\L{\LB{\} else if (\$(sender) == \S{}\/mailgroup\/\SE{}) \{}}
+\L{\LB{}\Tab{8}{pipe \S{}\"rcvstore +janet\/\SE{}mailgroup\S{}\"; folder = \"\SE{}janet\S{}\/mailgroup\"\SE{};}}
+\L{\LB{\} else if (\$(sender) == \S{}\/namedropper\/\SE{}) \{}}
+\L{\LB{}\Tab{8}{pipe \S{}\"rcvstore +mail\/\SE{}namedroppers\S{}\"; folder = \"\SE{}namedroppers\S{}\";}}
+\L{\LB{\} else if (\$(sender) == \/\SE{}pp.*\-request\S{}\/) \{}}
+\L{\LB{}\Tab{8}{pipe \"\SE{}rcvstore +pp\S{}\"; folder = \"\SE{}pp\S{}\";}}
+\L{\LB{\}}}
+\L{\LB{if (!delivered) \{}}
+\L{\LB{}\Tab{8}{pipe \"\SE{}rcvstore +inbox\S{}\";}}
+\L{\LB{}\Tab{8}{if (!delivered) \{}}
+\L{\LB{}\Tab{16}{ignore pipe \"\SE{}flagmail \-f \'DELIVERY FAILED\'\S{}\";}}
+\L{\LB{}\Tab{16}{exit (TEMPFAIL);}}
+\L{\LB{}\Tab{8}{\}}}
+\L{\LB{}\Tab{8}{folder = \"\SE{}inbox\S{}\";}}
+\L{\LB{\}}}
+\L{\LB{if (folder)}}
+\L{\LB{}\Tab{8}{ignore pipe \"\SE{}flgamail \-s \$(size) \-e \'\$(folder): \'\S{}\";}}

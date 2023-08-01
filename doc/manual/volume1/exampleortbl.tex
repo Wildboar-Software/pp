@@ -1,0 +1,41 @@
+\begin{quote}\footnotesize\begin{verbatim} 
+# A Truncated example of the UCL O/R Master Table
+#
+#       -*** United Kingdom ***-
+#
+C$GB:valid
+C$UK:alias C$GB
+C$US:valid
+ADMD$BTMHS.C$GB:valid
+ADMD$ .C$GB:valid
+ADMD$GOLD 400.C$GB:mta _DEFAULT_MTA_
+ADMD$GOLD-400.C$GB:alias ADMD$GOLD\ 400.C$GB
+ADMD$ATTMAIL.C$US:mta _DEFAULT_MTA_
+PRMD$UK\.AC.ADMD$GOLD 400.C$GB:valid
+PRMD$AC\.UK.ADMD$GOLD 400.C$GB:alias PRMD$UK\.AC.ADMD$GOLD\ 400.C$GB
+PRMD$UK\.AC.ADMD$BTMHS.C$GB:alias PRMD$UK\.AC.ADMD$GOLD\ 400.C$GB
+PRMD$UK\.CO.ADMD$GOLD 400.C$GB:valid
+PRMD$BDAC.ADMD$ .C$GB:mta _DEFAULT_MTA_
+PRMD$DTIIED.ADMD$GOLD 400.C$GB:mta _DEFAULT_MTA_
+O$UCL.PRMD$UK\.AC.ADMD$GOLD 400.C$GB:mta _DEFAULT_MTA_
+#
+#       -*** australian sites ***-
+C$AU:valid
+ADMD$OTCDIA.C$AU:valid
+ADMD$OTC.C$AU:valid
+PRMD$EDU.ADMD$OTCDIA.C$AU:mta _DEFAULT_MTA_
+PRMD$DITMELPP.ADMD$OTC.C$AU:mta _DEFAULT_MTA_
+#
+#       -*** french sites ***-
+C$FR:valid
+ADMD$PTT.C$FR:mta _DEFAULT_MTA_
+ADMD$ATLAS.C$FR:mta _DEFAULT_MTA_
+PRMD$REUNIR.ADMD$ATLAS.C$FR:mta _DEFAULT_MTA_
+#
+#	-*** usa sites ***-
+ADMD$UM.C$US:valid
+ADMD$ATT.C$US:valid
+PRMD$NREN.ADMD$UM.C$US:mta _DEFAULT_MTA_
+PRMD$ARC.ADMD$TELEMAIL.C$US:mta _DEFAULT_MTA_
+PRMD$WOLLONGONG.ADMD$ATT.C$US:mta _DEFAULT_MTA_
+\end{verbatim}\end{quote}

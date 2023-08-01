@@ -1,0 +1,18 @@
+############################################################
+#
+# Local channel table.
+#
+# This table maps address into usernames. For a simple
+# configuration just keep addresses and usernames
+# equivalent. Then to add new users to the system, just add
+# a line of the form
+# <username> ":" <key>=<value>
+# Most commonly username=<username-in-passwd-file>
+# 
+############################################################
+pp:username=pp
+#
+# Example user, J.Bloggs
+# Deliver with uid jb
+#
+J.Bloggs:username=jb

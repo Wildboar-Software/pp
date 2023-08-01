@@ -1,0 +1,9 @@
+tbl	aliases	show="Aliases: mapping -> local id",
+		flags=dbm,file=local-aliases
+tbl	domain	show="Mapping domain key ->full domain/MTA",
+		flags=dbm,override="xtel.co.uk:local"
+tbl	or	show="Mapping O/R Address -> MTA",flags=dbm
+tbl	or2rfc	show="RFC 987: X.400 -> RFC 822",flags=dbm
+tbl	rfc2or	show="RFC 987: RFC 822 -> X.400",flags=dbm
+tbl	channel	show="Binding MTA -> Channels",flags=dbm
+tbl	auth.qmgr show="Qmgr authorisation",flags=linear

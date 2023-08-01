@@ -1,0 +1,139 @@
+% -*- LaTeX -* Although it's slitex really
+
+\documentstyle[blackandwhite,pagenumbers,small,oval,psfig,tgrind]{NRslides}
+
+\raggedright
+
+\begin{document}
+\title	{ISODE/PP/QUIPU BOF}
+
+\author{Julian P.~Onions\\
+j.onions@xtel.co.uk\\[.5in]
+X-Tel Services Ltd.\\
+Nottingham University\\
+Nottingham NG7 2RD\\
+ENGLAND}
+
+\date	{March 19th, 1991}
+
+\maketitle
+
+\begin{bwslide}
+\ctitle{CONTENTS}
+\begin{nrtc}
+\item	Where are we now?
+	\begin{itemize}
+	\item	Current state of ISODE
+	\item	Current state of QUIPU
+	\item	Current state of PP
+	\end{itemize}
+
+\item	Whats coming up next?
+	\begin{itemize}
+	\item	What is happening to ISODE
+	\item	Where is QUIPU going
+	\item	what are the plans for PP
+	\end{itemize}
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Where are we now -- ISODE}
+\begin{nrtc}
+\item	6.0 is the official released version - released Jan 1990
+\item	6.8 is an interim version. Released March 1991.
+\item	7.0 is the next official release - when? (Anybodys guess)
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Changes in ISODE up to 6.8}
+\begin{nrtc}
+\item	New ASN.1 compiler (PEPSY)
+	\begin{itemize}
+	\item	Smaller code.
+	\item	faster?
+	\item Harder to debug!
+	\end{itemize}
+\item	Many many bug fixes
+\item	Some changes to smnp
+\item	Has shared libraries under SUN OS 4.1
+\item	DS can be used for bootstrapping now - DASED and IAED.
+\item	Application lookup using DS.
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Changes in Quipu up to 6.8}
+\begin{nrtc}
+\item	Changed to make use of pepsy (smaller binaries)
+\item	Internal data structures now stored as an AVL tree.
+\item	Indexing ability on sub-trees.
+\item	Spot shadowing of entries -- including a DSA mastering its own entry.
+\item	Attribute inheritance down the tree
+\item	DSA relaying
+\item	User friendly naming in the directory (UFN)
+\item	T.61 string handling
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Current state of PP}
+\begin{nrtc}
+\item	Current version is an interim 5.2 release.
+\item	Reasonably stable
+\item	Supports many protocols.
+	\begin{itemize}
+	\item	X.400 -- 1898 and 1988
+	\item	SMTP with DNS
+	\item	UUCP
+	\item	Local delivery
+	\item	Greybook
+	\item	Reformatting and interworking between all the above
+	\end{itemize}
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{ISODE -- things planned}
+\begin{nrtc}
+\item	Basically not very much.
+\item	Profiling and speeding up high on the agenda
+\item	TLI transport interface.
+\item	Maybe look at other ASN.1 encodings.
+\item	Bug fixing (as ever!)
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Changes to QUIPU planned}
+\begin{nrtc}
+\item	Alignment to Internet DSP (as per emerging RFC)
+\item	Management controls and Authorisation for operations.
+\item	DIT counting
+\item	DS for all lookups of ISODE applications
+\item	Strong authentication of operations 
+\end{nrtc}
+\end{bwslide}
+
+\begin{bwslide}
+\ctitle{Changes to PP planned}
+\begin{nrtc}
+\item	For 6.0 release
+	\begin{itemize}
+	\item	FAX gateway -- subject to the whims of manufacturers
+	\item	More robust, faster etc.
+	\item	Better support of deliver reports
+	\item	Channel pairing.
+	\end{itemize}
+\item	For 7.0 release
+	\begin{itemize}
+	\item	Integration with the directory for routing and name
+lookup.
+	\item	Most tables then optional.
+	\item	A P7/P7+/P3 message store available
+	\item	An X based X.400 user agent available with the release.
+	\end{itemize}
+\end{nrtc}
+\end{bwslide}
+\end{document}

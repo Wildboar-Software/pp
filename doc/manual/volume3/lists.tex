@@ -1,0 +1,544 @@
+% -*- LaTeX -*-
+
+\chapter {Distribution List Maintenance}
+
+\section{File based Distribution Lists}
+
+PP provides an interactive tool for maintaining distribution lists,
+\pgm{mlist}.
+This tool allows you, the user, to view, modify and generally manage
+the members of a given list. 
+What you are allowed to do to a list depends on the access rights
+set on that list.
+
+The access rights for a list are set when the one of the managers of that list
+first uses \pgm{mlist} to manage the list.
+There are four modes of access rights:
+\begin{description}
+\item [free:] Anyone can add or remove members of the list.
+\item [public:] Anyone can add themselves to or remove themselves from the list.
+\item [private:] Only managers of the list can add or remove members;
+\item [secret:] Only managers of the list can view or alter the members
+of a list.
+\end{description}
+If you are a manager of a list, the access rights are bypassed and you
+are given {\em free} access to the list.
+
+
+\subsection	{What you can and cannot do with \pgm{mlist}}
+
+For all modes of access except {\em free}, the maintenance of the
+list is done via a series of questions.
+For example:
+\begin{quote}\small\begin{verbatim}
+You (pac) are not in this list
+Do you wish to be added ? [y/n]
+\end{verbatim}\end{quote}
+
+With {\em free} access, the maintenance is done via a menu of options.
+\begin{description}
+
+\item [add:] A list of possible mail addresses is expected with this
+option (either following the add command or on the next line).
+\pgm{mlist} checks that each address is a valid mail address and
+that the normalised address does not already exist in the list.
+Addresses that pass both these tests are added to the list.
+
+\item [remove:] A regular expression is expected with this option.
+Any address that matches this expression is a candidate
+for removal from the list.
+\pgm{mlist} asks the user whether each candidate should be removed.
+
+\item [find:] As with the {\em remove} option, a regular
+expression is expected.
+Any address that matches the expressions is printed out.
+
+\item [verify:] This option goes through the list
+checking that each member is a valid mail address.
+\end{description}
+
+As well as these maintenance options, there are a few inspection
+options
+\begin{description}
+
+\item [print:] This option prints out all the information concerning
+the list.
+This information consists of  all the members of the list, the list
+moderator's mail address, and the user ids of the moderators of the list.
+
+\item [list:] This option displays all the lists known to the local PP system.
+Each list also has a short description of its purpose.
+
+\item [help:] This option displays all the options that are available
+to you.
+
+\end{description}
+
+If the list you require does not exist, there is one further
+option, {\tt create}.
+This option prompts you for all the details of the list you require
+and posts them to the postmaster.
+If the postmaster decides to grant you this list, he or she will then
+do the appropriate administration to create the list.
+Once the postmaster has done this, you can use \pgm{mlist} to
+manipulate the list.
+
+If you have done this and the list you requested now appears in the
+output of the \verb+list+ option but \pgm{mlist} still thinks it does
+not know 
+about that list, then it is possible that the postmaster overlooked
+creating an empty file to contain the list when he or she was adding
+the list to PP's tables.
+
+\subsection	{How \pgm{mlist} can run}
+
+\pgm{mlist} takes each list specified on the command line in turn, and
+enables you to modify it.
+If no lists are specified on the command line, \pgm{mlist} enters a loop.
+Within this loop, you choose the lists you wish to modify.
+When you have finished modifying the required lists, you can choose to
+{\tt quit} the loop and exit \pgm{mlist}.
+
+\pgm{mlist} can take several command line arguments:
+\begin{description}
+
+\item [-user 'username'] This specifies the username one wants to be
+known as when altering lists. Only privileged users can use this flag.
+
+\item [-uid 'userid'] This specifies the user Id one wants to be known
+as when altering lists. Only privileged users can use this flag.
+
+\item [-order 'domain order'] This specifies the preferred domain
+ordering to use when parsing addresses. This can be specified as:
+\begin{description}
+\item [usa] usa domain ordering ONLY.
+\item [uk] uk domain ordering ONLY.
+\item [usapref] usa domain ordering preferred.
+\item [ukpref] uk domain ordering preferred.
+\end{description}
+The default is usa domain ordering only.
+\end{description}
+
+\subsection	{\pgm{malias}.}
+
+The \pgm{malias} tool is a passive version of \pgm{mlist}.
+Using the \pgm{malias} tool, you can only view the members of specified lists.
+You are unable to modify, in any way, the contents of a list.
+
+\section{X.500 Directory based distribution lists}
+
+\newcommand{\option}[1]{``\verb|#1|''}
+
+Directory lists use the OSI directory to store the list of recipients.
+This has the advantage that the list can be easily viewed using any
+Directory User Agent (DUA), making the management task easier.  
+Some knowledge of the QUIPU Directory service is assumed.
+
+
+\subsection {The Basics}
+
+The manager of the system must set up a directory list in the user
+table for PP to be able to expand them. Once this is done, the
+maintenance of the list can be delegated to anyone with the
+appropriate permissions.  To set up a local directory based list
+called \verb+raboof+, an entry in the \file{users} table is needed.
+This should look something like
+
+\begin{quote}\index{dirlist}\begin{verbatim}
+raboof:dirlist lancaster.xtel.co.uk
+\end{verbatim}\end{quote}
+
+Each mail list needs a manager.  Typically this is the mail list name
+with \verb+-request+ appended, \verb+raboof-request+ in this case.
+So the PP \file{aliases} table may contain something like:
+
+\begin{quote}\begin{verbatim}
+raboof-request:alias c.robbins
+\end{verbatim}\end{quote}
+
+When mail for \verb+raboof+ comes in, the directory list channel is run
+The first action is to convert the \verb+raboof+ name into a Directory Name.
+First the ISODE \file{isoaliases} in the \file{ETCDIR} is consulted.  If
+there is an entry of the form
+
+\begin{quote}\begin{verbatim}
+raboof  "c=GB@o=Site@cn=The Raboof List"
+\end{verbatim}\end{quote}
+
+Then the given directory name is used.  If no such entry is found, then a 
+one level directory {\em search} operation is used.  The base of the
+search is defined by the \verb+local_DIT+ variable in the
+\file{dsaptailor} file in the \file{ETCDIR} directory.
+The search looks for entries belonging to the objectclass
+\verb|ppDistributionList|
+with a \verb+commonName+ attribute of \verb+raboof+.
+\footnote{\verb+raboof+ does not have to be the RDN of the entry, just an
+attribute. However you should ensure that the above search will only
+match one entry.  If in doubt use an alias.}
+
+Finally, the entry is read and the mail is delivered to the indicated
+recipients.
+
+\subsection{The DIT Entries for the list}
+
+The main entry, as described above must belong to the object class
+\verb+ppDistributionList+.  This has the following mandatory
+attributes:
+
+\begin{description}
+\item[\verb+mhsDLMembers+:] 
+	The ORName of members of the list.  Section~\ref{DL:ORName}
+	discusses the format of ORNames in detail.
+
+\item[\verb+owner+:]
+	The DN of the owner of the list.  Typically, this will be a
+	role entry for the \verb+-request+ of the list.  The object
+	class \verb+ppRole+ is useful for this as it allows you to
+	specify an \verb+mhsORAddress+ for the role.  A typical entry
+	might be:
+	\begin{quote}\footnotesize\begin{verbatim}
+cn= The Raboof List Manager
+cn= raboof-request
+roleOccupant= c=GB@o=X-Tel Services Ltd@cn=Colin Robbins
+mhsORAddresses= /S=Raboof-request/O=XTEL/PRMD=X-Tel Services/ADMD= /C=GB/
+	\end{verbatim}	\end{quote}
+
+\item[\verb+cn+:]
+	The name of the list.
+
+\item[\verb+mhsDLSubmitPermissions+:]
+	This defines who can send to the list.
+	The default is a special token \option{ALL} which permits
+	anybody to send mail to the list.  However it is
+	possible to restrict the use of the list. The syntax is:
+	\begin{quote}\begin{verbatim}
+<permission> ::= <group> | <individual> | \
+                 <member> | <pattern>
+<group> ::= 'GROUP #' <DN>
+	\end{verbatim}
+A member of the X.500 group \verb+DN+ can send to the list.
+	\begin{verbatim}
+<individual> ::= 'INDIVIDUAL #' <ORName>
+	\end{verbatim}
+The individual defined by \verb+ORName+ may send to the list.
+	\begin{verbatim}
+<member> ::= 'MEMBER #' <ORName>
+	\end{verbatim}
+A Member of the named list may send.
+This only works if the named list is also directory based.
+	\begin{verbatim}
+<pattern> ::= 'PATTERN #' <ORName>
+	\end{verbatim}
+Anybody whose ORName Matches the $<$ORName$>$ pattern can send.
+E.g., if $<$ORName$>$ was ``c=GB'', then only people in ``GB'' could send
+to the list.
+	\end{quote}
+\item[\verb+mhsORAddresses+:]
+	The mail address of the list, in this case
+	\begin{quote}\small\begin{verbatim}
+/S=raboof/O=XTEL/PRMD=X-Tel Ltd/ADMD= /C=GB/
+	\end{verbatim}\end{quote}
+\end{description}
+
+The optional attributes are listed below.
+
+\begin{description}
+\item[\verb+dl-policy+:]
+	The list delivery policy.
+	It is generally best to leave this to the default
+	value of: further list expansion allowed; use the original
+	parameter for the conversion prohibited header; 
+	use low priority.
+
+	To change the default the syntax is
+	\begin{quote}\begin{verbatim}
+<policy> ::= <expansion> $ <conversion> $ <priority>
+<expansion> ::= 'TRUE' | 'FALSE'  
+	\end{verbatim}
+If \verb+TRUE+ sub lists are also expanded.
+	\begin{verbatim}
+<conversion> ::= 'ORIGINAL' | 'TRUE' | 'FALSE'
+	\end{verbatim}
+Is message content conversion allowed.
+\verb+ORIGINAL+ implies use the parameter from the original message.
+	\begin{verbatim}
+<priority> ::= 'ORIGINAL' | 'HIGH' | 'LOW' | 'NORMAL'
+	\end{verbatim}
+The priority to use when delivering the message.
+\verb+ORIGINAL+ implies use the parameter from the original message.
+	\end{quote}
+\item[\verb+description+:]
+	A textual description of the list.
+\end{description}
+The following attributes may be present but are not used by the
+directory list channel.
+\begin{description}
+\item[\verb+o+:]
+	The associated organisation (if any)
+\item[\verb+ou+:]
+	The associated organisationalUnit (if any).
+\item[\verb+seeAlso+:]
+	A reference to another directory entry.
+\item[\verb+mhsDeliverableContentTypes+:]
+	Acceptable content types.
+\item[\verb+mhsdeliverableEits+:]
+	Acceptable encoded information types.
+\item[\verb+mhsPreferredDeliveryMethods+:]
+	A list of preferred delivery methods.
+\end{description}
+
+\subsection{ORNames}\label{DL:ORName}
+
+The most important part of directory lists is the originator-recipient
+name (ORName) of members of the list.
+An ORName consists of an optional directory name (DN), a dollar
+(\option{\$}) separator and an originator-recipient address (ORAddress).
+
+ORAddresses can be specified as text encoded X.400 addresses
+\begin{quote}\begin{verbatim}
+/S=Robbins/O=XTEL/PRMD=X-Tel Services/ADMD= /C=GB/
+\end{verbatim}\end{quote}
+or as rfc822 mail addresses 
+\begin{quote}\begin{verbatim}
+C.Robbins@xtel.co.uk
+\end{verbatim}\end{quote}
+In the later case, this will be converted into a X.400 style address.
+This conversion is useful as a short cut in giving all users with a
+\verb+rfc822mailbox+ attribute in the
+directory a \verb+mhsORAddress+ attribute.
+
+To specify an ORName as an ORAddress only (with no DN component) you
+need to precede the ORAddress with a \option{\$} symbol
+\footnote{If the programs were smart enough, this could probably be
+omitted in most cases, but it has the advantage of making the user
+think, and hopefully use a DN or UFN instead}.
+So, the above ORAddresses would become
+\begin{quote}\begin{verbatim}
+$ /S=Robbins/O=XTEL/PRMD=X-Tel Ltd/ADMD= /C=GB/
+\end{verbatim}\end{quote}
+and
+\begin{quote}\begin{verbatim}
+$ C.Robbins@xtel.co.uk
+\end{verbatim}\end{quote}
+as ORNames.
+It the \option{\$} is omitted, the interfaces will try to reverse map
+the mail address onto a DN --- If the user does have a directory
+entry, it often succeeds!
+
+It is much preferable to use a DN instead of a mail address.  The DN
+component can be specified in one of two ways, either as a fully
+qualified, QUIPU style DN:
+\begin{quote}\begin{verbatim}
+@c=GB@o=X-Tel Services Ltd@cn=Colin Robbins
+\end{verbatim}\end{quote}
+or as a UFN
+\begin{quote}\begin{verbatim}
+Robbins, xtel, GB
+\end{verbatim}\end{quote}
+Neither of these examples give an ORAddress.  The interfaces will
+determine this for themselves using the directory.
+If you do want to specify an address, then you can use the \option{\$}
+separator:
+\begin{quote}\begin{verbatim}
+Robbins, xtel, GB $ C.Robbins@xtel.co.uk
+\end{verbatim}\end{quote}
+
+\subsection{The DL tool}
+
+The program DL can be used to create and maintain the directory
+entries for list management, and is a very useful companion to the
+PP enhanced version of DISH.
+
+To invoke DL use the \pgm{dl} command.  It will read your
+\file{.quipurc} to obtain your directory username and password.
+The username can be changed with a \option{-u} flag, you will be
+prompted for a password.
+As with DISH you can request connection to a different DSA with the
+\option{-c} flag.
+
+DL attempts to interpret what you can do to the list in terms of your
+access rights, based on the DN you bound with.  If you are the DSA
+manager, you can use the  \option{-m} flag to tell DL you have full
+access rights.
+
+On entry to DL, typing a \option{?} will offer some limited help.
+
+When you enter DL you will be placed at the default position in the
+DIT, as defined by the variable \verb+local_DIT+ in the 
+\file{dsaptailor} file.  You can alter this using the \option{m}
+command, and supplying a UFN:
+
+\begin{quote}\begin{verbatim}
+> m
+Currently at 'X-Tel Services Ltd'
+Enter new location: cs, ucl, gb
+Searching...
+Found exact match(es) for 'GB'
+Found good match(es) for 'ucl'
+Found good match(es) for 'cs'
+Moved!
+>
+\end{verbatim}\end{quote}
+
+You can find out which lists exist at a given level in the DIT with
+the \option{l} option:
+\begin{quote}\begin{verbatim}
+> l
+Found the following lists:
+  GB Directory Pilot
+  JNT PP
+  JNT Quipu
+  X.500 Pilot Support
+  xtel
+>
+\end{verbatim}\end{quote}
+The \option{w} option will tell you which of those lists you are on.
+
+\subsection{Creating a List}
+
+A list can be created in one of two ways.  Either an existing PP file
+based list can be upgraded, or a list created from scratch.
+
+If you are bound to the directory as a ``normal'' user you will not
+have access rights to modify the directory.  So both for upgrading and
+list creation, the DL program will ask the user a few simple questions
+and then send a mail message to the postmaster.
+
+If you are bound as the DSA manager (using the \option{-m} start up
+flags to DL), the DL program will attempt to make the necessary
+changes to the directory for you.
+
+\subsubsection{Creating}
+
+To create a list use the \option{c} option. in the DL program.  You
+will be prompted for the name of the list, the owner of the list
+(UFN), and textual description.
+
+DL will create \verb+listname-request+ and \verb+listname+ 
+entries in the directory.
+
+Finally DL advises you to alter the PP tables to add 
+the new list.
+
+\subsubsection{Upgrading}
+
+Upgrading is achieved using the \option{u} option in the DL program.
+You will be asked for
+the name of the PP file based list.
+
+DL will create \verb+listname-request+ and \verb+listname+ 
+entries in the directory.
+The members of the list will be read from the file based list, and
+added into the directory list.  As many as possible will be reversed
+mapped into directory names.
+
+Finally DL tells advises you to alter the PP tables to change from a
+\verb+list+ to a \verb+dirlist+.
+
+
+\subsection{Managing a List}\label{DL:1list}
+
+Once created the DL program can be used to manage a list.  
+To manage the \verb+raboof+ list you can either invoke DL with the list name
+as an argument
+\begin{quote}\begin{verbatim}
+% dl raboof
+raboof>
+\end{verbatim}\end{quote}
+or run DL then give the list name 
+\begin{quote}\begin{verbatim}
+% dl 
+> raboof
+Reading 'raboof'...
+raboof> 
+\end{verbatim}\end{quote}
+In either case the new prompt will contain the list name.
+A \option{?} can be typed to obtain limited help.
+
+To add a member, simply enter the ORName, using the syntax described
+in Section~\ref{DL:ORName} at the ``listname'' prompt.
+
+The \option{p} option is used to print the members of the list.  If a DN
+is present, {\em only} the DN is printed.
+Each entry is preceded by a number.  This number can be used to
+reference the entry when using the \option{r} --- remove entry option,
+for example:
+\begin{quote}\begin{verbatim}
+raboof> p
+
+Owner: Colin Robbins
+
+Submit Permissions,   Entities matching the OR pattern:
+   X.400 Address: /C=GB/
+
+Entry has no dl-policy
+
+Members:
+ 1: Steve Hardcastle-Kille, Computer Science, 
+		   University College London
+ 2: Colin Robbins, X-Tel Services Ltd
+ 3: Julian Onions, X-Tel Services Ltd
+
+jnt-quipu> r
+give username to be removed: 2
+Remove Colin Robbins [y/n/d] ? n
+no
+\end{verbatim}
+The \option{d} option in the \option{[y/n/d]} prompt is used to display the
+directory entry (\option{y} for yes and \option{n} for no).
+\end{quote}
+Alternatively an ORName could be given, but as UFN is invoked, it may
+take too long to find to correct user.  Using numbers is quicker.
+
+Attributes such as the list policy, and submission policy can be
+changed using the \option{m} option.
+
+\subsection{Maintaining a List}
+From time to time mail addresses will change.  One of the advantages
+of the directory list is that such changes can to some extent be
+tracked \footnote{If the DN changes you are still in trouble!} as long
+as the directory is kept upto date.
+
+When accessing a particular list, the \option{c} and \option{v}
+commands to the DL program can be used to check or validate the list.
+The entry for each member of the list is checked for consistency.
+Each ORAddress is check to see if the local PP system thinks they are
+valid. If the ORName has a DN component, the given ORAddress is
+checked against the address given by the directory.  Using the
+\option{c} option errors are reported, using the \option{v} an attempt
+is made to update bad ORAddresses.
+
+You are advised to run ``check'' or ``validate'' on your lists regularly.
+Checking the lists can be done from \pgm{cron} using the \option{-v}
+option, for example:
+\begin{quote}\begin{verbatim}
+dl -v raboof
+\end{verbatim}\end{quote}
+This will warn (verbosely) of errors.  The \option{-q} option is useful
+to quieten DL down.  
+
+You can check all lists this way, by not specifying a list name, for
+example: 
+\begin{quote}\begin{verbatim}
+dl -v -q -m
+\end{verbatim}\end{quote}
+will (quietly) check all lists.  The \option{-m} flag is used here to
+tell DL it is in management mode. 
+Normally, the invoker of DL will be told of the errors in the list.
+When run at a site with a lot of lists, each with different managers, 
+it is often more useful to mail the list managers of the errors,
+rather than mail the invoker of DL.
+
+
+\subsection{Printing a List}
+
+When DL prints the members of a large list, a pager such as \pgm{more}
+will be used to prevent the list scrolling past.
+Sometimes this can get in the way, for example if you want to pipe the
+output onto a printer. 
+The \option{-p} flag to DL can be used to prevent this e.g.,
+\begin{quote}\begin{verbatim}
+dl -p raboof
+\end{verbatim}\end{quote}
+will cause DL to print the raboof list the the standard output, then
+exit.

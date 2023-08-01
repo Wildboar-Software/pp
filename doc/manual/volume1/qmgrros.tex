@@ -1,0 +1,528 @@
+\File{qmgrros.ry},{12:38},{Mar 25 1991}
+\L{\LB{\C{}\-\- qmgr.ry \- Qmgr operation definitions}}
+\CE{}\L{\LB{}}
+\L{\LB{Qmgr }}
+\L{\LB{\Proc{DEFINITIONS}DEFINITIONS ::=}}
+\L{\LB{BEGIN}}
+\L{\LB{}}
+\L{\LB{IMPORTS MPDUIdentifier FROM QmgrP1;}}
+\L{\LB{}}
+\L{\LB{\C{}\-\- EXPORTS everything}}
+\CE{}\L{\LB{}}
+\L{\LB{}}
+\L{\LB{\C{}\-\- PORTS}}
+\CE{}\L{\LB{qmgr\-use \K{OBJECT}}}
+\L{\LB{        PORTS \{ newmessage[S],}}
+\L{\LB{}\Tab{16}{readmsginfo[S],}}
+\L{\LB{}\Tab{16}{msginfo[C],}}
+\L{\LB{}\Tab{16}{channelinitialise[C],}}
+\L{\LB{}\Tab{16}{processmessage,}}
+\L{\LB{}\Tab{16}{channelbegin[S],}}
+\L{\LB{}\Tab{16}{readqueue[C],}}
+\L{\LB{                channelread[S],}}
+\L{\LB{}\Tab{16}{channelinfo[C],}}
+\L{\LB{}\Tab{16}{channelcontrol[S],}}
+\L{\LB{}\Tab{16}{mtaread[S],}}
+\L{\LB{}\Tab{16}{mtainfo[C],}}
+\L{\LB{}\Tab{16}{mtacontrol[S],}}
+\L{\LB{}\Tab{16}{qmgrstatus[S],}}
+\L{\LB{}\Tab{16}{readchannelmtamessage[S] \} ::= id\-pt\-qmgr\-use}}
+\L{\LB{}}
+\L{\LB{}}
+\L{\LB{activeChannel \K{OBJECT}}}
+\L{\LB{}\Tab{8}{        PORTS \{ channelinitialise, }}
+\L{\LB{}\Tab{24}{processmessage [S] \}}}
+\L{\LB{}\Tab{8}{::= id\-pt\-activeChannel}}
+\L{\LB{}}
+\L{\LB{passiveChannel \K{OBJECT}}}
+\L{\LB{}\Tab{8}{        PORTS \{ processmessage[S],}}
+\L{\LB{}\Tab{8}{                channelbegin[C] \}}}
+\L{\LB{}\Tab{8}{::= id\-pt\-passiveChannel}}
+\L{\LB{}}
+\L{\LB{submitProcess \K{OBJECT}}}
+\L{\LB{        PORTS \{ newmessage[C] \}}}
+\L{\LB{}\Tab{8}{::= id\-pt\-submitProcess}}
+\L{\LB{}}
+\L{\LB{queueReadProcess \K{OBJECT} }}
+\L{\LB{        PORTS \{ readqueue[S] \}}}
+\L{\LB{}\Tab{8}{::= id\-pt\-queueReadProcess}}
+\L{\LB{}}
+\L{\LB{managementUA \K{OBJECT} }}
+\L{\LB{}\Tab{8}{        PORTS \{ processmessage[C],}}
+\L{\LB{}\Tab{8}{                readmsginfo[C],}}
+\L{\LB{}\Tab{24}{msginfo[S],}}
+\L{\LB{}\Tab{8}{                channelread[C],}}
+\L{\LB{}\Tab{24}{channelinfo[S],}}
+\L{\LB{}\Tab{24}{channelcontrol[C],}}
+\L{\LB{}\Tab{8}{                mtaread[C],}}
+\L{\LB{}\Tab{24}{mtainfo[S],}}
+\L{\LB{}\Tab{8}{                mtacontrol[C],}}
+\L{\LB{}\Tab{24}{qmgrstatus[C],}}
+\L{\LB{}\Tab{24}{readchannelmtamessage[C] \}}}
+\L{\LB{}\Tab{8}{::= id\-pt\-managementUA}}
+\L{\LB{}}
+\L{\LB{\C{}\-\- OPERATIONS}}
+\CE{}\L{\LB{}}
+\L{\LB{}\Tab{32}{\C{}\-\- new message arrived}}
+\CE{}\L{\LB{}\Tab{32}{\C{}\-\- Submit \-\> QMGR}}
+\CE{}\L{\LB{newmessage OPERATION}}
+\L{\LB{}\Tab{8}{ARGUMENT MsgStruct}}
+\L{\LB{}\Tab{8}{RESULT NULL}}
+\L{\LB{}\Tab{8}{ERRORS \{ congested, protocol \}}}
+\L{\LB{}\Tab{8}{::= 0}}
+\L{\LB{}}
+\L{\LB{}\Tab{32}{\C{}\-\- read a message}}
+\CE{}\L{\LB{}\Tab{32}{\C{}\-\- Console \-\> QMGR}}
+\CE{}\L{\LB{}\Tab{32}{\C{}\-\- QMGR \-\> QMGR}}
+\CE{}\L{\LB{readmsginfo OPERATION}}
+\L{\LB{}\Tab{8}{ARGUMENT ReadMessageArgument}}
+\L{\LB{}\Tab{8}{RESULT MsgList}}
+\L{\LB{}\Tab{8}{ERRORS \{ congested, protocol \}}}
+\L{\LB{}\Tab{8}{LINKED \{msginfo\}}}
+\L{\LB{}\Tab{8}{::= 1}}
+\L{\LB{}}
+\L{\LB{}\Tab{32}{\C{}\-\- QMGR \-\> Console}}
+\CE{}\L{\LB{}\Tab{32}{\C{}\-\- Incremental update}}
+\CE{}\L{\LB{msginfo OPERATION}}
+\L{\LB{}\Tab{8}{ARGUMENT MsgList}}
+\L{\LB{}\Tab{8}{::= 10}}
+\L{\LB{}}
+\L{\LB{}\Tab{32}{\C{}\-\- processes a message}}
+\CE{}\L{\LB{}\Tab{32}{\C{}\-\- QMGR \-\> Channel}}
+\CE{}\L{\LB{processmessage OPERATION}}
+\L{\LB{}\Tab{8}{ARGUMENT ProcMsg}}
+\L{\LB{}\Tab{8}{RESULT DeliveryStatus}}
+\L{\LB{}\Tab{8}{ERRORS \{ congested, protocol \}}}
+\L{\LB{}\Tab{8}{::= 2}}
+\L{\LB{}}
+\L{\LB{}\Tab{32}{\C{}\-\- start up a channel}}
+\CE{}\L{\LB{}\Tab{32}{\C{}\-\- Channel \-\> QMGR}}
+\CE{}\L{\LB{channelbegin OPERATION}}
+\L{\LB{}\Tab{8}{ARGUMENT FilterList}}
+\L{\LB{}\Tab{24}{\C{}\-\- type of message requested}}
+\CE{}\L{\LB{}\Tab{8}{RESULT FilterList}}
+\L{\LB{}\Tab{24}{\C{}\-\- what you are going to get}}
+\CE{}\L{\LB{}\Tab{8}{ERRORS \{ congested, protocol \}}}
+\L{\LB{}\Tab{8}{::= 3}}
+\L{\LB{}}
+\L{\LB{}\Tab{32}{\C{}\-\- read the entire queue}}
+\CE{}\L{\LB{}\Tab{32}{\C{}\-\- QMGR \-\> Q reader}}
+\CE{}\L{\LB{readqueue OPERATION}}
+\L{\LB{}\Tab{8}{ARGUMENT NULL}}
+\L{\LB{}\Tab{8}{RESULT MsgList}}
+\L{\LB{}\Tab{8}{ERRORS \{ congested, protocol \}}}
+\L{\LB{}\Tab{8}{::= 4}}
+\L{\LB{}}
+\L{\LB{}\Tab{32}{\C{}\-\- read a channel}}
+\CE{}\L{\LB{}\Tab{32}{\C{}\-\- Console \-\> QMGR}}
+\CE{}\L{\LB{}\Tab{32}{\C{}\-\- get info at channel level}}
+\CE{}\L{\LB{channelread OPERATION}}
+\L{\LB{}\Tab{8}{ARGUMENT UTCTime}}
+\L{\LB{}\Tab{8}{RESULT ChannelReadResult}}
+\L{\LB{}\Tab{8}{ERRORS \{ congested, protocol \}}}
+\L{\LB{}\Tab{8}{LINKED \{chaninfo\}}}
+\L{\LB{}\Tab{8}{::= 5}}
+\L{\LB{}}
+\L{\LB{}\Tab{32}{\C{}\-\- QMGR \-\> Console}}
+\CE{}\L{\LB{}\Tab{32}{\C{}\-\- Incremental update}}
+\CE{}\L{\LB{chaninfo OPERATION}}
+\L{\LB{}\Tab{8}{ARGUMENT ChannelReadResult}}
+\L{\LB{}\Tab{24}{\C{}\-\- info on ALL channels}}
+\CE{}\L{\LB{}\Tab{8}{::= 11}}
+\L{\LB{}}
+\L{\LB{}\Tab{32}{\C{}\-\- control a channels behaviour}}
+\CE{}\L{\LB{}\Tab{32}{\C{}\-\- Console \-\> QMGR}}
+\CE{}\L{\LB{channelcontrol OPERATION}}
+\L{\LB{}\Tab{8}{ARGUMENT ChannelControl}}
+\L{\LB{}\Tab{8}{RESULT PrioritisedChannelList}}
+\L{\LB{}\Tab{8}{ERRORS \{ congested, protocol, noSuchChannel, illegalOperation,}}
+\L{\LB{}\Tab{16}{authenticationFailure\}}}
+\L{\LB{}\Tab{8}{::= 6}}
+\L{\LB{}}
+\L{\LB{}\Tab{32}{\C{}\-\- read about a mta}}
+\CE{}\L{\LB{}\Tab{32}{\C{}\-\- Console \-\> QMGR}}
+\CE{}\L{\LB{mtaread OPERATION}}
+\L{\LB{}\Tab{8}{ARGUMENT MtaRead}}
+\L{\LB{}\Tab{8}{RESULT PrioritisedMtaList}}
+\L{\LB{}\Tab{8}{ERRORS \{ congested, protocol, noSuchChannel \}}}
+\L{\LB{}\Tab{8}{LINKED \{mtainfo\}}}
+\L{\LB{}\Tab{8}{::= 7}}
+\L{\LB{}}
+\L{\LB{}\Tab{32}{\C{}\-\- QMGR \-\> Console}}
+\CE{}\L{\LB{}\Tab{32}{\C{}\-\- Incremental update}}
+\CE{}\L{\LB{mtainfo OPERATION}}
+\L{\LB{}\Tab{8}{ARGUMENT PrioritisedMtaList}}
+\L{\LB{}\Tab{8}{::= 12}}
+\L{\LB{}}
+\L{\LB{}\Tab{32}{\C{}\-\- control a mta}}
+\CE{}\L{\LB{}\Tab{32}{\C{}\-\- Console \-\> QMGR}}
+\CE{}\L{\LB{mtacontrol OPERATION}}
+\L{\LB{}\Tab{8}{ARGUMENT MtaControl}}
+\L{\LB{}\Tab{8}{RESULT MtaInfo}}
+\L{\LB{}\Tab{8}{ERRORS \{ congested, noSuchChannel, mtaNotInQueue,}}
+\L{\LB{ }\Tab{16}{authenticationFailure\}}}
+\L{\LB{}\Tab{8}{::= 8}}
+\L{\LB{}}
+\L{\LB{}\Tab{32}{\C{}\-\- control a message}}
+\CE{}\L{\LB{}\Tab{32}{\C{}\-\- Console \-\> QMGR}}
+\CE{}\L{\LB{msgcontrol OPERATION}}
+\L{\LB{}\Tab{8}{ARGUMENT MsgControl}}
+\L{\LB{}\Tab{8}{RESULT NULL}}
+\L{\LB{}\Tab{8}{ERRORS \{ congested, protocol, noSuchChannel, mtaNotInQueue,}}
+\L{\LB{ }\Tab{16}{authenticationFailure\}}}
+\L{\LB{}\Tab{8}{::= 13}}
+\L{\LB{}}
+\L{\LB{}\Tab{32}{\C{}\-\- QMGR \-\> Channel (process)}}
+\CE{}\L{\LB{channelInitialise OPERATION}}
+\L{\LB{}\Tab{8}{ARGUMENT Channel}}
+\L{\LB{}\Tab{8}{RESULT NULL}}
+\L{\LB{}\Tab{8}{ERRORS \{ congested, protocol, noSuchChannel\}}}
+\L{\LB{}\Tab{8}{::= 9}}
+\L{\LB{}}
+\L{\LB{qmgrControl OPERATION}}
+\L{\LB{}\Tab{8}{ARGUMENT QMGRControl}}
+\L{\LB{}\Tab{8}{RESULT NULL \C{}\-\- always works}}
+\CE{}\L{\LB{}\Tab{8}{ERRORS \{ congested, protocol, authenticationFailure\}}}
+\L{\LB{}\Tab{8}{::= 14}}
+\L{\LB{}}
+\L{\LB{readChannelMtaMessage OPERATION}}
+\L{\LB{}\Tab{8}{ARGUMENT MsgRead}}
+\L{\LB{}\Tab{8}{RESULT MsgList}}
+\L{\LB{}\Tab{8}{ERRORS \{ congested, protocol, noSuchChannel, mtaNotInQueue \}}}
+\L{\LB{}\Tab{8}{::= 15}}
+\L{\LB{}}
+\L{\LB{qmgrStatus OPERATION}}
+\L{\LB{}\Tab{8}{ARGUMENT NULL}}
+\L{\LB{}\Tab{8}{RESULT QmgrStatus}}
+\L{\LB{}\Tab{8}{ERRORS \{ congested, protocol \}}}
+\L{\LB{}\Tab{8}{::= 16}}
+\L{\LB{\C{}\-\- ERRORS}}
+\CE{}\L{\LB{}}
+\L{\LB{}\Tab{24}{\C{}\-\- congestion at the responder}}
+\CE{}\L{\LB{congested ERROR}}
+\L{\LB{}\Tab{8}{::=}\Tab{24}{0}}
+\L{\LB{}}
+\L{\LB{}\Tab{24}{\C{}\-\- unknown channel}}
+\CE{}\L{\LB{noSuchChannel ERROR}}
+\L{\LB{}\Tab{8}{::=}\Tab{24}{1}}
+\L{\LB{}}
+\L{\LB{}\Tab{24}{\C{}\-\- unknown operation}}
+\CE{}\L{\LB{illegalOperation ERROR}}
+\L{\LB{}\Tab{8}{::=}\Tab{24}{2}}
+\L{\LB{}}
+\L{\LB{}\Tab{24}{\C{}\-\- operation on mta makes no sense}}
+\CE{}\L{\LB{mtaNotInQueue ERROR}}
+\L{\LB{}\Tab{8}{::=}\Tab{24}{3}}
+\L{\LB{}}
+\L{\LB{}\Tab{24}{\C{}\-\- error in the protocol}}
+\CE{}\L{\LB{protocol ERROR}}
+\L{\LB{}\Tab{8}{::=}\Tab{24}{4}}
+\L{\LB{}}
+\L{\LB{authenticationFailure ERROR}}
+\L{\LB{}\Tab{8}{::= }\Tab{24}{5}}
+\L{\LB{}}
+\L{\LB{\C{}\-\- Bind Arguments}}
+\CE{}\L{\LB{}}
+\L{\LB{BindArgument ::= CHOICE \{}\Tab{32}{\C{}\-\- structure used in association request}}
+\CE{}\L{\LB{}\Tab{8}{noAuthentication [0] NULL,}}
+\L{\LB{}\Tab{8}{weakAuthentication [1] WeakAuthentication}}
+\L{\LB{}\Tab{8}{\}}}
+\L{\LB{}}
+\L{\LB{WeakAuthentication ::= SEQUENCE \{}}
+\L{\LB{}\Tab{8}{username [0] IA5String,}}
+\L{\LB{}\Tab{8}{passwd   [1] IA5String OPTIONAL}}
+\L{\LB{}\Tab{8}{\}}}
+\L{\LB{}}
+\L{\LB{BindResult ::= SEQUENCE \{}}
+\L{\LB{}\Tab{16}{result[0] ENUMERATED \{}\Tab{40}{\C{}\-\- result from the association request}}
+\CE{}\L{\LB{}\Tab{24}{acceptedLimitedAccess(0), \C{}\-\- accepted limited access}}
+\CE{}\L{\LB{}\Tab{24}{acceptedFullAccess(1)}\Tab{48}{  \C{}\-\- accepted full access}}
+\CE{}\L{\LB{}\Tab{16}{\},}}
+\L{\LB{}\Tab{16}{information[1] IA5String OPTIONAL,}}
+\L{\LB{}\Tab{16}{version[2] IA5String OPTIONAL}}
+\L{\LB{}\Tab{8}{\}}}
+\L{\LB{}}
+\L{\LB{}}
+\L{\LB{BindError ::= SEQUENCE \{}}
+\L{\LB{}\Tab{16}{reason[0] ENUMERATED \{}}
+\L{\LB{}\Tab{24}{badCredentials(0),}\Tab{48}{\C{}\-\- dont know this person}}
+\CE{}\L{\LB{}\Tab{24}{congested(1)}\Tab{48}{\C{}\-\- some system problem}}
+\CE{}\L{\LB{}\Tab{16}{\},}}
+\L{\LB{}\Tab{16}{information[1] IA5String OPTIONAL}}
+\L{\LB{}\Tab{8}{\}}}
+\L{\LB{}}
+\L{\LB{\C{}\-\- DATA TYPES}}
+\CE{}\L{\LB{}}
+\L{\LB{Mta ::= IA5String}}
+\L{\LB{}}
+\L{\LB{Channel ::= PrintableString}}
+\L{\LB{}}
+\L{\LB{Priority ::= ENUMERATED \{low(0), normal(1), high(2)\}}}
+\L{\LB{}\Tab{24}{\C{}\-\- Internal priorities COULD be different}}
+\CE{}\L{\LB{}\Tab{24}{\C{}\-\- to external ones}}
+\CE{}\L{\LB{}}
+\L{\LB{UAContentId ::= PrintableString}}
+\L{\LB{}}
+\L{\LB{ContentType ::= PrintableString}}
+\L{\LB{}}
+\L{\LB{EncodedInformationTypes ::= SEQUENCE OF PrintableString}}
+\L{\LB{}}
+\L{\LB{QID ::= PrintableString}}
+\L{\LB{}}
+\L{\LB{User ::= IA5String}}
+\L{\LB{}\Tab{24}{\C{}\-\- QMGR just sees users as strings.}}
+\CE{}\L{\LB{}\Tab{24}{\C{}\-\- This is 822 or \/= X.400 syntax}}
+\CE{}\L{\LB{}\Tab{24}{\C{}\-\- The caller must get the right form!}}
+\CE{}\L{\LB{}\Tab{24}{}}
+\L{\LB{}}
+\L{\LB{ReadMessageArgument ::= SEQUENCE \{}}
+\L{\LB{}\Tab{16}{filters  FilterList,}}
+\L{\LB{}\Tab{16}{interval UTCTime OPTIONAL}}
+\L{\LB{}\Tab{24}{\C{}\-\- interval for control of the LINKED operation}}
+\CE{}\L{\LB{}\Tab{16}{\}}}
+\L{\LB{}}
+\L{\LB{MsgList}\Tab{8}{::= SEQUENCE \{}}
+\L{\LB{}\Tab{16}{msgs SEQUENCE OF \K{\%}[ type\_Qmgr\_MsgStructList \K{\%}]}}
+\L{\LB{}\Tab{24}{MsgStruct,}}
+\L{\LB{}\Tab{16}{deleted SEQUENCE OF \K{\%}[ type\_Qmgr\_QidList \K{\%}] QID OPTIONAL}}
+\L{\LB{}\Tab{16}{\}}}
+\L{\LB{}}
+\L{\LB{ProcMsg ::= SEQUENCE \{}}
+\L{\LB{}\Tab{8}{qid QID,}}
+\L{\LB{}\Tab{8}{users UserList,}}
+\L{\LB{}\Tab{24}{\C{}\-\- if USER 0, do all outstanding DNs}}
+\CE{}\L{\LB{}\Tab{8}{channel Channel  \C{}\-\- Channel to apply}}
+\CE{}\L{\LB{}\Tab{16}{\C{}\-\- must be same for each user!}}
+\CE{}\L{\LB{}\Tab{16}{\C{}\-\- Warning and Expiry channels have \"special\" behaviour}}
+\CE{}\L{\LB{\}}}
+\L{\LB{}}
+\L{\LB{Control ::= CHOICE \{}}
+\L{\LB{}\Tab{16}{stop [0] NULL,}}
+\L{\LB{}\Tab{16}{start [1] NULL,}}
+\L{\LB{}\Tab{16}{cacheClear [2] NULL,}}
+\L{\LB{}\Tab{16}{cacheAdd [3] UTCTime \}}}
+\L{\LB{}}
+\L{\LB{ChannelControl ::=  SEQUENCE \{}}
+\L{\LB{}\Tab{16}{channel [0] Channel,}}
+\L{\LB{}\Tab{16}{control [1] Control }}
+\L{\LB{}\Tab{16}{\}}}
+\L{\LB{}}
+\L{\LB{MtaControl ::= SEQUENCE \{}}
+\L{\LB{}\Tab{16}{channel [0] Channel,}}
+\L{\LB{}\Tab{16}{mta [1] Mta,}}
+\L{\LB{}\Tab{16}{control [2] Control }}
+\L{\LB{}\Tab{16}{\}}}
+\L{\LB{}}
+\L{\LB{MsgControl ::= SEQUENCE \{}}
+\L{\LB{}\Tab{16}{qid [0] QID,}}
+\L{\LB{}\Tab{16}{users [1] UserList,}}
+\L{\LB{}\Tab{16}{control [2] Control}}
+\L{\LB{}\Tab{16}{\}}}
+\L{\LB{}}
+\L{\LB{UserList ::= SEQUENCE OF RecipientId}}
+\L{\LB{}}
+\L{\LB{RecipientId ::= INTEGER}}
+\L{\LB{}}
+\L{\LB{MsgStruct ::= SEQUENCE \{}}
+\L{\LB{}\Tab{8}{messageinfo}\Tab{24}{[0] PerMessageInfo,}}
+\L{\LB{}\Tab{8}{recipientlist}\Tab{24}{[1] SEQUENCE OF \K{\%}[ type\_Qmgr\_RecipientList \K{\%}]}}
+\L{\LB{}\Tab{32}{RecipientInfo}}
+\L{\LB{}\Tab{24}{\C{}\-\- only recipients with responsibility bit set}}
+\CE{}\L{\LB{}\Tab{24}{\C{}\-\- AND originator (recipient 0)}}
+\CE{}\L{\LB{}\Tab{24}{\C{}\-\- The originator is needed for DRs}}
+\CE{}\L{\LB{}\Tab{8}{\}}}
+\L{\LB{}\Tab{24}{}}
+\L{\LB{}}
+\L{\LB{PerMessageInfo ::= SEQUENCE \{}}
+\L{\LB{}\Tab{8}{queueid}\Tab{24}{[0] QID,}}
+\L{\LB{}\Tab{8}{mpduiden}\Tab{24}{[1] MPDUIdentifier,}}
+\L{\LB{}\Tab{8}{originator}\Tab{24}{[2] User,}}
+\L{\LB{}\Tab{8}{contenttype}\Tab{24}{[3] ContentType OPTIONAL,}}
+\L{\LB{}\Tab{8}{eit}\Tab{24}{[4] EncodedInformationTypes OPTIONAL,}}
+\L{\LB{}\Tab{8}{priority}\Tab{24}{[5] Priority,}}
+\L{\LB{}\Tab{8}{size}\Tab{24}{[6] INTEGER,}}
+\L{\LB{}\Tab{24}{\C{}\-\- size in bytes}}
+\CE{}\L{\LB{}\Tab{8}{age}\Tab{24}{[7] UTCTime,}}
+\L{\LB{}\Tab{8}{warnInterval}\Tab{24}{[8] INTEGER,}}
+\L{\LB{}\Tab{8}{numberWarningsSent [9] INTEGER,}}
+\L{\LB{}\Tab{8}{expiryTime }\Tab{24}{[10] UTCTime,}}
+\L{\LB{}\Tab{8}{deferredTime}\Tab{24}{[11] UTCTime OPTIONAL,}}
+\L{\LB{}\Tab{8}{uaContentId}\Tab{24}{[12] UAContentId OPTIONAL,}}
+\L{\LB{}\Tab{8}{errorCount}\Tab{24}{[13] INTEGER OPTIONAL,}}
+\L{\LB{}\Tab{8}{inChannel}\Tab{24}{[14] Channel OPTIONAL}}
+\L{\LB{}\Tab{8}{\}}}
+\L{\LB{}}
+\L{\LB{ProcStatus ::= }\Tab{16}{SEQUENCE \{}}
+\L{\LB{}\Tab{8}{enabled}\Tab{24}{[0] BOOLEAN,}}
+\L{\LB{}\Tab{8}{lastAttempt}\Tab{24}{[1] UTCTime OPTIONAL,}}
+\L{\LB{}\Tab{8}{cachedUntil}\Tab{24}{[2] UTCTime OPTIONAL,}}
+\L{\LB{}\Tab{8}{lastSuccess}\Tab{24}{[3] UTCTime OPTIONAL}}
+\L{\LB{}\Tab{8}{\}}}
+\L{\LB{}}
+\L{\LB{RecipientInfo ::= SEQUENCE \{}}
+\L{\LB{}\Tab{8}{user}\Tab{16}{ }\Tab{24}{[0] User,}}
+\L{\LB{}\Tab{8}{id}\Tab{24}{[1] RecipientId,}}
+\L{\LB{}\Tab{8}{mta}\Tab{24}{[2] Mta,}}
+\L{\LB{}\Tab{8}{channelList}\Tab{24}{[3] SEQUENCE OF \K{\%}[ type\_Qmgr\_ChannelList \K{\%}] Channel,}}
+\L{\LB{}\Tab{8}{channelsDone    [4] INTEGER,}}
+\L{\LB{}\Tab{32}{\C{}\-\- Number of channels processed}}
+\CE{}\L{\LB{}\Tab{32}{\C{}\-\- If EQUAL to the number of channels, }}
+\CE{}\L{\LB{}\Tab{32}{\C{}\-\- this implies DN is still pending}}
+\CE{}\L{\LB{}\Tab{8}{procStatus }\Tab{24}{[4] ProcStatus OPTIONAL,}}
+\L{\LB{}\Tab{8}{info}\Tab{24}{[5] IA5String OPTIONAL \}}}
+\L{\LB{}}
+\L{\LB{}}
+\L{\LB{FilterList ::= SEQUENCE OF Filter}}
+\L{\LB{}}
+\L{\LB{Filter ::= SEQUENCE \{}}
+\L{\LB{}\Tab{8}{contenttype}\Tab{24}{[0] ContentType OPTIONAL,}}
+\L{\LB{}\Tab{8}{eit}\Tab{24}{[1] EncodedInformationTypes OPTIONAL,}}
+\L{\LB{}\Tab{24}{\C{}\-\- message must have only specified types}}
+\CE{}\L{\LB{}\Tab{8}{priority}\Tab{24}{[2] Priority OPTIONAL,}}
+\L{\LB{}\Tab{24}{\C{}\-\- messages of this priority and above}}
+\CE{}\L{\LB{}\Tab{8}{moreRecentThan}\Tab{24}{[3] UTCTime OPTIONAL,}}
+\L{\LB{}\Tab{8}{earlierThan}\Tab{24}{[4] UTCTime OPTIONAL,}}
+\L{\LB{}\Tab{8}{maxSize}\Tab{24}{[5] INTEGER DEFAULT 0,}}
+\L{\LB{}\Tab{24}{\C{}\-\- size in bytes}}
+\CE{}\L{\LB{}\Tab{8}{originator}\Tab{24}{[6] User OPTIONAL,}}
+\L{\LB{}\Tab{8}{recipient}\Tab{24}{[7] User OPTIONAL,}}
+\L{\LB{}\Tab{8}{channel}\Tab{24}{[8] Channel OPTIONAL,}}
+\L{\LB{}\Tab{8}{mta}\Tab{24}{[9] Mta OPTIONAL,}}
+\L{\LB{}\Tab{8}{queueid}\Tab{24}{[10] QID OPTIONAL,}}
+\L{\LB{}\Tab{8}{mpduiden}\Tab{24}{[11] MPDUIdentifier OPTIONAL,}}
+\L{\LB{}\Tab{8}{uaContentId}\Tab{24}{[12] UAContentId OPTIONAL \}}}
+\L{\LB{}}
+\L{\LB{ChannelReadResult ::= SEQUENCE \{}}
+\L{\LB{}\Tab{8}{channels}\Tab{24}{[0] PrioritisedChannelList,}}
+\L{\LB{}\Tab{8}{load1}\Tab{24}{[1] INTEGER DEFAULT 0,}}
+\L{\LB{}\Tab{8}{load2}\Tab{24}{[2] INTEGER DEFAULT 0,}}
+\L{\LB{}\Tab{8}{currchans}\Tab{24}{[3] INTEGER DEFAULT 0,}}
+\L{\LB{}\Tab{8}{maxchans}\Tab{24}{[4] INTEGER DEFAULT 0\}}}
+\L{\LB{}}
+\L{\LB{PrioritisedChannelList ::= SEQUENCE OF PrioritisedChannel}}
+\L{\LB{}}
+\L{\LB{PrioritisedChannel ::= SEQUENCE \{}}
+\L{\LB{}\Tab{8}{channel}\Tab{16}{ChannelInfo,}}
+\L{\LB{}\Tab{8}{priority Priority \}}}
+\L{\LB{}}
+\L{\LB{ChannelInfo ::= SEQUENCE \{}}
+\L{\LB{}\Tab{8}{channel}\Tab{24}{[0] Channel,}}
+\L{\LB{}\Tab{8}{channelDescription [1] PrintableString,}}
+\L{\LB{}\Tab{8}{oldestMessage}\Tab{24}{[2] UTCTime,}}
+\L{\LB{}\Tab{8}{numberMessages}\Tab{24}{[3] INTEGER,    \C{}\-\- not including DRs}}
+\CE{}\L{\LB{}\Tab{8}{volumeMessages}\Tab{24}{[4] INTEGER,}\Tab{40}{\C{}\-\- bytes}}
+\CE{}\L{\LB{}\Tab{8}{numberActiveProcesses [5] INTEGER,}}
+\L{\LB{}\Tab{8}{status}\Tab{24}{[6] ProcStatus,}}
+\L{\LB{}\Tab{8}{numberReports   [7] INTEGER,}}
+\L{\LB{}\Tab{8}{direction}\Tab{24}{[8] BITSTRING \{}}
+\L{\LB{}\Tab{16}{inbound (0),}\Tab{32}{\C{}\-\- supports inbound traffic}}
+\CE{}\L{\LB{}\Tab{16}{outbound (1)}\Tab{32}{\C{}\-\- supports outbound traffic}}
+\CE{}\L{\LB{}\Tab{32}{\C{}\-\- both bits on =\> does both}}
+\CE{}\L{\LB{}\Tab{32}{\C{}\-\- both bits off is internal}}
+\CE{}\L{\LB{}\Tab{16}{\},}}
+\L{\LB{}\Tab{8}{chantype}\Tab{24}{[9] ENUMERATED \{}}
+\L{\LB{}\Tab{16}{mta (0),}\Tab{32}{\C{}\-\- is an MTA level channel}}
+\CE{}\L{\LB{}\Tab{16}{mts (1),}\Tab{32}{\C{}\-\- is an MTS level channel}}
+\CE{}\L{\LB{}\Tab{16}{internal (2),}\Tab{32}{\C{}\-\- is an internal channel (formatter etc)}}
+\CE{}\L{\LB{}\Tab{16}{passive (3)}\Tab{32}{\C{}\-\- responding channel?}}
+\CE{}\L{\LB{}\Tab{16}{\},}}
+\L{\LB{}\Tab{8}{maxprocs}\Tab{24}{[10] INTEGER DEFAULT 0,}}
+\L{\LB{}\Tab{8}{numberMtas}\Tab{24}{[11] INTEGER DEFAULT 0}}
+\L{\LB{}\Tab{8}{}}
+\L{\LB{}\Tab{8}{\}}}
+\L{\LB{}}
+\L{\LB{MtaRead ::= SEQUENCE \{}}
+\L{\LB{}\Tab{8}{channel Channel,}}
+\L{\LB{}\Tab{8}{time UTCTime OPTIONAL}}
+\L{\LB{}\Tab{8}{\}}}
+\L{\LB{}}
+\L{\LB{MsgRead ::= SEQUENCE \{}}
+\L{\LB{}\Tab{8}{channel Channel,}}
+\L{\LB{}\Tab{8}{mta Mta,}}
+\L{\LB{}\Tab{8}{time UTCTime OPTIONAL}}
+\L{\LB{}\Tab{8}{\}}}
+\L{\LB{}}
+\L{\LB{PrioritisedMtaList ::= SEQUENCE OF PrioritisedMta}}
+\L{\LB{}}
+\L{\LB{PrioritisedMta ::= SEQUENCE \{}}
+\L{\LB{}\Tab{8}{mta MtaInfo,}}
+\L{\LB{}\Tab{8}{priority Priority \}}}
+\L{\LB{}}
+\L{\LB{MtaInfo ::= SEQUENCE \{}}
+\L{\LB{}\Tab{8}{channel}\Tab{24}{[0] Channel,}}
+\L{\LB{}\Tab{8}{mta}\Tab{24}{[1] Mta,}}
+\L{\LB{}\Tab{8}{oldestMessage}\Tab{24}{[2] UTCTime,}}
+\L{\LB{}\Tab{8}{numberMessage}\Tab{24}{[3] INTEGER, \C{}\-\- not DRs}}
+\CE{}\L{\LB{}\Tab{8}{volumeMessages}\Tab{24}{[4] INTEGER,}}
+\L{\LB{}\Tab{8}{status}\Tab{24}{[5] ProcStatus,}}
+\L{\LB{}\Tab{8}{numberDRs}\Tab{24}{[6] INTEGER,}}
+\L{\LB{}\Tab{8}{active}\Tab{24}{[7] BOOLEAN DEFAULT FALSE,}}
+\L{\LB{}\Tab{8}{info}\Tab{24}{[8] IA5String OPTIONAL}}
+\L{\LB{}\Tab{8}{\}}}
+\L{\LB{}}
+\L{\LB{DeliveryStatus ::= SEQUENCE OF IndividualDeliveryStatus}}
+\L{\LB{}}
+\L{\LB{}}
+\L{\LB{IndividualDeliveryStatus ::=  SEQUENCE \{}}
+\L{\LB{}\Tab{8}{recipient [0] RecipientId,}}
+\L{\LB{}\Tab{8}{status}\Tab{16}{  [1] ENUMERATED \{}}
+\L{\LB{}\Tab{32}{  \C{}\-\- The QMGR should treat the following}}
+\CE{}\L{\LB{}\Tab{32}{  \C{}\-\- as successful.  In the latter cases}}
+\CE{}\L{\LB{}\Tab{32}{  \C{}\-\- a DR is processed in conjuction}}
+\CE{}\L{\LB{}\Tab{32}{  \C{}\-\- with a different recipient}}
+\CE{}\L{\LB{}\Tab{16}{success (0),}}
+\L{\LB{}\Tab{16}{successSharedDR (1),}}
+\L{\LB{}\Tab{16}{failureSharedDR (2),}}
+\L{\LB{}\Tab{8}{}}
+\L{\LB{}\Tab{32}{  \C{}\-\- The next set are treated by the}}
+\CE{}\L{\LB{}\Tab{32}{  \C{}\-\- QMGR as now having to send a DR}}
+\CE{}\L{\LB{}\Tab{16}{negativeDR (3),   \C{}\-\- negative DR}}
+\CE{}\L{\LB{}\Tab{16}{positiveDR (4),}\Tab{32}{  \C{}\-\- positive DR}}
+\CE{}\L{\LB{}\Tab{32}{  }}
+\L{\LB{}}
+\L{\LB{}\Tab{32}{  \C{}\-\- the final set are different types}}
+\CE{}\L{\LB{}\Tab{32}{  \C{}\-\- of transient failure, needing}}
+\CE{}\L{\LB{}\Tab{32}{  \C{}\-\- different QMGR retry strategies}}
+\CE{}\L{\LB{}\Tab{16}{messageFailure (5),\C{}\-\- temp failure on the Message (e.g. }}
+\CE{}\L{\LB{}\Tab{24}{  }\Tab{32}{  \C{}\-\- protocol temp reject)}}
+\CE{}\L{\LB{}\Tab{16}{mtaFailure (6),}\Tab{32}{  \C{}\-\- MTA failure (e.g. couldn\'t connect)}}
+\CE{}\L{\LB{}\Tab{16}{mtaAndMessageFailure (7)  \C{}\-\- Both (e.g. connection bust)}}
+\CE{}\L{\LB{}\Tab{16}{\},}}
+\L{\LB{}\Tab{8}{info[2] IA5String OPTIONAL}}
+\L{\LB{}\Tab{8}{\}}}
+\L{\LB{}}
+\L{\LB{}}
+\L{\LB{QMGRControl ::= SEQUENCE \{}}
+\L{\LB{}\Tab{8}{op [0] QMGROp}}
+\L{\LB{}\Tab{8}{\}}}
+\L{\LB{}}
+\L{\LB{QMGROp ::= ENUMERATED \{}}
+\L{\LB{}\Tab{8}{abort (0),}\Tab{24}{}}
+\L{\LB{}\Tab{8}{gracefulTerminate (1),}}
+\L{\LB{}\Tab{8}{restart (2),}\Tab{24}{\C{}\-\- as if from cold}}
+\CE{}\L{\LB{}\Tab{8}{rereadQueue (3),   \C{}\-\- but don\'t discard current information}}
+\CE{}\L{\LB{}\Tab{8}{disableSubmission (4),  \C{}\-\- Don\'t let processes submit}}
+\CE{}\L{\LB{}\Tab{8}{enableSubmission (5),}}
+\L{\LB{}\Tab{8}{disableAll (6),}}
+\L{\LB{}\Tab{8}{enableAll (7),}}
+\L{\LB{}\Tab{8}{increasemaxchans(8),}}
+\L{\LB{}\Tab{8}{decreasemaxchans(9) \}}}
+\L{\LB{}\Tab{8}{}}
+\L{\LB{}}
+\L{\LB{QmgrStatus ::= SEQUENCE \{}}
+\L{\LB{}\Tab{8}{boottime }\Tab{24}{UTCTime,}}
+\L{\LB{}\Tab{8}{messagesIn }\Tab{24}{INTEGER,}}
+\L{\LB{}\Tab{8}{messagesOut }\Tab{24}{INTEGER,}}
+\L{\LB{}\Tab{8}{addrIn}\Tab{24}{INTEGER,}}
+\L{\LB{}\Tab{8}{addrOut}\Tab{24}{INTEGER,}}
+\L{\LB{}\Tab{8}{opsPerSec }\Tab{24}{INTEGER,}\Tab{40}{\C{}\-\- * 100}}
+\CE{}\L{\LB{}\Tab{8}{runnableChans }\Tab{24}{INTEGER,}\Tab{40}{\C{}\-\- * 100}}
+\CE{}\L{\LB{}\Tab{8}{msgsInPerSec }\Tab{24}{INTEGER,}\Tab{40}{\C{}\-\- * 100}}
+\CE{}\L{\LB{}\Tab{8}{msgsOutPerSec }\Tab{24}{INTEGER,}\Tab{40}{\C{}\-\- * 100}}
+\CE{}\L{\LB{}\Tab{8}{maxChans }\Tab{24}{INTEGER,}}
+\L{\LB{}\Tab{8}{currChans }\Tab{24}{INTEGER,}}
+\L{\LB{}\Tab{8}{totalMsgs}\Tab{24}{INTEGER,}}
+\L{\LB{}\Tab{8}{totalVolume}\Tab{24}{INTEGER,}}
+\L{\LB{}\Tab{8}{totalDrs}\Tab{24}{INTEGER}}
+\L{\LB{}\Tab{8}{\}}}
+\L{\LB{END}}

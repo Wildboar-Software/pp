@@ -1,0 +1,52 @@
+.PS 5
+eighth = 1/8
+boxwid = 0.5
+boxht = 0.25
+arrowhead = 7
+arrowht = eighth/2
+define	user	X box "User"	X
+define	ua	X box "UA" wid 7/16 X
+define	mta	X box "MTA"	X
+MHE:	box dotted ht 4 + eighth wid 6.25
+	"Message Handling Environment" at MHE.nw + (eighth, -eighth) ljust
+MHS:	box ht 3.25 wid 4.5 with .s at MHE.s + (0,eighth)
+	"MHS" ljust at MHS.nw + (0.25, -0.25)
+MTS:	box dashed ht 2.5 wid 3 - eighth with .s at MHS.s + (0,eighth)
+	"MTS" ljust at MTS.nw + (0.25, -0.25)
+
+	user with .e at MHS.sw + (-eighth, 1)
+Ua1:	ua with .w at MHS.sw + (eighth, 1)
+	line <-> from 2nd last box.e to last box.w
+
+	user with .e at MHS.sw + (-eighth, 2)
+Ua2:	ua with .w at MHS.sw + (eighth, 2)
+	line <-> from 2nd last box.e to last box.w
+
+	user with .s at MHS.n + (0, eighth)
+Ua3:	ua with .n at MHS.n - (0,eighth)
+	line <-> from 2nd last box.s to last box.n
+
+	user with .w at MHS.se + (eighth,0.5)
+Ua4:	ua with .e at MHS.se + (-eighth, 0.5)
+	line <-> from 2nd last box.w to last box.e
+
+Mta1:	mta with .w at MTS.sw + (eighth, 1.25)
+	line <-> from Ua1.e to Mta1.sw
+	line <-> from Ua2.e to Mta1.nw
+
+Mta2:	mta with .n at MTS.n + (0, -eighth)
+	line <-> from Mta1.n to Mta2.w
+	line <-> from Mta2.n to Ua3.s
+
+Mta3:	mta with .e at MTS.se + (-eighth, 1.25)
+	line <-> from Mta2.e to Mta3.n
+	line <-> from Mta1.e to Mta3.w
+
+Mta4:	mta with .e at Ua4.w - (0.5,0)
+	line <-> from Mta4.e to Ua4.w
+	line <-> from Mta3.s to Mta4.n
+
+Mta5:	mta with .e at Mta4.w - (0.5,0)
+	line <-> from Mta4.w to Mta5.e
+	line <-> from Mta5.n to Mta1.s
+.PE

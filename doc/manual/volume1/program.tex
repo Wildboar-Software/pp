@@ -1,0 +1,76 @@
+% -*- LaTeX -*-
+% run this through LaTeX
+
+% SEK - this is a PP document, designed to be easy to convert to 
+% an ISODE Manual Section if we want to
+
+\input lcustom
+
+\documentstyle[11pt,draftnote,sfwmac,tgrind,twoside]{report}
+
+\makeindex
+
+\newcount\volnum
+\volnum=2
+
+\pagenumbering{roman}
+
+\begin{document}
+
+\title{{\Huge PP} \\
+	{\huge User's Manual}\vskip 1.5em
+	\LARGE\sl Volume 2: Programmers Guide}
+\author{Julian Onions \\ Nottingham University}
+
+
+\date{\ifdraft \versiondate/\\ \tt Draft Version \versiontag/\else \today\fi}
+
+\maketitle
+\newpage
+
+\thispagestyle{empty}
+\setcounter{page}{0}
+\mbox{}
+\newpage
+
+\tableofcontents
+\footnotetext[0]{\hskip -\parindent
+This document (version \versiontag/)
+was \LaTeX set \today\ with \fmtname\ v\fmtversion.}
+
+\listoftables
+
+\listoffigures
+
+% \include{preface}
+
+\newpage
+\ifodd\value{page} \else
+    \mbox{}
+    \newpage
+\fi
+\pagenumbering{arabic}
+
+% \part	{Introduction}
+% \include{introduction}
+
+% \part	{Programming PP}
+\include{general}
+\include{submission}
+\include{channels}
+\include{delivery}
+
+% \bibliography{bcustom,sfwdoc,networking}
+% \bibliographystyle{alpha}
+
+\input program.ind
+
+\clearpage
+\ifodd\value{page} \else
+    \mbox{}
+    \newpage
+\fi
+
+\typeout{you can usually ignore the message about Label(s) may have changed}
+
+\end{document}

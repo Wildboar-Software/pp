@@ -1,0 +1,43 @@
+\begin{quote}\footnotesize\begin{verbatim}
+#-**************************************
+#
+#
+# -*** UCL's default local entry ***- 
+# -*** this is different for every PP site ***- 
+# (lines folded for readability)
+default:lpsap='"591"/Internet=bells',lmta="UK.AC.UCL.CS",lpass=" "
+#
+#
+-*** NASA ***-
+#
+us-nasa:rmta="titan.arc.nasa.gov",
+  rpsap='"591"/Internet=128.102.128.5'
+#
+# -*** UCL ***-
+gb-ucl:rmta="UK.AC.UCL.CS",rpass=" ",
+  rpsap='"591"/X121+23421920030080'
+#
+# -*** when pid is specified, the rpsap format below is used ***-
+#
+eg_site1:rmta="SiteName1",
+  rpsap='"999"/Int-X25(80)=23421234005004+PID+03010100'
+#
+# -*** when more than one network address is specified ***-
+# -*** note the network addresses are seperated by '|' ***-
+#
+eg_site2:rmta="SiteName2",
+  rpsap='"400"/X121+23427351714799|X121+23428490013799'
+#
+# -*** when trynext is specified, the format below is used ***-
+#
+eg_site3:rmta="SiteName3",rpsap='"999"/X121+234212340050',
+  trynext="eg_site2"
+#
+# 
+au-manta:rmta="manta.cng.dit.csiro.au",rpass=" ",
+  rpsap='"591"/Int-X25(80)=50523343000180+PID+03010100|Internet=128.250.1.100'
+#
+#
+#
+#-**************************************
+\end{verbatim}\end{quote}

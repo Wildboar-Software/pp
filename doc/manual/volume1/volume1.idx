@@ -1,0 +1,824 @@
+\indexentry{doc}{viii}
+\indexentry{dbm}{2}
+\indexentry{X25 access}{2}
+\indexentry{ASN.1}{2}
+\indexentry{libdsap.a}{2}
+\indexentry{/bin/mail}{3}
+\indexentry{sendmail{}}{3}
+\indexentry{sendmail}{4}
+\indexentry{rsh{}}{4}
+\indexentry{pp-gen{}}{5}
+\indexentry{Make.defs}{5}
+\indexentry{config.h}{5}
+\indexentry{make}{5}
+\indexentry{CMDDIR}{5}
+\indexentry{CHANDIR}{5}
+\indexentry{FORMDIR}{5}
+\indexentry{filtercontrol}{5}
+\indexentry{TOOLDIR}{5}
+\indexentry{C}{7}
+\indexentry{C}{7}
+\indexentry{C}{7}
+\indexentry{pepy}{7}
+\indexentry{posy}{7}
+\indexentry{rosy}{7}
+\indexentry{pepsy}{7}
+\indexentry{lint {}}{7}
+\indexentry{chown{}}{7}
+\indexentry{chmod{}}{7}
+\indexentry{LOGDIR}{8}
+\indexentry{TAILOR}{8}
+\indexentry{libpp.a}{8}
+\indexentry{QUEDIR}{8}
+\indexentry{TBLDIR}{8}
+\indexentry{LIBSYS}{8}
+\indexentry{dbm {}}{8}
+\indexentry{LIBRESOLV}{8}
+\indexentry{USRBINDIR}{8}
+\indexentry{OPTIONALCHANS}{8}
+\indexentry{OPTIONALFILTERS}{9}
+\indexentry{FAXDRIVERS}{9}
+\indexentry{FAXPAGESIZE}{9}
+\indexentry{MANDIR}{9}
+\indexentry{MANOPTS}{9}
+\indexentry{CC}{10}
+\indexentry{C}{10}
+\indexentry{C}{10}
+\indexentry{gcc}{10}
+\indexentry{dbm}{10}
+\indexentry{cc}{10}
+\indexentry{OLDCC}{10}
+\indexentry{C}{10}
+\indexentry{gcc}{10}
+\indexentry{cc}{10}
+\indexentry{CCOPTIONS}{10}
+\indexentry{C}{10}
+\indexentry{LIBCCOPTIONS}{10}
+\indexentry{C}{10}
+\indexentry{LDOPTIONS}{10}
+\indexentry{ROSY}{10}
+\indexentry{POSY}{10}
+\indexentry{PEPY}{10}
+\indexentry{PEPSY}{10}
+\indexentry{pepy}{10}
+\indexentry{posy}{10}
+\indexentry{rosy}{10}
+\indexentry{pepsy}{10}
+\indexentry{X11}{10}
+\indexentry{true}{10}
+\indexentry{LIBX}{10}
+\indexentry{APPDEFAULTS}{10}
+\indexentry{LIBPHOTO}{10}
+\indexentry{xalert}{10}
+\indexentry{NOPHOTOS}{10}
+\indexentry{config.h}{10}
+\indexentry{LINT}{10}
+\indexentry{lint {}}{10}
+\indexentry{LINTFLAGS}{10}
+\indexentry{PGMPROT}{10}
+\indexentry{PPUSER}{10}
+\indexentry{ROOTUSER}{11}
+\indexentry{CHOWN}{11}
+\indexentry{chown {}}{11}
+\indexentry{CHMOD}{11}
+\indexentry{chmod {}}{11}
+\indexentry{BACKUP}{11}
+\indexentry{cp {}}{11}
+\indexentry{echo {}}{11}
+\indexentry{INSTALL}{11}
+\indexentry{cp {}}{11}
+\indexentry{install {}}{11}
+\indexentry{h/config.h}{11}
+\indexentry{DBM}{11}
+\indexentry{NDBM}{11}
+\indexentry{ndbm {}}{11}
+\indexentry{dbm {}}{11}
+\indexentry{ndbm {}}{11}
+\indexentry{dbm {}}{11}
+\indexentry{NAMESERVER}{11}
+\indexentry{HAS\_FSYNC}{11}
+\indexentry{fsync {}}{11}
+\indexentry{UKORDER}{11}
+\indexentry{VAT}{11}
+\indexentry{CHANDIR}{11}
+\indexentry{qmgr}{12}
+\indexentry{qmgr}{12}
+\indexentry{quedir}{12}
+\indexentry{qmgrload}{12}
+\indexentry{qmgr}{12}
+\indexentry{qmgr}{12}
+\indexentry{qmgr}{12}
+\indexentry{qmgrload}{12}
+\indexentry{qmgr}{12}
+\indexentry{quedir}{12}
+\indexentry{msg-clean}{12}
+\indexentry{qmgr}{12}
+\indexentry{trash}{12}
+\indexentry{quedir}{12}
+\indexentry{qmgr}{12}
+\indexentry{timeout}{12}
+\indexentry{dr2rfc}{12}
+\indexentry{warning}{12}
+\indexentry{splitter}{12}
+\indexentry{submit}{12}
+\indexentry{splitter}{12}
+\indexentry{822-local}{12}
+\indexentry{slocal}{12}
+\indexentry{users}{12}
+\indexentry{slocal}{12}
+\indexentry{smtp}{13}
+\indexentry{p2explode}{13}
+\indexentry{p2flatten}{13}
+\indexentry{p2explode}{13}
+\indexentry{P2toRFC}{13}
+\indexentry{RFCtoP2}{13}
+\indexentry{rfc934}{13}
+\indexentry{list}{14}
+\indexentry{list}{14}
+\indexentry{dirlist}{14}
+\indexentry{shell}{14}
+\indexentry{shell}{14}
+\indexentry{splitter}{14}
+\indexentry{fcontrol}{14}
+\indexentry{FORMDIR}{14}
+\indexentry{examples}{14}
+\indexentry{README}{14}
+\indexentry{smtp}{15}
+\indexentry{822-local}{15}
+\indexentry{list}{15}
+\indexentry{/bin/mail}{15}
+\indexentry{sendmail{}}{15}
+\indexentry{cron{}}{15}
+\indexentry{ckconfig {}}{15}
+\indexentry{ckconfig}{15}
+\indexentry{tailor}{16}
+\indexentry{tailor}{16}
+\indexentry{tailor}{16}
+\indexentry{Make.defs}{16}
+\indexentry{tailor}{16}
+\indexentry{Make.defs}{16}
+\indexentry{tailor}{16}
+\indexentry{tailor}{16}
+\indexentry{ckconfig {}}{16}
+\indexentry{ckconfig}{16}
+\indexentry{tailor}{16}
+\indexentry{ckconfig}{16}
+\indexentry{tailoring, variables}{17}
+\indexentry{tailor}{17}
+\indexentry{tailoring, simple}{17}
+\indexentry{tailor}{17}
+\indexentry{loc\_dom\_mta}{17}
+\indexentry{loc\_dom\_site}{17}
+\indexentry{domain}{17}
+\indexentry{loc\_or}{17}
+\indexentry{or}{17}
+\indexentry{Note}{17}
+\indexentry{qmgrhost}{17}
+\indexentry{hostname {}}{17}
+\indexentry{isoentities}{17}
+\indexentry{submit}{17}
+\indexentry{Submit}{17}
+\indexentry{qmgr-pa.cache}{17}
+\indexentry{isoentities}{17}
+\indexentry{postmaster}{17}
+\indexentry{bodypart}{18}
+\indexentry{headertype}{18}
+\indexentry{pptsapd\_addr}{18}
+\indexentry{pptsapd}{18}
+\indexentry{qmgr}{18}
+\indexentry{pptsapd}{18}
+\indexentry{pptsapd}{18}
+\indexentry{cmddir}{18}
+\indexentry{tbldir}{18}
+\indexentry{dbmbuild}{18}
+\indexentry{linear}{18}
+\indexentry{quedir}{18}
+\indexentry{logdir}{18}
+\indexentry{chandir}{18}
+\indexentry{chans}{18}
+\indexentry{cmddir}{18}
+\indexentry{cmddir}{18}
+\indexentry{formdir}{18}
+\indexentry{fcontrol}{18}
+\indexentry{format}{18}
+\indexentry{cmddir}{18}
+\indexentry{cmddir}{18}
+\indexentry{dbm}{19}
+\indexentry{tbldir}{19}
+\indexentry{ppdbm}{19}
+\indexentry{pplogin}{19}
+\indexentry{pp}{19}
+\indexentry{/etc/passwd}{19}
+\indexentry{isode}{19}
+\indexentry{isotailor {}}{19}
+\indexentry{authchannel}{19}
+\indexentry{channel-auth}{19}
+\indexentry{channel-auth}{19}
+\indexentry{auth.channel}{19}
+\indexentry{authloglevel}{19}
+\indexentry{wrndfldir}{19}
+\indexentry{tbldir}{19}
+\indexentry{warninterval}{19}
+\indexentry{nwarnings}{19}
+\indexentry{returntime}{19}
+\indexentry{lockstyle}{20}
+\indexentry{flock {}}{20}
+\indexentry{fcntl {}}{20}
+\indexentry{lockf {}}{20}
+\indexentry{flock {}}{20}
+\indexentry{lockdir}{20}
+\indexentry{/tmp}{20}
+\indexentry{maxloops}{20}
+\indexentry{maxhops}{20}
+\indexentry{x400mta}{20}
+\indexentry{submit\_addr}{20}
+\indexentry{submit}{20}
+\indexentry{inetd{}}{20}
+\indexentry{submit}{20}
+\indexentry{dap\_user}{20}
+\indexentry{dap\_passwd}{21}
+\indexentry{queuestruct}{21}
+\indexentry{fsync {}}{21}
+\indexentry{adminstration\_assigned\_alternate\_recipient}{21}
+\indexentry{tailoring, logs}{21}
+\indexentry{tailor}{21}
+\indexentry{submit}{21}
+\indexentry{log, file}{21}
+\indexentry{logdir}{22}
+\indexentry{log, level}{22}
+\indexentry{log, dlevel}{22}
+\indexentry{log, sflags}{22}
+\indexentry{log, dflags}{22}
+\indexentry{log, size}{22}
+\indexentry{normlog}{22}
+\indexentry{operlog}{23}
+\indexentry{authlog}{23}
+\indexentry{isodelog}{23}
+\indexentry{submit}{24}
+\indexentry{submit}{24}
+\indexentry{submit}{24}
+\indexentry{submit}{24}
+\indexentry{submit}{24}
+\indexentry{tailoring, tables}{24}
+\indexentry{submit}{24}
+\indexentry{tailor}{24}
+\indexentry{tbldir}{24}
+\indexentry{table, name}{24}
+\indexentry{table, file}{24}
+\indexentry{table, show}{24}
+\indexentry{table, flags}{24}
+\indexentry{table, dbm}{24}
+\indexentry{table, linear}{24}
+\indexentry{tbldir}{24}
+\indexentry{table, override}{24}
+\indexentry{tailoring, channels}{24}
+\indexentry{channel tailor}{25}
+\indexentry{channel, name}{25}
+\indexentry{channel, prog}{25}
+\indexentry{channel, key}{25}
+\indexentry{channel, show}{25}
+\indexentry{channel, type}{25}
+\indexentry{channel, drchan}{26}
+\indexentry{dr2rfc}{26}
+\indexentry{channel, content-in}{26}
+\indexentry{channel, content-out}{26}
+\indexentry{channel, cost}{26}
+\indexentry{rfc822norm}{26}
+\indexentry{P2toRFC}{26}
+\indexentry{removebp}{26}
+\indexentry{p2flatten}{26}
+\indexentry{channel, sort}{27}
+\indexentry{channel, outinfo}{27}
+\indexentry{channel, ininfo}{27}
+\indexentry{fcontrol}{27}
+\indexentry{fcontrol}{27}
+\indexentry{channel, inadr}{27}
+\indexentry{channel, outadr}{27}
+\indexentry{channel, addr}{27}
+\indexentry{channel, insubadr}{27}
+\indexentry{channel, outsubadr}{27}
+\indexentry{submit}{28}
+\indexentry{submit}{28}
+\indexentry{channel, subadr}{28}
+\indexentry{channel, adr-order}{28}
+\indexentry{submit}{28}
+\indexentry{channel, bptin}{28}
+\indexentry{channel, bpout}{28}
+\indexentry{channel, outtable}{28}
+\indexentry{channel, table}{28}
+\indexentry{channel, intable}{28}
+\indexentry{channel, mtatable}{28}
+\indexentry{channel, mta}{28}
+\indexentry{channel, access}{29}
+\indexentry{channel, domain-norm}{29}
+\indexentry{channel, maxproc}{29}
+\indexentry{channel, auth-table}{29}
+\indexentry{channel, conv}{29}
+\indexentry{channel, probe}{29}
+\indexentry{channel, trace}{30}
+\indexentry{submit}{30}
+\indexentry{channel, solo-proc}{30}
+\indexentry{submit}{30}
+\indexentry{hdr2fax}{30}
+\indexentry{channel, bad-sender-policy}{30}
+\indexentry{channel, check}{30}
+\indexentry{isoentities}{32}
+\indexentry{submit}{32}
+\indexentry{MTAconsole}{32}
+\indexentry{/etc/isoservices}{32}
+\indexentry{iaed{}}{32}
+\indexentry{tailor}{33}
+\indexentry{mtatable}{33}
+\indexentry{domain}{33}
+\indexentry{greyin}{33}
+\indexentry{channel}{34}
+\indexentry{submit}{34}
+\indexentry{submit}{34}
+\indexentry{pipe{}}{34}
+\indexentry{inetd}{34}
+\indexentry{tailor}{34}
+\indexentry{inetd.conf}{34}
+\indexentry{qmgr}{34}
+\indexentry{smtp}{34}
+\indexentry{inetd {}}{34}
+\indexentry{smtpd}{34}
+\indexentry{inetd}{34}
+\indexentry{/etc/inetd.conf}{34}
+\indexentry{inetd.conf {}}{34}
+\indexentry{pp.start}{35}
+\indexentry{smtpd}{35}
+\indexentry{smtpd}{35}
+\indexentry{sloppy}{35}
+\indexentry{x400in84}{35}
+\indexentry{isoservices}{35}
+\indexentry{channel, uucp}{36}
+\indexentry{channel, decnet}{36}
+\indexentry{decnet}{36}
+\indexentry{inetd}{36}
+\indexentry{dniserver.reg}{36}
+\indexentry{dniserver}{36}
+\indexentry{decnet}{36}
+\indexentry{smtp}{37}
+\indexentry{filter control}{37}
+\indexentry{fcontrol}{37}
+\indexentry{fcontrol}{37}
+\indexentry{tailor}{37}
+\indexentry{fcontrol}{37}
+\indexentry{formdir}{37}
+\indexentry{tailor}{37}
+\indexentry{fcontrol}{37}
+\indexentry{fcontrol}{39}
+\indexentry{rfc822norm}{39}
+\indexentry{rfc822norm}{39}
+\indexentry{fcontrol}{39}
+\indexentry{tailor}{39}
+\indexentry{fcontrol}{40}
+\indexentry{rfc822norm}{40}
+\indexentry{fcontrol}{40}
+\indexentry{rfc822norm}{40}
+\indexentry{822touk}{40}
+\indexentry{822tous}{40}
+\indexentry{domain}{41}
+\indexentry{alias}{41}
+\indexentry{alias}{41}
+\indexentry{p2norm}{41}
+\indexentry{p2norm}{41}
+\indexentry{or}{41}
+\indexentry{aliases}{42}
+\indexentry{p2norm}{42}
+\indexentry{p2norm}{42}
+\indexentry{p2norm}{42}
+\indexentry{aliases}{42}
+\indexentry{aliases}{42}
+\indexentry{formdir}{42}
+\indexentry{tailor}{42}
+\indexentry{list}{42}
+\indexentry{aliases}{43}
+\indexentry{rfc1148}{43}
+\indexentry{P2toRFC}{43}
+\indexentry{RFCtoP2}{43}
+\indexentry{P2toRFC}{44}
+\indexentry{P2toRFC}{44}
+\indexentry{P2toRFC}{44}
+\indexentry{RFCtoP2}{44}
+\indexentry{rfc934}{44}
+\indexentry{rfc934}{44}
+\indexentry{rfc934}{44}
+\indexentry{rfc934}{44}
+\indexentry{Lib/pp/static.c}{44}
+\indexentry{p2flatten}{44}
+\indexentry{p2flatten}{44}
+\indexentry{p2flatten}{44}
+\indexentry{p2flatten}{45}
+\indexentry{p2explode}{45}
+\indexentry{p2explode}{45}
+\indexentry{qmgrload}{45}
+\indexentry{qmgrload}{45}
+\indexentry{tailor}{45}
+\indexentry{msg-clean}{45}
+\indexentry{msg-clean}{45}
+\indexentry{debris}{45}
+\indexentry{debris}{45}
+\indexentry{tailor}{45}
+\indexentry{debris}{45}
+\indexentry{splitter}{46}
+\indexentry{splitter}{46}
+\indexentry{submit}{46}
+\indexentry{timeout}{46}
+\indexentry{timeout}{46}
+\indexentry{warning}{46}
+\indexentry{warning}{46}
+\indexentry{warning}{46}
+\indexentry{warndir}{46}
+\indexentry{dr2rfc}{46}
+\indexentry{dr2rfc}{46}
+\indexentry{dr2rfc}{46}
+\indexentry{dr2rfc}{46}
+\indexentry{dr2rfc}{46}
+\indexentry{dr2rfc}{46}
+\indexentry{submit}{46}
+\indexentry{dr2rfc}{48}
+\indexentry{qmgr}{48}
+\indexentry{pptsapd}{48}
+\indexentry{pptsapd}{48}
+\indexentry{aliases}{50}
+\indexentry{users}{50}
+\indexentry{domain}{50}
+\indexentry{channel}{50}
+\indexentry{or}{50}
+\indexentry{submit}{50}
+\indexentry{domain}{50}
+\indexentry{or}{50}
+\indexentry{users}{50}
+\indexentry{aliases}{50}
+\indexentry{channel}{50}
+\indexentry{or2rfc}{50}
+\indexentry{rfc2or}{50}
+\indexentry{rfc1148gate}{50}
+\indexentry{or}{50}
+\indexentry{domain}{50}
+\indexentry{channel}{50}
+\indexentry{aliases}{50}
+\indexentry{aliases}{51}
+\indexentry{aliases}{51}
+\indexentry{users}{51}
+\indexentry{or2rfc}{51}
+\indexentry{rfc2or}{51}
+\indexentry{rfc1148gate}{51}
+\indexentry{submit}{51}
+\indexentry{ckadr}{51}
+\indexentry{tables, alias}{51}
+\indexentry{aliases}{51}
+\indexentry{aliases}{52}
+\indexentry{aliases}{53}
+\indexentry{user}{53}
+\indexentry{aliases}{53}
+\indexentry{table, users}{53}
+\indexentry{users}{53}
+\indexentry{822-local}{53}
+\indexentry{slocal}{53}
+\indexentry{shell}{54}
+\indexentry{table, domain}{54}
+\indexentry{domain}{54}
+\indexentry{submit}{54}
+\indexentry{domain}{54}
+\indexentry{channel}{55}
+\indexentry{aliases}{55}
+\indexentry{users}{55}
+\indexentry{domain}{56}
+\indexentry{domain}{56}
+\indexentry{domain}{56}
+\indexentry{domain}{56}
+\indexentry{domain}{56}
+\indexentry{domain}{56}
+\indexentry{channel}{57}
+\indexentry{or}{57}
+\indexentry{channel}{58}
+\indexentry{channel}{58}
+\indexentry{domain}{58}
+\indexentry{or}{58}
+\indexentry{or}{58}
+\indexentry{or}{58}
+\indexentry{domain}{58}
+\indexentry{domain}{59}
+\indexentry{tables, X.400 O/R}{59}
+\indexentry{or}{59}
+\indexentry{domain}{59}
+\indexentry{or}{59}
+\indexentry{or}{59}
+\indexentry{domain}{60}
+\indexentry{channel}{60}
+\indexentry{alias}{60}
+\indexentry{user}{60}
+\indexentry{domain}{60}
+\indexentry{channel}{60}
+\indexentry{tables, channel}{60}
+\indexentry{Submit}{60}
+\indexentry{channel}{60}
+\indexentry{or}{60}
+\indexentry{domain}{60}
+\indexentry{domain}{62}
+\indexentry{or}{62}
+\indexentry{domain}{63}
+\indexentry{or}{63}
+\indexentry{alias}{63}
+\indexentry{p2norm}{63}
+\indexentry{rfc822norm}{63}
+\indexentry{users}{63}
+\indexentry{aliases}{63}
+\indexentry{admin-users}{63}
+\indexentry{admin-aliases}{63}
+\indexentry{domain}{63}
+\indexentry{or}{63}
+\indexentry{users}{63}
+\indexentry{aliases}{63}
+\indexentry{admin-users}{63}
+\indexentry{admin-aliases}{63}
+\indexentry{aliases}{63}
+\indexentry{admin-users}{64}
+\indexentry{aliases}{64}
+\indexentry{admin-aliases}{64}
+\indexentry{aliases}{64}
+\indexentry{p2norm}{65}
+\indexentry{rfc822norm}{65}
+\indexentry{or2rfc}{65}
+\indexentry{rfc2or}{65}
+\indexentry{rfc2or}{65}
+\indexentry{rfc1148gate}{66}
+\indexentry{rfc2or}{66}
+\indexentry{auth.channel}{66}
+\indexentry{auth.mta}{66}
+\indexentry{auth.user}{66}
+\indexentry{auth.channel}{67}
+\indexentry{auth.channel}{67}
+\indexentry{auth.mta}{67}
+\indexentry{auth.user}{67}
+\indexentry{auth.channel}{68}
+\indexentry{wrndfldir}{68}
+\indexentry{auth.channel}{68}
+\indexentry{auth.mta}{69}
+\indexentry{regex {}}{69}
+\indexentry{Submit}{71}
+\indexentry{MTAconsole}{71}
+\indexentry{qmgr}{71}
+\indexentry{auth.qmgr}{72}
+\indexentry{auth.qmgr}{72}
+\indexentry{mkpasswd}{72}
+\indexentry{mkpasswd}{72}
+\indexentry{tables, local}{73}
+\indexentry{ch.local}{73}
+\indexentry{ch.local}{73}
+\indexentry{822-local}{73}
+\indexentry{slocal}{73}
+\indexentry{.mailfilter}{73}
+\indexentry{USRBINDIR}{73}
+\indexentry{Make.defs}{73}
+\indexentry{exec{}}{74}
+\indexentry{Note}{74}
+\indexentry{tables, X.400 84}{74}
+\indexentry{tables, X.400 88}{74}
+\indexentry{ch.x400out84}{74}
+\indexentry{channel}{74}
+\indexentry{default}{76}
+\indexentry{ch.x400in84}{76}
+\indexentry{ch.x400in88}{76}
+\indexentry{nsapexpand}{76}
+\indexentry{table, list}{77}
+\indexentry{ch.list}{77}
+\indexentry{list}{77}
+\indexentry{users}{77}
+\indexentry{moderator}{77}
+\indexentry{mlist}{77}
+\indexentry{mlist}{77}
+\indexentry{tbldir}{77}
+\indexentry{mlist}{77}
+\indexentry{mlist}{77}
+\indexentry{mlist}{77}
+\indexentry{mlist}{78}
+\indexentry{mlist}{78}
+\indexentry{mlist}{78}
+\indexentry{make-lists{}}{78}
+\indexentry{make-lists{}}{78}
+\indexentry{Tools}{78}
+\indexentry{table, shell}{78}
+\indexentry{ch.shell}{78}
+\indexentry{shell}{78}
+\indexentry{users}{78}
+\indexentry{shell}{78}
+\indexentry{/etc/passwd}{78}
+\indexentry{/etc/passwd}{78}
+\indexentry{shell}{78}
+\indexentry{shell}{79}
+\indexentry{chandir}{79}
+\indexentry{shell}{79}
+\indexentry{shell}{79}
+\indexentry{shell}{79}
+\indexentry{not}{80}
+\indexentry{statp}{80}
+\indexentry{Tools}{80}
+\indexentry{Tools/statgen}{80}
+\indexentry{or}{81}
+\indexentry{rfc2or}{83}
+\indexentry{or2rfc}{83}
+\indexentry{rfc1148}{83}
+\indexentry{ts\_communities}{86}
+\indexentry{rfc2or}{87}
+\indexentry{or2rfc}{87}
+\indexentry{or}{87}
+\indexentry{tailor}{87}
+\indexentry{tailor}{89}
+\indexentry{tailor}{89}
+\indexentry{tailor}{89}
+\indexentry{tailor}{90}
+\indexentry{tailor}{92}
+\indexentry{x400out84}{93}
+\indexentry{tailor}{93}
+\indexentry{fax}{95}
+\indexentry{channel}{96}
+\indexentry{users}{96}
+\indexentry{hdr2fax}{96}
+\indexentry{hdr2fax}{96}
+\indexentry{hdr2fax}{96}
+\indexentry{hdr2fax}{96}
+\indexentry{ia52fax}{96}
+\indexentry{hdr2fax}{96}
+\indexentry{hdr2fax}{97}
+\indexentry{hdr2fax}{97}
+\indexentry{hdr2fax}{97}
+\indexentry{hdr2fax}{97}
+\indexentry{hdr2fax}{97}
+\indexentry{hdr2fax}{98}
+\indexentry{ia52fax}{98}
+\indexentry{Make.defs}{98}
+\indexentry{hdr2fax}{98}
+\indexentry{hdr2fax}{98}
+\indexentry{fcontrol}{98}
+\indexentry{fcontrol}{99}
+\indexentry{hdr2fax}{99}
+\indexentry{hdr2fax}{99}
+\indexentry{hdr2fax}{99}
+\indexentry{hdr2fax}{99}
+\indexentry{ia52fax}{99}
+\indexentry{ia52fax}{99}
+\indexentry{fcontrol}{99}
+\indexentry{ia52fax}{100}
+\indexentry{asn}{102}
+\indexentry{fcontrol}{102}
+\indexentry{formdir}{102}
+\indexentry{asn}{102}
+\indexentry{fcontrol}{103}
+\indexentry{fcontrol}{103}
+\indexentry{asn}{103}
+\indexentry{asn}{103}
+\indexentry{submit}{104}
+\indexentry{qmgrload}{104}
+\indexentry{msg-clean}{105}
+\indexentry{timout}{105}
+\indexentry{warning}{105}
+\indexentry{tailor}{106}
+\indexentry{msg-clean}{106}
+\indexentry{qmgr-load}{106}
+\indexentry{tailor}{115}
+\indexentry{tailor}{115}
+\indexentry{LINEconsole}{116}
+\indexentry{LINEconsole}{116}
+\indexentry{LINEconsole}{117}
+\indexentry{regex {}}{117}
+\indexentry{lconsole}{118}
+\indexentry{lconsole}{119}
+\indexentry{lconsole}{119}
+\indexentry{ckchan}{121}
+\indexentry{ckchan}{121}
+\indexentry{ckchan}{121}
+\indexentry{ckchan}{121}
+\indexentry{ckconfig}{122}
+\indexentry{tailor}{122}
+\indexentry{chndfldir}{122}
+\indexentry{tailor}{122}
+\indexentry{tbldir}{122}
+\indexentry{ckconfig}{122}
+\indexentry{ckconfig}{122}
+\indexentry{ckconfig}{122}
+\indexentry{ckconfig}{122}
+\indexentry{ckconfig}{122}
+\indexentry{ckadr}{122}
+\indexentry{ckadr}{122}
+\indexentry{ckadr}{122}
+\indexentry{ckadr}{123}
+\indexentry{ckadr}{123}
+\indexentry{ckadr}{123}
+\indexentry{ckadr}{123}
+\indexentry{ckadr}{123}
+\indexentry{ckadr}{123}
+\indexentry{only}{123}
+\indexentry{only}{123}
+\indexentry{ckadr}{123}
+\indexentry{probe}{124}
+\indexentry{tailor}{124}
+\indexentry{tailor}{124}
+\indexentry{tailor}{124}
+\indexentry{probe}{124}
+\indexentry{probe}{124}
+\indexentry{submit}{125}
+\indexentry{submit}{125}
+\indexentry{submit}{125}
+\indexentry{tailor}{125}
+\indexentry{ckconfig}{125}
+\indexentry{ckadr}{125}
+\indexentry{dbmbuild}{125}
+\indexentry{submit}{125}
+\indexentry{console}{126}
+\indexentry{pptsapd}{126}
+\indexentry{ckconfig}{126}
+\indexentry{tailor}{126}
+\indexentry{pptsapd}{126}
+\indexentry{ntail}{126}
+\indexentry{tools}{126}
+\indexentry{tail {}}{126}
+\indexentry{aliases}{126}
+\indexentry{users}{126}
+\indexentry{local channel}{126}
+\indexentry{list channel}{126}
+\indexentry{authorisation}{126}
+\indexentry{or}{126}
+\indexentry{channel}{127}
+\indexentry{domain}{127}
+\indexentry{channel}{127}
+\indexentry{domain}{127}
+\indexentry{channel}{127}
+\indexentry{domain}{127}
+\indexentry{abbrev}{127}
+\indexentry{c-nrs}{127}
+\indexentry{pp.dmn}{127}
+\indexentry{abbrev}{127}
+\indexentry{abbrev}{128}
+\indexentry{abbrev}{128}
+\indexentry{pp.chan}{129}
+\indexentry{c-nrs}{129}
+\indexentry{tjoin}{129}
+\indexentry{Tjoin}{129}
+\indexentry{channel}{129}
+\indexentry{tjoin}{130}
+\indexentry{alias}{130}
+\indexentry{users}{130}
+\indexentry{dbmbuild}{130}
+\indexentry{tailoring, filters}{131}
+\indexentry{tailor}{131}
+\indexentry{tailor}{131}
+\indexentry{submit}{131}
+\indexentry{fcontrol}{131}
+\indexentry{uuencode}{131}
+\indexentry{submit}{131}
+\indexentry{submit}{131}
+\indexentry{submit}{132}
+\indexentry{822top2}{132}
+\indexentry{rc.local}{132}
+\indexentry{rc.local}{132}
+\indexentry{pp.start}{132}
+\indexentry{pptsapd}{132}
+\indexentry{smtpsrvr}{132}
+\indexentry{inetd}{132}
+\indexentry{tsapd}{133}
+\indexentry{isode-gen {}}{133}
+\indexentry{kill}{133}
+\indexentry{pp.start}{133}
+\indexentry{dbmbuild}{133}
+\indexentry{pp.night}{133}
+\indexentry{dbmbuild}{133}
+\indexentry{oper}{133}
+\indexentry{stat}{133}
+\indexentry{oper}{133}
+\indexentry{stat}{133}
+\indexentry{tools}{133}
+\indexentry{statp}{133}
+\indexentry{stat}{133}
+\indexentry{awk {}}{133}
+\indexentry{quedir}{134}
+\indexentry{quedir}{134}
+\indexentry{addr}{134}
+\indexentry{base}{134}
+\indexentry{filter.number}{134}
+\indexentry{report.number}{134}
+\indexentry{addr}{134}
+\indexentry{pp-tables/}{147}
+\indexentry{pp-tables/}{148}
+\indexentry{mu}{149}
+\indexentry{submit}{149}
+\indexentry{mu.defaults}{149}
+\indexentry{mu.defaults}{149}
+\indexentry{submit}{149}
+\indexentry{mu.defaults}{149}
+\indexentry{argh.c}{150}
+\indexentry{submit}{150}
+\indexentry{submit}{150}
+\indexentry{submit}{150}
+\indexentry{submit}{150}
+\indexentry{submit}{150}
+\indexentry{submit}{150}
+\indexentry{submit}{151}
+\indexentry{submit}{151}
+\indexentry{submit}{151}
+\indexentry{submit}{151}
+\indexentry{submit}{151}
+\indexentry{submit}{153}
+\indexentry{\LaTeX {}}{166}

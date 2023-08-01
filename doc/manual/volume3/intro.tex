@@ -1,0 +1,60 @@
+% -*- LaTeX -*-
+
+\chapter{Introduction}
+
+This manual is concerned with the user-visible tools associated with
+PP. Other tools which are management oriented or system related are
+described in other volumes.
+
+Most of the work of a message transfer system is not visible to the
+user, who typically interacts with some intermediary (user agent or
+UA). As such this manual is a collection of the tools and interfaces
+that are directly visible to the user.  Conceptually, they may be
+considered as a part of the UA, which for convenience and performance
+are implemented as a part of the MTA.
+
+The main components of this volume consider the following:
+
+\begin{describe}
+\item[\verb|local delivery|:]	Local delivery is one of the more
+obviously noticeable parts of PP to the user. This is where the
+message leaves the transfer system and enters the user's domain. As
+such, this interface is tailorable to a considerable degree. PP does
+not restrict the user to a given delivery program, but can be
+configured on both a per recipient and a per message-type basis. This
+is conceptually a user agent function, but it is often more efficient
+to do this operation at the user agent/MTA boundary.
+
+\item[\verb|distribution lists|:]	Maintenance and use of
+distribution lists is another area where the end user is directly
+involved. This verges on administration, but is administration that
+can be delegated to given users for each list. The areas discussed
+here are the administration of distribution lists and the information
+associated with such lists.
+
+\item[\verb|user oriented management|:]	There are certain
+administrative functions that it is useful to make available to end
+users. These include checking the progress of individual messages and
+checking the validity of addresses and usernames.
+
+\end{describe}
+
+Much of the information presented here is often available in the
+online \unix/ manuals but usually in a much less verbose format.
+These are listed here:
+\begin{describe}
+\item[\man chkmf (1)]	Check the \file{.mailfilter} syntax.
+\item[\man ckmail (1)]	Check status of your mail.
+\item[\man flagmail (1)]	Notify a server program of new mail.
+\item[\man mail (1)]	A very dumb mail submission program.
+\item[\man malias (1)]	Show what mailing lists expand to.
+\item[\man mlist (1)]	Distribution list maintenance program.
+\item[\man ttyalert (1)]	Alert of new mail on the terminal.
+\item[\man xalert (1)]	Alert of new mail in an X window.
+\item[\man resend (1)]	Resubmit a message to more recipients.
+\item[\man strip\_addr (1)] Remove comments and extraneous parts from an
+RFC~822 \linebreak[3]address.
+
+\item[\man mailfilter(5)] Brief description of the
+			\file{.mailfilter} syntax.
+\end{describe}

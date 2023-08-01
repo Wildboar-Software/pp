@@ -1,0 +1,361 @@
+\chapter {General}
+
+\section {Overview}
+
+There are certain approaches taken by PP processes.  These are described
+here to facilitate emulation by new processes. These are not strict
+guidelines, but following existing practises will usually be easier
+and make upgrading the software less painful.
+
+\section {Initialisation}
+
+All PP programs generally start by calling one or more initialisation
+routines. This may vary depending on what the channel needs to know.
+This initialisation does various things, amongst which are:
+\begin{itemize}
+\item	Reading global parameters from the tailor file.
+\item	Initialising the logging packages.
+\item	Handling of signals.
+\end{itemize}
+
+The normal method of initialising a process is to call the following
+routine very early on (usually one of the first things):
+\begin{quote}\index{sys\_init}\begin{verbatim}
+sys_init (name)
+char *name;
+\end{verbatim}\end{quote}
+
+This routine does most of the initialisation required. The argument is
+usually the value of \verb|argv[0]|, which is used in the logging
+initialisation to record the name of this program.
+
+For some programs however, this sort of initialisation is not
+appropriate. In this case another interface may be better.
+\begin{quote}\index{pp\_initialise}\begin{verbatim}
+int pp_initialise (name, flags)
+char *name;
+int flags;
+\end{verbatim}\end{quote}
+This routine will read in the tailor file, but will optionally not
+configure certain aspects depending on the flags. The name is the same
+as in \verb|sys_init|. The flags can be any of the following:
+\[\begin{tabular}{|l|p{.6\textwidth}}
+\hline
+	\multicolumn{1}{|c|}{\bf Flag}&
+		\multicolumn{1}{|c|}{\bf Effect} \\
+\hline
+	\tt TAI\_NONE & No special tailoring is done.\\
+	\tt TAI\_LOGS & Reset all logs to use the PP log directory. \\
+	\tt TAI\_SIGNALS & Set handlers for certain signals. \\
+	\tt TAI\_ALL & All of the above. \\
+\hline
+\end{tabular}\]
+The flags may be combined by bitwise the bitwise or operator.
+
+\section {Runtime Tailoring}
+
+The runtime tailoring for PP is complex, as there are many parameters
+that can affect the operation of the system. The main things tailored
+are pathnames to locate commonly used programs; file names and
+directories; or the more complex tailoring to define such things as
+channels and tables. See Volume 1 for the full detail.
+
+To add new items to be tailored, it is necessary to add some code to
+the parsing routines. For simple additions, it is necessary only to
+modify the tables and the switch statement in the file
+\file{pp/Lib/tai/tai\_sys.c}. More complex tailoring is best done by
+creating a separate procedure, possible in a new file. Such additional
+tailoring should not be undertaken lightly as it will make the new
+version of PP incompatable with existing and new versions.
+
+\section {Logging}
+
+All logging works through a standard package. This package includes
+features to limit the log files and to notify administrators of errors.
+The logging has some structure too it and the following are the
+general rules used when programming PP.
+
+\subsection	{Logging Levels}
+
+The logging package takes a bit mask of values to log. This is
+compared with the current setting of the logging level and then
+certain values are logged. The levels available are shown in
+Table~\ref{tab:logging}. The values \verb|LLOG_NONE| and
+\verb|LLOG_ALL| are special: the first is no logging at all, the
+latter sets all bits in the bitmask.
+
+\tagtable{log}{Logging Levels}{tab:logging}
+
+\subsection	{Logging Structures}
+
+There are three log structures used in PP. The structures themselves
+are defined in the include file \file{isode/logger.h}.  These
+structures are of type \mbox{\verb|LLog *|}\index{LLog} and are the
+following:
+
+\index{log\_norm}\index{log\_stat}\index{log\_oper}%
+\[\begin{tabular}{|l|l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Structure}&
+		\multicolumn{1}{|c|}{\bf Usage}\\
+\hline
+	\tt log\_norm&	Normal logging\\
+	\tt log\_oper&	Critical Operator message\\
+	\tt log\_stat&	Statistical and Authorisation \\
+\hline
+\end{tabular}\]
+These structures are rarely used explicitly. With few exceptions, the
+logging macros described below use the \verb|log_norm| structure.
+
+\subsection	{Logging Macros}\label{logging}
+There are several macros defined to aid in the use of logging. The
+definitions of these macros can be found in the include file
+\file{ll\_log.h}. These macros may be used in the following way:
+\begin{quote}\index{PP\_LOG}\begin{verbatim}
+PP_LOG (level, (format, arg1, arg2 ...))
+int    level;
+char   *str;
+\end{verbatim}\end{quote}
+This macro is used for most of the non-debugging logging. The
+arguments to this call are as follows:
+\begin{describe}
+\item[\verb|level|:]	One of the logging levels specified above.
+However, as there are macros provided for fatal errors and debugging,
+it is usually only the values of 
+\linebreak
+\verb|LLOG_EXCEPTIONS| and
+\verb|LLOG_PDUS| which are used as the argument here. The
+\verb|LLOG_EXCEPTIONS| is used to log failures that are not critical.
+The \verb|LLOG_PDUS| level is used to trace any protocol exchanges --
+using the
+\verb|PP_PDUS| macro if suitable.
+
+\item[\verb|format|:]	This is a printf-like format string which
+together with any arguments {\em must} be enclosed in brackets as
+shown. The
+\verb|format| and any number of optional \verb|arg|s produce the
+logging message.
+\end{describe}
+
+The next macro is a more general macro which allows logging of system
+error messages to be attached to the basic log message.
+
+\begin{quote}\index{PP\_SLOG}\begin{verbatim}
+PP_SLOG (level, what, (format, arg1, arg2 ...))
+int  level;
+char *what;
+char *format;
+\end{verbatim}\end{quote}
+This is similar to the \verb|PP_LOG| macro, but the extra argument if
+not null ensures that operating system call failures are logged as
+well. This macro should be used where it is suspected that a system
+call has failed.
+\begin{describe}
+\item[\verb|level|:]	The logging level.
+\item[\verb|what|:]	A string which if not the null pointer logs
+the system error.
+\item[\verb|format|:]	A printf-like format string.
+\end{describe}
+
+For more urgent cases of logging, the following macro is provided:
+
+\begin{quote}\index{PP\_OPER}\begin{verbatim}
+PP_OPER (what, (format, arg1, arg2 ...))
+char   *what, *format;
+\end{verbatim}\end{quote}
+
+This macro is used for logging of extreme problems. It should only be
+used for errors that require operator intervention. These errors
+typically end up in a separate log as well as the normal log and are
+always logged at the \verb|LLOG_FATAL| level. It is assumed that the
+system administrator will look through this log frequently and will
+immediately take action on anything found there. The arguments are:
+\begin{describe}
+\item[\verb|what|:]	This is a string which is used to construct a
+system error message. This should only be present if a system call is
+suspected of failing. Otherwise the constant \verb|NULLCP| should be used.
+
+\item[\verb|format|:]	This string is used as a printf like syntax
+to produce the message together with optional arguments as in the case
+of \verb|PP_LOG|. Again, this parameter and any arguments {\em must}
+be enclosed in brackets as shown.
+\end{describe}
+
+Another logging call is provided for statistical and authorisational
+data:
+
+\begin{quote}\index{PP\_STAT}\begin{verbatim}
+PP_STAT ((format, arg1, arg2 ...))
+char   *format;
+\end{verbatim}\end{quote}
+This macro is used for logging statistical information. It should be
+used where useful to record statistics like number of messages and
+times, etc. Its arguments are printf like, and {\em must} be enclosed
+in the double brackets as shown.
+
+\begin{quote}\index{PP\_NOTICE}\begin{verbatim}
+PP_NOTICE ((format, arg1, arg2 ...))
+char   *format
+\end{verbatim}\end{quote}
+This macro is used to record interesting events in protocol exchanges.
+It should be used so that the basic flow of a program may be observed,
+without undue amounts of log file space or extra machine load. Common
+logging events should be: connecting to a host, terminating a
+connection, and the transfer of a message.
+
+\begin{quote}\index{PP\_TRACE}\begin{verbatim}
+PP_TRACE ((format, arg1, arg2 ...))
+char   *format;
+\end{verbatim}\end{quote}
+This macro is used throughout the source code to trace the calling of
+functions and the general flow of the programs and libraries. It logs
+the information at the \verb|LLOG_TRACE| level, and this macro is
+dependent on the value of the \verb|PP_DEBUG| define. If this is not
+defined then the \verb|PP_TRACE| macros are not compiled in.
+The arguments are identical to the \verb|PP_STAT| macro.
+
+\begin{quote}\index{PP\_DBG}\begin{verbatim}
+PP_DBG ((format, arg1, arg2 ...))
+char   *format;
+\end{verbatim}\end{quote}
+This macro is similar to the \verb|PP_TRACE| macro, except it logs at
+the level of
+\linebreak
+\verb|LLOG_DEBUG| and will not expand to anything unless
+\verb|PP_DEBUG| is defined and has a value greater than 1 (usually
+\verb+PP_DEBUG_ALL+\index{PP\_DEBUG\_ALL}). This macro
+should be used for very detailed tracing, or where large amounts of
+logging are likely to be generated.
+
+\begin{quote}\index{PP\_PDU}\begin{verbatim}
+PP_PDU ((fnx, pe, text, rw))
+IFP    fnx;
+PE     pe;
+char   *text;
+int    rw;
+\end{verbatim}\end{quote}
+This macro is for logging of ASN.1\index{ASN.1} protocol data units (PDUs).
+It is only compiled in if \verb|PP_DEBUG| is
+\verb+PP_DEBUG_SOME+\index{PP\_DEBUG\_SOME} or greater. The arguments
+are as follows:
+\begin{describe}
+\item[\verb|fnx|:]	A function to print out the PDU. This should
+be a function constructed by the printer option of pepy.
+
+\item[\verb|pe|:]	The presentation element to print out.
+
+\item[\verb|str|:]	An explanatory string, usually the name of
+the PDU.
+
+\item[\verb|rw|:]	A flag indicating the direction the PDU is
+going. Set to \verb|PDU_WRITE| to indicate the pdu is being 
+written and \verb|PDU_READ| to show it is being read.
+\end{describe}
+Non ASN.1\index{ASN.1} protocol exchanges can be logged with the
+\verb|PP_LOG| macro at the 
+\linebreak
+\verb|LLOG_PDUS| level.
+
+If other logging calls not described here are needed, they can be
+constructed from the more general \verb|SLOG|\index{SLOG} macro
+described in the ISODE manual. Use of this feature is discouraged.
+
+\section {Code Location}
+
+The code to PP is arranged in a hierarchy of directories. This is a
+brief tour around the structure.
+
+\subsection{Library Code}
+
+Much of the PP system is in the library code. This is found in
+the directory \verb|Lib/|\index{Lib/} under the top directory of the PP
+distribution.  The library itself is split into several
+subdirectories. These are as follows:
+
+\begin{describe}
+\item[\verb|addr/|:]\index{addr/}	The RFC~822 address parser
+library. This
+contains ways to manipulate and process RFC~822 addresses.
+
+\item[\verb|format/|:]\index{format/}	This directory contains support routines for
+formatting messages.
+
+\item[\verb|io/|:]\index{io/}	This directory contains most of the routines
+concerned with writing out and reading in structures. It is generally
+used for reading in structures and writing them out.
+
+\item[\verb|or/|:]\index{or/}	This directory has a set of routines for
+manipulating O/R addresses.
+
+\item[\verb|parse/|:]\index{parse/}	This directory contains the code to do the generic
+parsing of addresses. It contains the general interface to X.400 and
+RFC~822 addresses.
+
+\item[\verb|pp/|:]\index{pp/}	This directory contains many of the basic PP
+specific routines such as manipulation of structures, PP structures, and
+the flattening and unflattening of these structures.
+
+\item[\verb|qmgr/|:]\index{qmgr/}	This directory contains the code required to
+interface with the QMGR process.
+
+\item[\verb|table/|:]\index{table/}	This directory contains routines for accessing
+the databases used by PP for routing, aliases and the like.
+
+\item[\verb|tai/|:]\index{tai/}	This contains the routines responsible for
+reading and parsing the \file{tailor} file.
+
+\item[\verb|util/|:]\index{util/}	This directory contains some
+generally useful common procedures.
+
+\item[\verb|x400/|:]\index{x400/}	This directory contains
+support routines for X.400 handling.
+\end{describe}
+
+\subsection{Core Programs}
+
+The next major directory to be considered is the
+\verb|Src/|\index{Src/} directory. This contains the core programs
+required by PP. These are:
+\begin{describe}
+\item[\verb|MTAconsole/|:]\index{MTAconsole/}	This is the source
+code for the X-based MTA console program. It monitors the overall
+running of PP.
+
+\item[\verb|LINEconsole/|:]\index{LINEconsole} The source for a line
+based console program.
+
+\item[\verb|lconsole/|:]\index{lconsole} The source for an alternative
+line based console.
+
+\item[\verb|submit/|:]\index{submit/}	This is the source for the
+submission process. All messages entering the queue go through this process.
+
+\item[\verb|qmgr/|:]\index{qmgr/}	This is the source for the
+QMGR process.
+
+\item[\verb|pptsapd/|:]\index{pptsapd/}	This is the source for the pp
+tsap daemon. This is the process that runs the channels invoked by the
+queue manager.
+
+\end{describe}
+
+\subsection{Other Directories}
+The are the following other directories which have some significance.
+
+\begin{describe}
+\item[\verb|h/|:]\index{h/}	Contains all the public header files used in
+the PP system.
+
+\item[\verb|doc/|:]\index{doc/}	Contains the documentation on PP.
+
+\item[\verb|man/|:]\index{man/}	Contains manual pages on the PP programs.
+
+\item[\verb|Uip/|:]\index{Uip/}	Contains some user interface programs for
+submitting messages to PP.
+
+\item[\verb|Tools/|:]\index{Tools/}  Contains several programs
+useful for building up parts of the PP system or verifying it.
+
+\item[\verb|Chans/|:]\index{Chans/} The channel programs can all be
+found under the directory \verb|Chans/|.
+\end{describe}

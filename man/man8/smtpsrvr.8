@@ -1,0 +1,41 @@
+.TH SMTPSRVR 8
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man8/RCS/smtpsrvr.8,v 6.0 1991/12/18 20:44:03 jpo Rel $
+.\"
+.\" $Log: smtpsrvr.8,v $
+.\" Revision 6.0  1991/12/18  20:44:03  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+smtpsrvr \- Smtp protocol server
+.SH
+.in +.5i
+.ti -.5i
+/usr/lib/pp/smtpsrvr
+\%[-t\ timeout] \%[\-T\ tailor] \%channel
+.in -.5i
+(under smtpd or inetd)
+.SH DESCRIPTION
+.I Smtpsrvr
+is the smtp protocol engine. It is responsible for interfacing between
+PP and the smtp protocol.
+.PP
+.I Smtpsrvr
+responds to the following flags.
+.TP
+\-t timeout
+Sets the timeout for nameserver operations
+.TP
+\-T tailor
+Use the given tailor file rather than the standard default.
+.PP
+The mandatory argument to \fIsmtpsrvr\fP is the channel to claim it is
+coming from. There is no default for this.
+.SH FILES
+/etc/inetd.conf  the inetd configuration file
+.SH "SEE ALSO"
+inetd(8), inetd.conf(5)
+.br
+\fIThe PP Manual: Volume 1 \- Installation and Operation\fP
+

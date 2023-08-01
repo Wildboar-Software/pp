@@ -1,0 +1,37 @@
+\small\begin{verbatim}
+Start-of-MsgEnvPrm
+Message-type User-Mpdu
+Message-size 84
+Number-warnings 000
+Warning-interval 24
+Return-interval 72
+Encoded-info EncTypes="hdr.822,ia5"
+alt-recip-allowed true
+cont-return true
+Ua-id Test
+pp-cont-corr "Subject: Test, To: pac"
+content-corr 04165375626a6563743a20546573742c20546f3a20706163 none
+Inbound-channel smtp
+Inbound-mta "xtel.co.uk"
+MsgId string="lancaster..123:25.08.91.15.53.50" Country=GB Admin=" "
+	Prmd="X-Tel Services"
+Trace Country=GB Admin=" " Prmd="X-Tel Services"
+	arrival="Wed, 25 Sep 1991 16:53:49 +0100" action=0 End-of-block
+Trace mta="lancaster.xtel.co.uk" Country=GB Admin=" "
+	Prmd="X-Tel Services"
+	arrival="Wed, 25 Sep 1991 15:53:50 +0000" action=0 End-of-block
+Queued-time "Wed, 25 Sep 1991 15:53:51 +0000"
+Start-of-MsgEnvAddr
+Origs rno=000 status=done reform-done=000 reform-list="822tous|822tous.1"
+	outchan=dr2rfc outmta="lancaster.xtel.co.uk" ext-id=0 resp=false
+	mta-rreq=basic usr-rreq=basic type=822 eits="ia5,hdr.822-us"
+	content=822 orig="pp@xtel.co.uk"
+	x400="/I=P/S=Pat/O=XTEL/PRMD=X-Tel Services/ADMD= /C=GB/"
+	rfc="P.Pat@xtel.co.uk" end-of-addr
+Recip rno=001 status=pend reform-done=001 reform-list="822tous|822tous.1"
+	outchan=822-local outmta="lancaster.xtel.co.uk" ext-id=1
+	resp=true mta-rreq=basic usr-rreq=basic type=822
+	eits="ia5,hdr.822-us" content=822 orig=pac
+	x400="/I=p/S=cowen/OU=x400/O=XTEL/PRMD=X-Tel Services/ADMD= /C=GB/"
+	rfc="p.cowen@x400.xtel.co.uk" end-of-addr
+\end{verbatim}

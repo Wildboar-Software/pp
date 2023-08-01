@@ -1,0 +1,58 @@
+.TH CKADR 8
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man8/RCS/ckadr.8,v 6.0 1991/12/18 20:44:03 jpo Rel $
+.\"
+.\" $Log: ckadr.8,v $
+.\" Revision 6.0  1991/12/18  20:44:03  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+ckadr \- address checker
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+ckadr \%[-rxanpbl0123]
+\%[address..]
+.in -.5i
+.SH DESCRIPTION
+The 
+.I ckadr
+tool checks whether addresses are acceptable to the local mail system.
+.PP
+If \fIckadr\fP is invoked with command line arguments, it will
+attempt to parse them as addresses and report back the
+result.
+.PP
+If no command line arguments are given, \fIckadr\fP will read from
+the standard input.
+Each line read will be parsed as an address and the result reported back to
+the user.
+.PP
+.I ckadr
+has a growing number of flags. These are:-
+.TP
+\-r
+Force the address type to be RFC-822 address. This is the default choice.
+.TP
+\-x
+Force the address type to be X.400 style.
+.TP
+\-a
+Normalise all domains within the address
+.TP
+\-n
+No responsibility set, parse this like an originator address.
+.TP
+\-p
+count percent characters (%) as routing constructs.
+.TP
+\-b
+Parse in big-endian format first (UK form).
+.TP
+\-l
+parse in little endian format (US and rest of world format)
+.TP
+.SH "SEE ALSO"
+\fIThe PP Manual: Volume 3 \- Users Guide\fP
+

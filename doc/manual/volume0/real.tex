@@ -1,0 +1,253 @@
+\input{dist-params}
+\chapter {Overview}
+
+\section {What is PP?}
+
+PP is a message transfer agent (MTA), which supports a number of
+message transfer protocols, including:
+
+\begin {itemize}
+\item X.400 (1984) P1 \cite{MHS}.
+\item X.400 (1988) / ISO 10021 P1 \cite{CCITT.MHS}.
+\item A number of RFC~822-based protocols \cite{RFC822}.
+\end {itemize}
+
+It is based on experience with previous MTAs, and has the following
+aims:
+
+\begin {itemize}
+\item  Use for switching large volumes of messages in a service environment.
+\item  Management features, suitable for complex sites.
+\item Protocol conversion facilities, particularly for mapping between
+RFC~822 and X.400 according to RFC~987 \cite{ARPA.MHS},
+RFC~1148\cite{RFC1148} and RFC~1148bis.
+\item  Body part format conversion.
+\item Support for development of advanced user agents, particularly those
+wishing to use X.400 and/or multimedia capability.
+\end {itemize}
+
+For a technical overview of PP, a number of papers are included in the
+distribution, the paper by Kille is recommended
+\cite{IFIP.PP}.   PP is implemented in \pgm{C}, and runs on a range of
+UNIX and UNIX-like operating systems. 
+The current release includes the following modules:
+
+\input{highlights}
+
+
+
+\section {The PP Documentation}
+
+This manual refers to PP version \ppversion/ of \ppdate/.
+
+The PP manual is divided into three volumes and this covering document,
+which introduces PP and contains general
+information relevant to all of the other volumes:
+
+\begin {description}
+\item[Volume 1:] Installation and Operations.  This describes all that is
+needed to install PP and how to administer PP as part of an operational
+service.
+\item[Volume 2:] Programmer's Guide.  This describes programming interfaces
+for submission of messages into PP, and for channels which deliver messages
+locally or remotely.
+\item[Volume 3:] User's Guide.  In general, PP should not be visible to the
+end user.  There are some associated tools, which are needed, and are
+described in this volume.
+\end {description}
+
+\section {A Brief History of PP}
+
+PP began in 1985, when several of us wished to produce a system to support
+X.400.  It was clear that MMDF (our favourite MTA at that time) was not going to be
+extensible to do all that we wanted.  Steve Kille had looked at the EAN MTA at the
+end of 1984.  Whilst this was an impressive development at the time, it did
+not really meet our needs, although our initial plan was to use the OSI
+layers from EAN.   
+
+Two meetings were held in September 1985 to consider the possibilities of
+future MTA development:
+
+\begin {itemize}
+\item At CWI, discussion took place between: Doug Kingston (CWI/BRL),
+Piet Beertma (CWI), Miriam Amos (DEC/UCB), Kevin Dunlap (DEC/UCB),
+Daniel Karrenberg (Uni Dortmund), and Steve Kille.
+
+\item At UCL, discussion took place between: Phil Cockcroft (UCL), Doug
+Kingston, Steve Kille, and Julian Onions.   
+\end {itemize}
+
+These meetings, and following messages, resulted in some of the
+initial PP design.  As a result of the second meeting, Phil Cockcroft
+and Julian Onions started to write large chunks of code, and Steve
+Kille wrote some small chunks of code.
+
+By April 1986, a system was starting to come together, which was being
+called PP.  Marshall Rose was starting work on his \pgm{ASN.1} tools, which
+were clearly going to be a part of PP!  In July, the mechanisms for
+representing multimedia messages in the queue were designed and
+evolved.
+
+By October 1986, it was time to design the QMGR fully.  Steve Kille had been
+at the infamous CCITT Directory meeting in Munich in February, and so
+specified a QMGR design in the new ASDC (abstract service definition
+conventions).  Phil Cockcroft left UCL at the end of 1986, which was a big
+loss to the effort.
+
+In February 1987, there was a basic system working, which talked SMTP
+and X.400.  Filling in the holes took much longer than we expected!
+The first priority was to replace the shell script QMGR.  Julian
+Onions was then working on the ISODE ROS tools (ROSY and POSY), and so
+it was decided to use ROS to implement the QMGR.  The QMGR and the
+tools proceeded in parallel.  In 1988 Alina daCruz (UCL) rewrote the
+access libraries, Pete Cowen (Nottingham) worked on a range of
+formatting tools, and Bruce Wilford (UCL) redid all of the channel
+binding and domain handling.  Mike Roe (UCL) started work on LISP code
+to produce a first cut at the 1988 X.400 protocol.  Discussions with
+Piete Brooks (Cambridge) led to the initial design of the JNT mail
+channel.  In October 1988, Steve Kille presented a paper on PP at the
+IFIP WG 6.5 conference, but there was still no PP ready for release.
+By the end of 1988, there was a PP which had been radically changed
+and looked much more like the final system.
+
+
+PP received its first public airing at CEBIT (Hannover Fair) in March 1989,
+where it carried ODIF over X.400, and converted into Diamond format by
+use of private conversion tools.  It interworked with a number of
+X.400(84) systems at this point.  This was as a part of the ESPIRIT
+PODA project.
+
+
+In 1989, the X MTA Console (Pete Cowen) and authorisation (John
+Taylor) were added in, and the internal structures fully upgraded to
+X.400(88).  PP 3.0 was cut in July 1989, and was used as the basis for
+UK to full X.400 relaying.  This system was released outside UCL and
+Nottingham on a very selective basis.
+
+PP 4.0 was released at the very end of 1989 to 15 beta sites.  Three more
+beta releases were made during 1990 to an increasing number of beta sites.
+During this time, the upgrade to RFC~1148 was made, and initial
+implementations of P1(1988) and directory-based distribution lists (Colin
+Robbins) added.
+
+PP 5.0, the first openly available release, was cut in September 1990.
+As experience was obtained with PP 5.0, a bug-fix release known as PP
+5.2 was released in February of 1991. This corrected a number of minor
+problems with the 5.0 release. 
+
+PP 6.0 was released on \ppdate/ 
+\section {Etymology}
+
+PP is not an acronym.  There is no truth in the rumour that PP stands
+for ``Postman Pat,'' a famous British postman.
+
+\section {Acknowledgements}
+
+PP funding has come from a number of sources.  In particular the UK
+Joint Network Team (JNT) has funded a significant part of the PP
+development.  Jim Craigie of the JNT has been helpful and encouraging
+in this.  The Alvey-sponsored COSMOS project funded a major part of
+the initial development of PP.  The Alvey-sponsored Locator project
+funded work on PP to provide hooks for security features.  Use of PP
+as infrastructure in the ESPRIT PODA project has led to many
+improvements in the current release.
+
+Prof. Peter Kirstein of University College London (UCL) and Dr. Hugh
+Smith of Nottingham University have been particularly tolerant of the
+excessive resources consumed by this development.
+
+
+The major work of coding PP (apart from the authors) has been done by
+Phil Cockcroft, Alina da Cruz, and John Taylor of UCL and Pete Cowen
+of Nottingham University.  Code has also been written by Adrian
+Joseph, Mike Roe, Colin Robins, and Bruce Wilford of UCL.
+Irene Hassel of UCL
+helped to write documentation.  John Andrews of UCL has helped to
+bring PP into service at UCL.
+
+Piete Brooks of Cambridge Computer lab has been a faithful alpha test site,
+and has contributed code to integrate UNIX-NIFTP and C-NRS.  He has made
+many useful comments and contributed a number of bugfixes.  Andrew
+Macpherson of STL has contributed a number of bugfixes and tools to help
+Sendmail sites convert to PP.   
+
+The ISODE from Marshall T. Rose of NYSERNet is an essential
+component of PP.
+
+The character set conversion code is based on that provided by
+Keld Simonsen of the Danish UNIX User Group.
+
+Useful comment and fixes have been provided by our beta test sites.
+Particularly useful help has come from: Andrew Findlay of Brunel; Juha
+Heinanen of FUNET; Simon Poole of EUnet; Ole Bj{\o}rn Hessen of University
+of Oslo; George Michaelson of University of Queensland; and Peter Yee of NASA.
+
+\chapter {Using PP}
+
+\section {Conditions of Use}
+
+PP is an openly available suite of software.  There are no
+restrictions on its usage.  The authors accept no liability resulting
+from use of PP.
+
+\section {Comments and Discussion}
+
+Comments and problems on PP should be sent electronically to the PP
+support mailbox.  The RFC~822 form of this is:
+\begin {quote}
+\verb|pp-support@cs.ucl.ac.uk| 
+\end {quote}
+Bug reports (and fixes) to this address are welcome. These reports
+will be dealt with on a best-effort basis.
+
+The X.400 form is:
+
+\begin {center}
+\begin {tabbing}
+Organisation \= UCL \kill
+Surname \> PP-Support \\
+Org Unit \> CS \\
+Organisation \> UCL \\
+PRMD \> UK.AC \\
+ADMD \> \verb*| | \\
+Country \> GB \\
+\end {tabbing}
+\end {center}
+
+\pagebreak[4]
+
+If this is not possible, comments may be sent to:
+
+\begin {tabbing}
+Postal Address: \= Steve Kille \\
+\> Department of Computer Science \\
+\> University College London \\
+\> Gower Street \\
+\> WC1E 6BT \\
+\> UK \\ \\
+Telephone: \> +44-1-380-7294 \\
+\end {tabbing}
+
+
+There is an electronic discussion list: 
+
+\begin {quote}
+\verb|pp-people@cs.ucl.ac.uk|
+\end {quote}
+
+All interested parties are encouraged to join this list by sending to:
+
+\begin {quote}
+\verb|pp-people-request@cs.ucl.ac.uk|
+\end {quote}
+
+
+\chapter {Obtaining PP}
+
+The PP version \ppversion/ software may be obtained in the following
+ways from these places:
+
+\input{distrib}
+
+\bibliography{bcustom,pp,networking}
+\bibliographystyle{alpha}

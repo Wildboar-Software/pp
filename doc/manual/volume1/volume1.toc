@@ -1,0 +1,184 @@
+\contentsline {chapter}{\numberline {1}General Considerations}{1}
+\contentsline {section}{\numberline {1.1}Overview}{1}
+\contentsline {section}{\numberline {1.2}General Requirements}{1}
+\contentsline {subsection}{\numberline {1.2.1}Systems}{1}
+\contentsline {subsection}{\numberline {1.2.2}Disk space}{2}
+\contentsline {subsection}{\numberline {1.2.3}Communications Requirements}{2}
+\contentsline {subsection}{\numberline {1.2.4}X Window System}{2}
+\contentsline {subsection}{\numberline {1.2.5}QUIPU}{2}
+\contentsline {section}{\numberline {1.3}Specific Channel Requirements}{3}
+\contentsline {section}{\numberline {1.4}User Agents}{3}
+\contentsline {section}{\numberline {1.5}Compatibility with Older MTAs}{3}
+\contentsline {subsection}{\numberline {1.5.1}MMDF}{3}
+\contentsline {subsection}{\numberline {1.5.2}Sendmail}{4}
+\contentsline {section}{\numberline {1.6}MTA Layout}{4}
+\contentsline {section}{\numberline {1.7}Performance}{4}
+\contentsline {chapter}{\numberline {2}Installing PP}{5}
+\contentsline {section}{\numberline {2.1}Compile Time Configuration}{5}
+\contentsline {subsection}{\numberline {2.1.1}Make.defs}{5}
+\contentsline {subsection}{\numberline {2.1.2}h/config.h}{11}
+\contentsline {section}{\numberline {2.2}Overview of Channels}{11}
+\contentsline {subsection}{\numberline {2.2.1}Mandatory Channels}{12}
+\contentsline {subsection}{\numberline {2.2.2}Optional Channels}{12}
+\contentsline {section}{\numberline {2.3}Example Configurations}{14}
+\contentsline {subsubsection}{Local SMTP}{15}
+\contentsline {subsubsection}{SMTP mail}{15}
+\contentsline {subsubsection}{Janet mail}{15}
+\contentsline {section}{\numberline {2.4}Configuration of User Agents}{15}
+\contentsline {section}{\numberline {2.5}Checking the Configuration of Your System}{15}
+\contentsline {chapter}{\numberline {3}Configuring PP}{16}
+\contentsline {section}{\numberline {3.1}The General Syntax of Tailor File Entries}{16}
+\contentsline {section}{\numberline {3.2}Variable Tailor File Entries}{17}
+\contentsline {subsection}{\numberline {3.2.1}Mandatory Tailoring Variables}{17}
+\contentsline {subsection}{\numberline {3.2.2}Optional Tailoring Variables}{18}
+\contentsline {section}{\numberline {3.3}Logging Tailor File Entries.}{21}
+\contentsline {subsection}{\numberline {3.3.1}Diverting Logging Streams}{23}
+\contentsline {section}{\numberline {3.4}Table Tailor File Entries}{24}
+\contentsline {section}{\numberline {3.5}Channel Tailor File Entries}{24}
+\contentsline {section}{\numberline {3.6}ISODE Runtime Tailoring}{32}
+\contentsline {subsection}{\numberline {3.6.1}Queue Manager Tailoring}{32}
+\contentsline {subsection}{\numberline {3.6.2}X.400 Tailoring}{32}
+\contentsline {section}{\numberline {3.7}Channel Pairing}{33}
+\contentsline {section}{\numberline {3.8}Tailoring of Common Channels}{34}
+\contentsline {subsection}{\numberline {3.8.1}Submit}{34}
+\contentsline {subsection}{\numberline {3.8.2}Protocol Channels}{34}
+\contentsline {subsubsection}{SMTP channel}{34}
+\contentsline {subsubsection}{X.400 inbound channel}{35}
+\contentsline {subsubsection}{UUCP Channel}{36}
+\contentsline {subsubsection}{{\psf DECnet} MAIL11 channel}{36}
+\contentsline {subsection}{\numberline {3.8.3}Filter Control and Common Filters}{37}
+\contentsline {subsubsection}{RFC\penalty \@M \ 822 Filter}{39}
+\contentsline {subsubsection}{P2norm Filter}{41}
+\contentsline {subsubsection}{Body Part Deleting Filters}{42}
+\contentsline {subsubsection}{ODIF filters}{42}
+\contentsline {subsection}{\numberline {3.8.4}The List Channel}{42}
+\contentsline {subsection}{\numberline {3.8.5}The RFC 1148 Channels}{43}
+\contentsline {subsection}{\numberline {3.8.6}Shaping Channels}{44}
+\contentsline {subsubsection}{RFC 934 Channel}{44}
+\contentsline {subsubsection}{P2flatten Channel}{44}
+\contentsline {subsubsection}{P2explode Channel}{45}
+\contentsline {subsection}{\numberline {3.8.7}Miscellaneous Channels}{45}
+\contentsline {subsubsection}{Qmgrload Channel}{45}
+\contentsline {subsubsection}{Msg-Clean Channel}{45}
+\contentsline {subsubsection}{Debris Channel}{45}
+\contentsline {subsubsection}{Splitter Channel}{46}
+\contentsline {subsubsection}{Timeout Channel}{46}
+\contentsline {subsubsection}{Warning Channel}{46}
+\contentsline {subsubsection}{Dr2rfc Channel}{46}
+\contentsline {section}{\numberline {3.9}How Channels Work}{48}
+\contentsline {chapter}{\numberline {4}PP Tables}{50}
+\contentsline {section}{\numberline {4.1}Basic Operation of the Tables}{50}
+\contentsline {section}{\numberline {4.2}The General Syntax of Table Entries.}{51}
+\contentsline {section}{\numberline {4.3}The Aliases Table}{51}
+\contentsline {section}{\numberline {4.4}The Users Table}{53}
+\contentsline {section}{\numberline {4.5}The Domain Table}{54}
+\contentsline {section}{\numberline {4.6}The O/R Address Table}{59}
+\contentsline {section}{\numberline {4.7}The Channel Table}{60}
+\contentsline {section}{\numberline {4.8}Supporting Multiple Organizations on One MTA}{63}
+\contentsline {section}{\numberline {4.9}RFC 1148 Mapping Tables}{65}
+\contentsline {subsection}{\numberline {4.9.1}The O/R to RFC\penalty \@M \ 822 Table}{65}
+\contentsline {subsection}{\numberline {4.9.2}The RFC\penalty \@M \ 822 to O/R table}{65}
+\contentsline {subsection}{\numberline {4.9.3}The Known RFC\penalty \@M \ 1148 Gateway Table}{66}
+\contentsline {section}{\numberline {4.10}PP Authorisation}{66}
+\contentsline {subsection}{\numberline {4.10.1}Access Policy}{67}
+\contentsline {subsection}{\numberline {4.10.2}Table Formats}{67}
+\contentsline {subsubsection}{Channel Authorisation}{68}
+\contentsline {subsubsection}{MTA authorisation}{69}
+\contentsline {subsubsection}{User Authorisation}{70}
+\contentsline {section}{\numberline {4.11}Authentication}{70}
+\contentsline {subsection}{\numberline {4.11.1}Submit Authentication}{71}
+\contentsline {subsection}{\numberline {4.11.2}QMGR Authentication}{71}
+\contentsline {section}{\numberline {4.12}The 822 Local Table}{73}
+\contentsline {section}{\numberline {4.13}The X.400 (1984/1988) Outbound Table}{74}
+\contentsline {section}{\numberline {4.14}The X.400 (1984/1988) Inbound Table}{76}
+\contentsline {section}{\numberline {4.15}The List Table}{77}
+\contentsline {section}{\numberline {4.16}The Shell Table}{78}
+\contentsline {subsection}{\numberline {4.16.1}Statistical Logging}{79}
+\contentsline {chapter}{\numberline {5}Setting Up X.400 Links}{81}
+\contentsline {section}{\numberline {5.1}Remote Site Information}{81}
+\contentsline {subsection}{\numberline {5.1.1}Conventions}{83}
+\contentsline {section}{\numberline {5.2}Setting Up the Routing Tables}{83}
+\contentsline {subsection}{\numberline {5.2.1}Routing and Mapping tables}{83}
+\contentsline {subsection}{\numberline {5.2.2}Editing the O/R Table}{83}
+\contentsline {subsubsection}{X.400 Outbound Procedures}{86}
+\contentsline {subsection}{\numberline {5.2.3}Editing the X.400 Outbound Table}{86}
+\contentsline {subsection}{\numberline {5.2.4}Channel Table Usage}{87}
+\contentsline {subsection}{\numberline {5.2.5}Edit the Channel Table}{87}
+\contentsline {subsection}{\numberline {5.2.6}X.400 Inbound Procedures}{89}
+\contentsline {subsection}{\numberline {5.2.7}Editing the X.400 Inbound Table}{89}
+\contentsline {subsection}{\numberline {5.2.8}Testing Outbound Connections}{92}
+\contentsline {subsection}{\numberline {5.2.9}How to make a test X.400 connection to a remote site}{92}
+\contentsline {subsection}{\numberline {5.2.10}A Common X.400 Incoming Connection Problem}{93}
+\contentsline {chapter}{\numberline {6}Additional Capabilities}{95}
+\contentsline {section}{\numberline {6.1}G3Fax capability in PP}{95}
+\contentsline {subsection}{\numberline {6.1.1}Fax Addressing}{95}
+\contentsline {subsection}{\numberline {6.1.2}The Fax Table}{96}
+\contentsline {subsection}{\numberline {6.1.3}Fax Conversion}{98}
+\contentsline {subsubsection}{The \unhbox \voidb@x \hbox {\pit hdr2fax} Filter}{98}
+\contentsline {subsubsection}{The \unhbox \voidb@x \hbox {\pit ia52fax} Filter}{99}
+\contentsline {subsection}{\numberline {6.1.4}The Fax Transmission and Reception Channels}{100}
+\contentsline {subsubsection}{The Panasonic Systemfax 250 Driver}{100}
+\contentsline {subsubsection}{The Outbound Transmission Channel}{100}
+\contentsline {subsubsection}{The Inbound Reception Daemon}{101}
+\contentsline {subsubsection}{The Fujitsu dexNet200 Driver}{102}
+\contentsline {section}{\numberline {6.2}ASN.1 Filter}{102}
+\contentsline {subsection}{\numberline {6.2.1}Runtime Options}{102}
+\contentsline {subsection}{\numberline {6.2.2}Tailoring}{103}
+\contentsline {subsubsection}{Tailoring Examples}{103}
+\contentsline {chapter}{\numberline {7}Managing PP}{104}
+\contentsline {section}{\numberline {7.1}QMGR}{104}
+\contentsline {subsection}{\numberline {7.1.1}Message Submission}{104}
+\contentsline {subsection}{\numberline {7.1.2}Queue Reading}{104}
+\contentsline {subsection}{\numberline {7.1.3}Active Channel}{104}
+\contentsline {subsection}{\numberline {7.1.4}Passive Channel}{105}
+\contentsline {subsection}{\numberline {7.1.5}Cleanups, Timeouts, Warnings and Debris}{105}
+\contentsline {subsection}{\numberline {7.1.6}QMGR Management and Tailoring}{105}
+\contentsline {section}{\numberline {7.2}MTA Console}{107}
+\contentsline {subsection}{\numberline {7.2.1}The MTA Console's Display}{107}
+\contentsline {subsubsection}{The Monitor Mode}{108}
+\contentsline {subsubsection}{The Control Mode}{108}
+\contentsline {subsection}{\numberline {7.2.2}Configuring The MTA Console}{108}
+\contentsline {subsubsection}{Totals Configuration.}{108}
+\contentsline {subsubsection}{Colour Configuration.}{109}
+\contentsline {subsubsection}{Static Connection Configuration.}{109}
+\contentsline {subsubsection}{Confirmation Configuration.}{109}
+\contentsline {subsubsection}{Heuristic Configuration}{109}
+\contentsline {subsubsection}{Configuration of Timeouts and Retries.}{110}
+\contentsline {subsection}{\numberline {7.2.3}The Effect of the Mouse Buttons and Keys}{111}
+\contentsline {subsection}{\numberline {7.2.4}Badness}{114}
+\contentsline {subsubsection}{Tailoring of Upperbounds}{114}
+\contentsline {section}{\numberline {7.3}LINEconsole}{116}
+\contentsline {subsection}{\numberline {7.3.1}LINEconsole Commands}{117}
+\contentsline {section}{\numberline {7.4}Lconsole}{118}
+\contentsline {section}{\numberline {7.5}Checkup Procedures}{121}
+\contentsline {subsection}{\numberline {7.5.1}ckchan}{121}
+\contentsline {subsection}{\numberline {7.5.2}ckconfig}{122}
+\contentsline {subsection}{\numberline {7.5.3}Checking of Addresses}{122}
+\contentsline {subsubsection}{Ckadr}{122}
+\contentsline {subsubsection}{Probes}{124}
+\contentsline {section}{\numberline {7.6}Dealing with Errors}{125}
+\contentsline {section}{\numberline {7.7}Managing Tables}{126}
+\contentsline {subsubsection}{RFC 1148 Mapping Tables}{126}
+\contentsline {subsubsection}{Domain and Channel Tables}{127}
+\contentsline {subsubsection}{Generation of the domain table}{127}
+\contentsline {subsubsection}{Generation of the Channel Table}{129}
+\contentsline {section}{\numberline {7.8}Adding New Users and MTAs}{130}
+\contentsline {section}{\numberline {7.9}Adding Filters, Shapers + EITs}{131}
+\contentsline {subsection}{\numberline {7.9.1}Adding A New Encoded Information Type}{131}
+\contentsline {subsection}{\numberline {7.9.2}Adding a New Content Type}{131}
+\contentsline {section}{\numberline {7.10}The Day--to--Day Running of PP}{132}
+\contentsline {subsection}{\numberline {7.10.1}How to Start Up the PP System}{132}
+\contentsline {subsection}{\numberline {7.10.2}What to Run Each Night}{133}
+\contentsline {subsection}{\numberline {7.10.3}Saving Logs}{133}
+\contentsline {section}{\numberline {7.11}Examining the PP Queue}{134}
+\contentsline {subsection}{\numberline {7.11.1}Delivery Reports}{134}
+\contentsline {subsection}{\numberline {7.11.2}Receipt Notifications}{134}
+\contentsline {chapter}{\numberline {A}Example of the Tailor File}{136}
+\contentsline {chapter}{\numberline {B}Example of the PP Start Script}{144}
+\contentsline {chapter}{\numberline {C}Example of the PP Script Run Nightly}{145}
+\contentsline {chapter}{\numberline {D}Obtaining X.400 Tables}{147}
+\contentsline {chapter}{\numberline {E}Testing PP --- the MTS User Interface}{149}
+\contentsline {section}{\numberline {E.1}Overview}{149}
+\contentsline {section}{\numberline {E.2}User Input}{151}
+\contentsline {section}{\numberline {E.3}MU Internals}{152}
+\contentsline {chapter}{\numberline {F}QMGR Protocol}{154}

@@ -1,0 +1,61 @@
+.TH MAKE-LISTS 8 "August 1990"
+.\" @(#) $Header: /xtel/pp/pp-beta/Tools/make-lists/RCS/make-lists.8,v 6.0 1991/12/18 20:30:32 jpo Rel $
+.\"
+.\" $Log: make-lists.8,v $
+.\" Revision 6.0  1991/12/18  20:30:32  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+make-lists \- Convert sendmail alias-file lists for PP
+.SH SYNOPSIS
+.B make-lists
+.B /etc/aliases
+.B ch.list
+.B listdir/
+.SH DESCRIPTION
+The
+.I make-lists
+program is a transition tool for sendmail users.
+.IP /etc/aliases
+is the sendmail alias file to be  processed.
+.IP ch.list
+\- the file to contain the PP list-table entries.
+.IP listdir/
+\- the lists found in the sendmail alias file will be collected
+into seperate files in
+.BR listdir ,
+after which they may be maintained with
+.BR mlist(1) .
+.PP
+A sendmail alias file handles mailing lists in two ways.  The first is by
+including a user-maintained file, one user per line.   This is equivalent to
+PP's way of doing things, and is not supported by this tool.  The other is
+by forming a comma-seperated set of list members:
+
+.nf
+list: member1, member2, member3
+.fi
+
+these groups are extracted into seperate files in
+.BR listdir ,
+and a pp list-control line added to
+.BR ch.list .
+.PP
+Each 
+.B list
+has an associated
+.BR list -request
+created at the same time.  If one existed in the sendmail-alias file, it is
+used, otherwise
+.I postmaster
+is elected.
+.SH SEE ALSO
+sendmail(8)
+.br
+\fIThe PP Manual: Volume 1 \- Installation and Operation\fP
+.SH AUTHORS
+M.A.Scott and A.Macpherson, STC Technology Ltd
+.br
+Program donated for use with PP August 1990

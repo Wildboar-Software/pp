@@ -1,0 +1,15 @@
+\File{delv\-rep.c},{09:19},{Mar 17 1989}
+\L{\LB{...}}
+\L{\LB{    \{}}
+\L{\LB{}\Tab{8}{\K{char} buffer[BUFSIZ];}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{(\K{void}) sprintf (buffer, \S{}\"Address \%s failed for reason \%s\"\SE{},}}
+\L{\LB{}\Tab{24}{ap \-\> ad\_r822adr, rstr);}}
+\L{\LB{}\Tab{8}{}}
+\L{\LB{}\Tab{8}{(\K{void}) delivery\_set (ap \-\> ad\_no,}}
+\L{\LB{}\Tab{24}{     int\_Qmgr\_status\_permanentFailure);}}
+\L{\LB{}\Tab{8}{set\_dr (qp, ap \-\> ad\_no, msg\_name,}}
+\L{\LB{}\Tab{16}{  DRR\_UNABLE\_TO\_TRANSFER,}}
+\L{\LB{}\Tab{16}{  DRD\_UNRECOGNISED\_OR, buffer);}}
+\L{\LB{    \}}}
+\L{\LB{...}}

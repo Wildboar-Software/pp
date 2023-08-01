@@ -1,0 +1,9 @@
+This is a program to help adapt large sendmail alias files
+into the format required by PP. It should be noted that only
+comma separated lists are transformed by this process. Aliases
+such as
+
+	postmaster:jpo
+
+are not output, and such expansions must be added by hand into the
+PP alias table.

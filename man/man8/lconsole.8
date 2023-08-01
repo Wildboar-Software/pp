@@ -1,0 +1,77 @@
+.TH LCONSOLE 8
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man8/RCS/lconsole.8,v 6.0 1991/12/18 20:44:03 jpo Rel $
+.\"
+.\" $Log: lconsole.8,v $
+.\" Revision 6.0  1991/12/18  20:44:03  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+lconsole \- line based MTA console
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+lconsole \%[\-Q\ mta] \%[\-u\ user] \%[\-p\ passwd] \%[\-b] \%[actions...]
+.in -.5i
+.SH DESCRIPTION
+.I Lconsole
+is a simple interface to the qmgr providing low functionality but
+provides access to all the controlling and monitoring functions.
+.PP
+The options are:
+.TP
+\-Q mta
+Connect to this mta by default on start up.
+.TP
+\-u user
+Connect as this user to the mta, a password will be prompted for.
+.TP
+\-p passwd
+Supply a password to connect to the mta. (This is not generally
+recommended)
+.TP
+\-b
+Run in batch mode (no prompting).
+.PP
+All other arguments on the command line are taken as an operation to
+perform. If no actions are supplied the \fIlconsole\fP takes commands
+from the standard input.
+.PP
+The possible commands are:
+.nf
+.sp
+.ta \w'rereadqueue\0\0'u
+?	- provide help.
+channel	- display channels or one channel.
+clear	- clear the delay on a channel, mta or msg.
+close	- close the association with a qmgr.
+decrease	- decrease the number of runnable channels.
+delay	- add a deley to a channel, mta or msg.
+disable	- disable a channel, mta or message.
+enable	- enable a channel, mta or msg.
+help	- provide help.
+increase	- increase the number of runnable channels.
+msg	- show details of messages.
+mta	- show details of mtas.
+open	- open a connection to a qmgr.
+quit	- terminate the program.
+rereadqueue 	- initiate a queue refresh.
+restart	- restart the qmgr.
+show	- show certain matching messages.
+shutdown	- shutdown the qmgr.
+source	- read in a file of commands.
+status	- show the status of the qmgr.
+.sp
+.fi
+When displaying channels, messages and mtas, a regular expression is
+used to choose the messages. Where a command takes a channel as an
+argument, a regular expression resolving to a unique channel may be used.
+.SH FILES
+None
+.SH "SEE ALSO"
+MTAconsole(8)
+.br
+\fIThe PP Manual: Volume 1 \- Installation and Operation\fP
+.SH BUGS
+Should have more defaulting.

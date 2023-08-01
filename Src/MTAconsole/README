@@ -1,0 +1,10 @@
+There is known but elusive bug somewhere in the MTAconsole.
+Occasionally the MTAconsole falls over and core dumps within the
+routine  XawFormDoLayout ().
+This appears to happen if there is a substantial decrease in the
+number of mtas displayed for a particular channel while the console is
+in monitor mode.
+Any help in diagnosing this problem would be very welcome.
+Please note that this does not appear to make the MTAconsole unusable.
+In our experience, the problem occurs infrequently.
+

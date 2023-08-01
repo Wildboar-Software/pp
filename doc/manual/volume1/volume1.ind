@@ -1,0 +1,381 @@
+\begin{theindex}\makeatletter
+\raggedright
+\def\newindex#1{{\huge\hspace{-.5in}\parbox[t]{.5in}{\makebox[.35in][c]{\uppercase{#1}}}\vspace{-1.5ex}}}
+\item 822-local, 12, 15, 53, 66
+\item 822top2, 132
+\item 822touk, 40
+\item 822tous, 40
+\indexspace
+\newindex{a}
+\item abbrev, 127, 128
+\item addr, 134
+\item admin-aliases, 63
+\item adminstration\_assigned\_alternate\_recipient, 21
+\item admin-users, 63
+\item alias, 41, 60, 62, 130
+\item aliases, 42, 43, 50, 51, 52, 55, 63, 64, 126
+\item APPDEFAULTS, 10
+\item argh.c, 150
+\item asn, 101, 102, 103
+\item ASN.1, 2
+\item authchannel, 19
+\item auth.channel, 74, 75
+\item authlog, 23
+\item authloglevel, 19
+\item auth.mta, 74, 75, 77
+\item authorisation, 126
+\item auth.qmgr, 79
+\item auth.user, 74, 75
+\item awk, 133
+\indexspace
+\newindex{b}
+\item BACKUP, 11
+\item base, 134
+\item /bin/mail, 3, 15
+\item bodypart, 18
+\indexspace
+\newindex{c}
+\item C, 7, 9, 10
+\item CC, 9
+\item cc, 10
+\item CCOPTIONS, 10
+\item CHANDIR, 5, 11
+\item chandir, 18, 72
+\item channel, 34, 50, 55, 57, 58, 60, 67, 96, 127, 129
+\subitem  access, 29
+\subitem  addr, 27
+\subitem  adr-order, 28
+\subitem  auth-table, 29
+\subitem  bad-sender-policy, 30
+\subitem  bpout, 28
+\subitem  bptin, 28
+\subitem  check, 30
+\subitem  content-in, 26
+\subitem  content-out, 26
+\subitem  conv, 29
+\subitem  cost, 26
+\subitem  decnet, 36
+\subitem  domain-norm, 29
+\subitem  drchan, 26
+\subitem  inadr, 27
+\subitem  ininfo, 27
+\subitem  insubadr, 27
+\subitem  intable, 28
+\subitem  key, 25
+\subitem  maxproc, 29
+\subitem  mta, 28
+\subitem  mtatable, 28
+\subitem  name, 25
+\subitem  outadr, 27
+\subitem  outinfo, 27
+\subitem  outsubadr, 27
+\subitem  outtable, 28
+\subitem  probe, 29
+\subitem  prog, 25
+\subitem  show, 25
+\subitem  solo-proc, 30
+\subitem  sort, 27
+\subitem  subadr, 28
+\subitem  table, 28
+\subitem  trace, 30
+\subitem  type, 25
+\subitem  uucp, 36
+\item channel tailor, 25
+\item channel-auth, 19
+\item chans, 18
+\item ch.list, 70
+\item ch.local, 66
+\item chmod, 7
+\item CHMOD, 11
+\item chndfldir, 122
+\item chown, 7, 10
+\item ch.shell, 71
+\item ch.x400in84, 69
+\item ch.x400in88, 69
+\item ch.x400out84, 67
+\item ckadr, 51, 122, 123, 125
+\item ckchan, 121
+\item ckconfig, 15, 16, 122, 125, 126
+\item CMDDIR, 5
+\item cmddir, 18
+\item c-nrs, 127, 129
+\item config.h, 5, 10
+\item console, 126
+\item cp, 11
+\item cron, 15
+\indexspace
+\newindex{d}
+\item dap\_passwd, 21
+\item dap\_user, 20
+\item dbm, 2, 8, 9, 11, 19
+\item dbmbuild, 18, 125, 130, 133
+\item debris, 45
+\item decnet, 36
+\item default, 69
+\item dirlist, 14
+\item dniserver, 36
+\item dniserver.reg, 36
+\item doc, viii
+\item domain, 17, 33, 41, 50, 54, 56, 58, 59, 60, 62, 63, 127
+\item dr2rfc, 12, 26, 46
+\indexspace
+\newindex{e}
+\item echo, 11
+\item /etc/inetd.conf, 34
+\item /etc/isoservices, 32
+\item /etc/passwd, 19, 72
+\item examples, 14
+\item exec, 67
+\indexspace
+\newindex{f}
+\item fax, 95
+\item FAXDRIVERS, 9
+\item fcntl, 20
+\item fcontrol, 14, 18, 27, 37, 39, 40, 98, 99, 101, 102, 131
+\item filter control, 37
+\item filtercontrol, 5
+\item filter.number, 134
+\item flock, 20
+\item format, 18
+\item FORMDIR, 5, 14
+\item formdir, 18, 37, 42, 101
+\item fsync, 11, 21
+\indexspace
+\newindex{g}
+\item gcc, 9, 10
+\item greyin, 33
+\indexspace
+\newindex{h}
+\item HAS\_FSYNC, 11
+\item h/config.h, 11
+\item hdr2fax, 30, 96, 97, 98, 99
+\item headertype, 18
+\item hostname, 17
+\indexspace
+\newindex{i}
+\item ia52fax, 96, 98, 99
+\item iaed, 32
+\item inetd, 20, 34, 36, 132
+\item inetd.conf, 34
+\item install, 11
+\item isode, 19
+\item isode-gen, 133
+\item isodelog, 23
+\item isoentities, 17, 32
+\item isoservices, 35
+\item isotailor, 19
+\indexspace
+\newindex{k}
+\item kill, 133
+\indexspace
+\newindex{l}
+\item \LaTeX {}, 166
+\item lconsole, 118, 119
+\item LDOPTIONS, 10
+\item LIBCCOPTIONS, 10
+\item libdsap.a, 2
+\item LIBPHOTO, 10
+\item libpp.a, 8
+\item Lib/pp/static.c, 44
+\item LIBRESOLV, 8
+\item LIBSYS, 8
+\item LIBX, 10
+\item linear, 18
+\item LINEconsole, 116, 117
+\item lint, 7
+\item LINT, 10
+\item LINTFLAGS, 10
+\item list, 13, 15, 42, 70
+\item list channel, 126
+\item local channel, 126
+\item loc\_dom\_mta, 17
+\item loc\_dom\_site, 17
+\item lockdir, 20
+\item lockf, 20
+\item lockstyle, 20
+\item loc\_or, 17
+\item log, dflags, 22
+\subitem  dlevel, 22
+\subitem  file, 21
+\subitem  level, 22
+\subitem  sflags, 22
+\subitem  size, 22
+\item LOGDIR, 8
+\item logdir, 18, 22
+\indexspace
+\newindex{m}
+\item .mailfilter, 67
+\item make, 5
+\item Make.defs, 5, 16, 67
+\item make-lists, 71
+\item MANDIR, 9
+\item MANOPTS, 9
+\item maxhops, 20
+\item maxloops, 20
+\item mkpasswd, 79
+\item mlist, 70, 71
+\item moderator, 70
+\item msg-clean, 12, 45, 105, 106
+\item MTAconsole, 32, 79
+\item mtatable, 33
+\item mu, 149
+\item mu.defaults, 149
+\indexspace
+\newindex{n}
+\item NAMESERVER, 11
+\item NDBM, 11
+\item NOPHOTOS, 10
+\item normlog, 22
+\item not, 79
+\item Note, 17, 67
+\item nsapexpand, 70
+\item ntail, 126
+\item nwarnings, 19
+\indexspace
+\newindex{o}
+\item OLDCC, 10
+\item only, 123
+\item oper, 133
+\item operlog, 23
+\item OPTIONALCHANS, 8
+\item OPTIONALFILTERS, 9
+\item or, 17, 41, 50, 57, 58, 59, 60, 62, 63, 81, 87, 126
+\item or2rfc, 50, 51, 64, 83, 87
+\indexspace
+\newindex{p}
+\item p2explode, 13, 45
+\item p2flatten, 13, 26, 44
+\item p2norm, 41, 42, 62, 64
+\item P2toRFC, 13, 26, 43, 44
+\item pepsy, 7
+\item PEPSY, 10
+\item pepy, 7, 10
+\item PGMPROT, 10
+\item pipe, 34
+\item postmaster, 17
+\item posy, 7
+\item POSY, 10
+\item pp, 19
+\item pp.chan, 129
+\item ppdbm, 19
+\item pp.dmn, 127
+\item pp-gen, 5
+\item pplogin, 19
+\item pp.night, 133
+\item pp.start, 35, 132, 133
+\item pp-tables/, 147, 148
+\item pptsapd, 18, 48, 126, 132
+\item pptsapd\_addr, 18
+\item PPUSER, 10
+\item probe, 124
+\indexspace
+\newindex{q}
+\item qmgr, 11, 12, 18, 34, 48, 79
+\item qmgrhost, 17
+\item qmgrload, 12, 45, 104
+\item qmgr-load, 106
+\item qmgr-pa.cache, 17
+\item QUEDIR, 8
+\item quedir, 12, 18, 134
+\item queuestruct, 21
+\indexspace
+\newindex{r}
+\item rc.local, 132
+\item README, 14
+\item regex, 77, 117
+\item removebp, 26
+\item report.number, 134
+\item returntime, 19
+\item rfc1148, 43, 83
+\item rfc1148gate, 50, 51, 66
+\item rfc2or, 50, 51, 65, 66, 83, 87
+\item rfc822norm, 26, 39, 40, 62, 64
+\item rfc934, 13, 44
+\item RFCtoP2, 13, 43, 44
+\item ROOTUSER, 10
+\item rosy, 7, 10
+\item rsh, 4
+\indexspace
+\newindex{s}
+\item sendmail, 3, 4, 15
+\item shell, 14, 53, 71, 72
+\item slocal, 12, 53, 66
+\item sloppy, 35
+\item smtp, 13, 15, 34, 37
+\item smtpd, 34, 35
+\item smtpsrvr, 132
+\item splitter, 12, 14, 46
+\item stat, 133
+\item statp, 133
+\item submit, 12
+\item Submit, 17
+\item submit, 20, 21, 24, 28, 30, 32, 34, 46, 50, 51, 54
+\item Submit, 60, 73
+\item submit, 104, 125, 131, 132, 149, 150, 151, 153
+\item submit\_addr, 20
+\indexspace
+\newindex{t}
+\item table, dbm, 24
+\subitem  domain, 54
+\subitem  file, 24
+\subitem  flags, 24
+\subitem  linear, 24
+\subitem  list, 70
+\subitem  name, 24
+\subitem  override, 24
+\subitem  shell, 71
+\subitem  show, 24
+\subitem  users, 53
+\item tables, alias, 51
+\subitem  channel, 60
+\subitem  local, 66
+\subitem  X.400 84, 67
+\subitem  X.400 88, 67
+\subitem  X.400 O/R, 59
+\item tail, 126
+\item TAILOR, 8
+\item tailor, 16, 17, 21, 24, 33, 34, 37, 39, 42, 45, 68, 87, 89, 90, 92, 93, 106, 115, 122, 124, 125, 126, 131
+\item tailoring, channels, 24
+\subitem  filters, 131
+\subitem  logs, 21
+\subitem  simple, 17
+\subitem  tables, 24
+\subitem  variables, 17
+\item TBLDIR, 8
+\item tbldir, 18, 19, 24, 71, 122
+\item timeout, 12, 46
+\item timout, 105
+\item tjoin, 129, 130
+\item /tmp, 20
+\item TOOLDIR, 5
+\item Tools, 71
+\item tools, 126, 133
+\item trash, 12
+\item true, 10
+\item tsapd, 133
+\item ts\_communities, 86
+\indexspace
+\newindex{u}
+\item UKORDER, 11
+\item user, 53, 60
+\item users, 12, 50, 51, 53, 55, 63, 70, 72, 96, 126, 130
+\item USRBINDIR, 8, 67
+\item uuencode, 131
+\indexspace
+\newindex{v}
+\item VAT, 11
+\indexspace
+\newindex{w}
+\item warndir, 46
+\item warning, 12, 46, 105
+\item warninterval, 19
+\item wrndfldir, 19, 75
+\indexspace
+\newindex{x}
+\item X11, 10
+\item X25 access, 2
+\item x400in84, 35
+\item x400mta, 20
+\item x400out84, 93
+\item xalert, 10
+\end{theindex}

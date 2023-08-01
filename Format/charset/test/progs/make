@@ -1,0 +1,2 @@
+#! /bin/sh
+PATH=/usr/ucb:/bin:/usr/bin exec ${MAKECMD-make} -f ../../../../Make.defs -f Makefile ${1+"$@"}

@@ -1,0 +1,146 @@
+\documentstyle [11pt,a4] {article}
+\begin{document}
+\section {ASN.1 Filter}
+
+\bigskip
+\subsection {Description}
+\medskip
+\noindent The ASN.1 Filter ({\em asn}) is used in conjunction with the 
+general filter controller {\em fcontrol}, and is located in the 
+{\em formdir} directory.
+
+\medskip
+\noindent It is a general body part conversion filter and can do 
+a variety of conversions depending on its specified options.
+These options are:
+
+\begin {enumerate}
+
+\item Accept as input one of 2 choices: 
+\begin {itemize}
+\item An ASN.1 wrapped body part 
+\item A body part that is not encoded in any way (unwrapped ia5 text).
+\end{itemize}
+
+\item Optionally perform a character set conversion on the body part. 
+
+\item Produce as output one of 2 choices:
+\begin {itemize}
+\item an ASN.1 wrapped body part.
+\item A body part that is not encoded in any way (unwrapped ia5 text).
+\end {itemize}
+\end {enumerate}
+
+
+\bigskip\bigskip
+\subsection {Runtime Options}
+\medskip
+
+
+\begin {tabbing}
+
+{\bf {\em asn}} \\
+\ \ \ \ \=
+\= \begin{math} [-ia \ \ "none"\  |\  input.asn1] \end{math}\ \ \ \ 
+\= \begin{math} [-oa \ \ "none"\  |\  output.asn1] \end{math} \\
+
+\> \begin{math} [-is \ \ input.character.set] \end{math}
+\>\>  \begin{math} [-os \ \ output.character.set] \end{math} \\
+
+\> \begin{math} [ -x \  | \  -m ] \ \ \ [ -l ] \end{math}
+\end{tabbing}
+
+\smallskip
+\noindent Please note the following: 
+\begin {itemize}
+\item All keywords and values are optional.
+\item If '-is' is specified then '-os' is mandatory, and vice versa.
+\item If '-is' has the same value as '-os' 
+then {\bf no} character set conversion is performed.
+\item If the -ia and/or -oa is not specified, then the default is 
+'none', which means 'No ASN.1 encoding and/or decoding is required', 
+i.e  the body part is read and/or output as is. 
+\item For available character set values, please refer to 
+Appendix A - "Character Sets supported by the {\em charset} filter".
+\clearpage
+\item At present, there are only 5 available {\em input.asn1} and
+{\em output.asn1} values, they are:
+\begin{enumerate}
+\item none
+\item ia5 (unwrapped)
+\item generaltext
+\item motis-86-6937
+\item teletex
+\end{enumerate}
+\item The {\em -x}/{\em -m} options specify {\bf either} a X.408
+{\bf or} a Mnemonic conversion.  The default is {\em -x},
+where mnemonics are unrecognised. See the {\em charset} filter documentation
+for more information.
+\item Sometimes quite legally, remote sites leave out the \begin{math} <CR>
+\end{math} characters terminating ASN.1 encoded body part lines.
+The {\em -l} option prevents on decoding, the concatenation of such lines.
+\end {itemize}
+\bigskip
+
+\subsection {Tailoring}
+\medskip
+
+\noindent The following fields need to be set within the tailor file.
+\begin {itemize}
+\item {\bf prog}, set to the value {\em fcontrol},
+because the {\em asn} filter is only used in conjunction 
+with the general filter controller. 
+\item {\bf bptin} and {\bf bptout}, set to specified {\bf bodypart}s.
+\item {\bf type}, set to {\em shaper}.
+\item {\bf conv}, set to either {\em conv} or {\em loss}.
+\item {\bf cost}, only set if conv={\em loss}.
+\item {\bf info}, set to the ASN.1 filter name {\em asn} followed 
+by its required options.
+\end {itemize}
+
+\bigskip
+\subsubsection {Tailoring Examples}
+\bigskip
+
+\noindent {\bf Example 1} Converting an ASN.1 iso6937 body part into an 
+unwrapped ia5 body part:
+
+\begin{verbatim}
+chan iso6937toia5   prog=fcontrol,
+                    show="iso6937 -> ia5 conversion filter",
+                    bptin=iso6937, bptout=ia5,
+                    type=shaper, conv=loss, cost=99,
+                    info="asn -is iso_6937-2-add -os ccitt_x.408_ia5irv
+                          -ia motis-86-6937 -oa ia5"
+\end{verbatim}
+
+
+\clearpage
+\noindent {\bf Example 2} Converting a ia5 unwrapped body part into an 
+ASN.1 iso6937 body part.
+
+\begin{verbatim}
+chan ia5toiso6937   prog=fcontrol,
+                    show="ia5 -> iso6937 conversion filter",
+                    bptin=ia5, bptout=iso6937,
+                    type=shaper, conv=loss, cost=99,
+                    info="asn -is ccitt_x.408_ia5irv -os iso_6937-2-add
+                          -ia ia5 -oa motis-86-6937"
+\end{verbatim}
+
+
+
+\bigskip\bigskip
+\noindent {\bf Example 3} Converting a ASN.1 iso6937 body part into a 
+ASN.1 teletex body part.
+
+\begin{verbatim}
+chan iso6937toteletex	prog=fcontrol,
+                        show="iso6937 -> teletex conversion filter",
+                        bptin=iso6937, bptout=ttx,
+                        type=shaper, conv=loss, cost=99,
+                        info="asn -is iso_6937-2-add -os t.61-8bit
+                              -ia motis-86-6937 -oa teletex"
+\end{verbatim}
+
+\end {document}

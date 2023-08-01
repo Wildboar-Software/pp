@@ -1,0 +1,62 @@
+#!/bin/sh
+#
+#
+#       awk.or2rfc - is an awk program that reformats the
+#       the PP tables into the RFC-987 International ones.
+#
+#
+#       syntax :    awk.or2rfc  {first | multi}  input-table
+#
+######################################################################
+
+AWK=/usr/bin/awk
+
+FILEIN=$1
+FILETEMP=or2rfc.temp
+
+if [ -z "$FILEIN" ]
+then
+        echo " "
+        echo "Usage:   awk.or2rfc  input-table"
+        echo " "
+        exit 1
+fi
+
+grep "^C" $FILEIN >$FILETEMP
+grep "^ADMD" $FILEIN >>$FILETEMP
+grep "^PRMD" $FILEIN >>$FILETEMP
+grep "^O" $FILEIN | sort -u >>$FILETEMP 
+
+
+
+#---------------------- Start of the awk routines  --------------------------#
+
+
+
+$AWK <$FILETEMP '
+BEGIN   {
+
+		print("#")
+		print("#=============================================================================")
+		print("#======================================================= United Kingdom ======")
+		print("#        Last update: 90.02.01")
+		print("#        Responsible: John Seymour <John.Seymour@ean-relay.ac.uk>")
+		print("#")
+		print("#    Beware of the quoted dots in this table!")
+		print("#")
+		FS =":"
+        }
+
+/^#.*/  {
+                continue
+        }
+        {
+		printf("%s#%s#\n", $1, $2)
+		continue
+        }
+
+END     {}
+
+'
+
+rm $FILETEMP

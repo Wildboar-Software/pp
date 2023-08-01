@@ -1,0 +1,189 @@
+\chapter {General Considerations}
+
+\section {Overview}
+
+Before rolling the tape onto a disk, there are some general issues which it
+is useful to consider.  If you are planning to install PP on more than one
+machine, you should read the latter parts of this chapter carefully.
+
+\section {General Requirements}
+
+\subsection{Systems}
+
+PP is designed to be portable to a wide range of \unix/ systems.
+Configurations are given for the following systems:
+\begin{itemize}
+\item	Sun 3 using SunOS 3.X.
+\item	Sun 3 using SunOS 4.X.
+\item	Sun 4 using SunOS 4.X.
+\end{itemize}
+It is also known to run on the following systems:
+\begin{itemize}
+\item	Vax Ultrix.
+\item	Mips Ultrix.
+\item	CCUR 6000 RTU 6.0
+\item	ICL DRS/6000
+\item	NeXT
+\item	Olivetti LSX-3020
+\item	Pyramid 9800 and MIS
+\end{itemize}
+
+\subsection {Disk space}
+
+A fair amount of space must be made available for the system. The
+figures given below are only a guide.
+
+The basic distribution tape contains sources amounting to around 7Mb.
+
+You will need approximately 40Mb of headroom extra to compile
+everything, although you can do it in stages if you do not have that
+much space.
+
+The installed binaries will take up somewhere around 20-30Mb.
+
+The routing table files plus local tables  may take up about 1Mb if you
+have a lot of connectivity.
+
+The \file{dbm} database built from these tables, perhaps another 1-4Mb.
+
+Of course you must also allow plenty of space for the mail passing through!
+
+This suggests that you should allow about 50Mb of space for building
+everything, and when built, about 25Mb to run the system with whatever
+room you feel reasonable for spooling of messages (phew!).
+
+This figure is less if your version of ISODE can make use of shared
+libraries (e.g., SunOS).
+
+\subsection   {Communications Requirements}\index{X25 access}  
+
+PP uses OSI/ROS for its internal communication, using the ISODE
+implementation of ROS and the lower layers\cite{ISODE}. It is assumed
+that ISODE is installed and available on the system in question. ISODE
+\pgm{ASN.1} tools are also required to build parts of PP. This version of
+PP assumes ISODE version \isodevrsn/.
+
+\subsection	{X Window System}
+The system has a very useful monitoring tool which is written using
+the \xwindows/
+which is used for managing the MTA as a whole. It is possible to run
+an MTA without the console, but not so easily. The console depends on
+X11 release 4 (or greater) and the Athena Widget set. It will not work under
+earlier releases of X11.
+
+There are also present some small programs to do X-based alert of
+new mail. These programs have the same X requirements.
+
+All binaries should work against X11 release 3 (or greater) servers.
+
+\subsection	{QUIPU}
+This release requires the \file{libdsap.a} library, but has no
+requirements on the QUIPU X.500 directory service agent. There is a
+list channel that utilises the directory but this is optional. Also
+the X based alert utility has the ability to fetch photographs of the
+user sending you mail from the directory. This feature can be disabled
+though. Future releases of PP will require a QUIPU DSA.
+
+\section{Specific Channel Requirements}
+
+Some of the channels in PP have external dependencies. 
+\begin{describe}
+\item[SMTP:]	The Simple Mail Transfer Protocol channel requires the
+use of TCP/IP. If the domain name server is to be used, then the
+BIND\cite{BIND} resolver library must be provided (see
+Table~\ref{tab:makedefs1} on page~\pageref{tab:makedefs1}).
+
+\item[JNT Mail:]	This is integrated with the UNIX-NIFTP package,
+available from Cambridge (UK) at the following address:
+\begin{quote}\begin{verbatim}
+Piete Brooks (pb@cl.cam.ac.uk)
+Cambridge University Computer Laboratory,
+Cambridge
+ENGLAND
+\end{verbatim}\end{quote}
+
+X.25 access is usually required for this channel.
+
+\item[X.400:]	This uses the ISODE lower layers (both 1984 and 1988
+variants). For most services X.25, CONS, or CLNP is required to run
+this channel, although it can be run over TCP/IP using
+RFC-1006\cite{TSAP.on.TCP}.
+
+\item[UUCP:]	This channel requires a working UUCP
+installed on the given machine.
+
+\item[DECNET:] This requires the Sunlink DNI (version 7.0 or later) package.
+\end{describe}
+
+\section{User Agents}
+
+This version of PP does not support any sophisticated user agents. It
+provides a mail-sending interface of the same approximate
+functionality of \pgm{/bin/mail}. It is strongly recommended that the
+MH\cite{MH6.5} user agent is considered for use with PP. MH should be
+configured with the SMTP transfer option which will connect to PP
+though the SMTP protocol (configuration option \verb|mts send/smtp|).
+This also allows PP to be accessed from hosts not running PP
+directly but with SMTP connectivity. 
+
+{\bf Warning:} MH should be compiled without the \verb|BERK| option.
+
+\section{Compatibility with Older MTAs}
+
+PP is designed as a replacement for \man sendmail(8) and MMDF. As such it is
+capable of the majority of functions of both (and a great deal more).
+However, there are some differences.
+
+\subsection{MMDF}
+PP does not support the MMDF syntax that allows users to give an
+address as \verb|user=string@host.domain|.
+
+\subsection{Sendmail}
+PP does not deliver to sendmail style mailboxes by default. This can
+be changed however (see Section~\ref{sect:local}).
+
+Some programs that send mail have compiled into them the
+\pgm{sendmail} program. To deal with these, a fake sendmail is
+provided that emulates most of the common sendmail options.
+
+As PP does not have sendmail's general rewriting rules, it can not in
+general be programmed to ``fix up'' strange addresses. This applies
+particularly to address formats such as DECnet and Xerox-style
+addresses. To handle this sort of address an inbound channel should be
+written that can parse these addresses and convert them to RFC-822 addresses.
+
+\section{MTA Layout}
+Usually PP will support sites with many hosts. It is possible, but
+not desirable, to run a copy of PP on each host. An MTA is defined
+by the existence of a queue (spool area). Each queue should be managed
+(in human terms) in order to guarantee good service.
+
+For this reason, the number of MTAs should be kept small, and other
+mechanisms used for delivery to local hosts. Possibilities include:
+\begin{itemize}
+\item NFS. This simply consists of NFS-mounting (possible through use
+of an automounter) the necessary files systems for delivery.
+\item Remote access protocols. Use of services such as POP\cite{POP}
+may be an alternative.
+\item Delivery to a central place which is NFS-mounted by clients.
+\end{itemize}
+For these reasons, some of the PP utility programs may be accessed
+remotely using \man rsh(1).
+
+A site with 1000 users and 100 hosts might consider installing
+between one and four MTAs.  Reasons for choosing MTAs might include:
+\begin{itemize}
+\item	External communication links.
+\item	Large host with many users.
+\item	Fileservers used substantially for mail.
+\item	Separate administration domains.
+\end{itemize}
+
+\section{Performance}
+
+PP is running on a Sun 4/330 at the nsfnet-relay.ac.uk mail hub,
+moving around 15,000 messages a day between the UK and the US.
+Experience from this and other sites has been fed back into the
+development process, with the result that PP 6.0 performs better than
+its predecessors.  However, as is the case with any application, PP
+could still benefit from more fine tuning.

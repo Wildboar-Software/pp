@@ -1,0 +1,79 @@
+.TH QMGR 8
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man8/RCS/qmgr.8,v 6.0 1991/12/18 20:44:03 jpo Rel $
+.\"
+.\" $Log: qmgr.8,v $
+.\" Revision 6.0  1991/12/18  20:44:03  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+qmgr \- the PP queue manager process
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+/usr/lib/pp/qmgr
+\%[\-D] \%[\-d\ debris_time] \%[\-l\ load_time] \%[\-c\ cache_time]
+\%[\-t\ timeout_time] \%[\-m\ nchans] \%[\-s] \%[\-M]
+.in -.5i
+(under rc.local)
+.SH DESCRIPTION
+The
+.I Qmgr
+is the controlling process for the PP message system. It is
+responsible for the scheduling of all the messages in the queue and is
+also the information base for the knowledge about the PP queues.
+.PP
+.I Qmgr
+is normally invoked at boot time from the file \fI/etc/rc.local\fP to
+initialise the queue and start things running.
+When invoked, the \fIqmgr\fP listens on an set of NSAP connections
+awaiting queries and updates. At the same time it starts a channel
+designed to load information into the qmgr.
+.PP
+The \fIQmgr\fP responds to the following flags
+.TP
+\-D
+When initialising the channels, set all channels to disabled. If this
+switch is set, then no channels will be run until they are enabled by
+the \fIMTAconsole\fP or similar.
+.TP
+\-d time
+The amount of time (in hours) between successive runs of the debris
+cleanout channel. By default, this channel runs every 3 hours.
+.TP
+\-l time
+The amount of time in hours between successive runs of the qmgr
+loading channel. This channel is run every so often to check
+consistency between the queue on disc and in memory. The default is
+every 6 hours.
+.TP
+\-t time
+The amount of time in hours between successive runs of the timeout
+process. This is run every so often to check the queue for messages
+that have timed out. The default is every 12 hours.
+.TP
+\-c time
+Set the default cache time (in seconds) for channels. This defaults to
+5 minutes. This is the time a channel will be cached for initially.
+Multiple failures keep doubling this number up to a maximum 6 times.
+.TP
+\-m nchans
+Sets the maximum number of channels that can be running at one time.
+This should be greater than 0! The default is 6.
+.TP
+\-s
+This sets the inhibit submission flag. If this is set, the \fIqmgr\fP
+will still accept incoming submissions but will otherwise ignore them.
+.TP
+\-M
+Allow the msg-clean process to run whilst the qmgr is loading. This
+allows a possible race condition but is a big win for very large queues.
+.SH FILES
+/etc/rc.local
+.SH "SEE ALSO"
+MTAconsole(1)
+.br
+\fIThe PP Manual: Volume 1 \- Installation and Operation\fP
+.SH BUGS
+Probably lots...

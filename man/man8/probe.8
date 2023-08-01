@@ -1,0 +1,59 @@
+.TH PROBE 8
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man8/RCS/probe.8,v 6.0 1991/12/18 20:44:03 jpo Rel $
+.\"
+.\" $Log: probe.8,v $
+.\" Revision 6.0  1991/12/18  20:44:03  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+probe \- Generates a Probe
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+probe 	
+.in -.5i
+.in +.4i
+\%[-t [Recipients ...]] 
+.br
+\%[-s Message-size] 
+.br
+\%[-e Encoded-Information-Types]
+.br
+\%[-u UA-id] 
+.br
+\%[-i]
+.br
+\%[-a]
+.in -.4i
+.SH DESCRIPTION
+.I Probe,
+generates a message probe which should always return either a 
+successful or a failed Delivery Report.
+.PP
+It has the following options
+.TP
+\-t
+Interpret the remaining arguments up to the next switch as
+\*(lqTo:\*(rq Recipients.
+.TP
+\-s
+Specifies the size of the message that will be sent later on.
+.TP
+\-e 
+Specifies one or more encoded information types within the message 
+to be sent later. The list of types should be seperated 
+by a \*(lq,\*(rq and are found in the PP Documentation Volume 1. 
+.TP
+\-u
+Specifies a User id. This should be a maximum of 16 characters.
+.TP
+\-i
+This option requests implicit conversion.
+.TP
+\-a 
+This option allows for alternate recipients.
+
+.SH "SEE ALSO"
+\fIThe PP Manual: Volume 1 \- Installation and Operation\fP

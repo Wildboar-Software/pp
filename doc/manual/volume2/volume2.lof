@@ -1,0 +1,13 @@
+\addvspace {10pt}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Channel List Structure}}{9}
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Encoded Information Type Structure}}{10}
+\contentsline {figure}{\numberline {2.3}{\ignorespaces Management Parameter Structure}}{11}
+\contentsline {figure}{\numberline {2.4}{\ignorespaces Queue Structure}}{14}
+\contentsline {figure}{\numberline {2.5}{\ignorespaces Address Structure}}{20}
+\contentsline {figure}{\numberline {2.6}{\ignorespaces Reply Structure}}{22}
+\contentsline {figure}{\numberline {2.7}{\ignorespaces Example Interaction with Submit}}{27}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Channel / Queue Manager Interface Structures}}{32}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Example Outbound Channel}}{43}
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Example Delivery Report Generation}}{45}

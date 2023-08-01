@@ -1,0 +1,189 @@
+.de LP
+.in 0
+.sp
+..
+.de IP
+.sp
+.in 0
+.in +5
+.ti -5
+.ta +5
+\\$1\t\c
+..
+.de DS
+.sp
+.nf
+.in +3
+..
+.de DE
+.sp
+.fi
+.in -3
+..
+.LP
+%BEGIN(J)	
+This configuration is meant to be a simplistic Janet configuration. It
+does only the basics to get the system going. A proper janet site
+needs tables building directly from the nrs database.
+.LP
+This configuration relies on the grey book channel having been built.
+This should be built in conjunction with the unix-niftp package. The
+full channel and domain table should be built by the c-nrs processor
+in PP mode.
+%END(J)
+%BEGIN(I)
+The configuration presented here is intended to be that used by a
+"normal" internet site. This means that the site should have a direct
+IP connection to the Internet and make use of the DNS.
+%END(I)
+%BEGIN(L)
+The configuration presented here is intended to be that used by a
+a site with local smtp capability. The configuration will allow
+delivery to a few local users and send all remote traffic to a single
+host.
+%END(L)
+.LP
+This is intended to be a first step that will get messages delivered to
+a few selected people and make very little use of the more advanced
+features.
+.LP
+To configure this version for use, do the following.
+.nr Ct 0 1
+.IP \n+(Ct.
+Run make install in this directory. This will install the files in the
+correct places.
+.DS
+% ./make install
+.DE
+.IP \n+(Ct.
+Edit the installed tailor file (%TAILOR%) to configure the site specific
+parameters near the beginning of this file.
+.DS
+% vi %TAILOR%
+.DE
+.IP \n+(Ct.
+Add the contents of the file isoentities.add to your system wide
+isoentities file (usually either in /usr/etc). You will probably need
+to be root to do this step.
+.DS
+% su
+Password:
+# vi /usr/etc/isoentities
+.DE
+This step is useful as a backup anyway, but if you have all your
+applications registered in the X.500 directory, you should add such an
+entry to that too. A sample entry is given in x500.sample. This should
+be added (after editing) at the same position as your other local applications.
+.DS
+% dish -u <manager>
+Welcome to Dish (DIrectory SHell)
+Enter password for "<manager>":
+Dish -> moveto cn=<machine>
+Dish -> add "cn=pp qmgr" -objectclass "applicationEntity & quipuObject"
+.DE
+.IP \n+(Ct.
+Change directory to the tables directory (%TABLES%).
+.DS
+% cd %TABLES%
+.DE
+.IP \n+(Ct.
+Edit the users file and add a few local users using the format
+given in that file.
+.DS
+% vi users
+.DE
+.IP \n+(Ct.
+Edit the ch.local file and add the same users to that file.
+.DS
+% vi ch.local
+.DE
+%BEGIN(J)
+.IP \n+(Ct.
+Edit the channel and domain table and make the changes suggested
+there.
+.DS
+% vi channel domain
+.DE
+%END(J)
+%BEGIN(L)
+.IP \n+(Ct.
+Edit the channel and domain tables. In particular replace the strings
+LOC-DOM-MTA, LOC-DOM-SITE and SMTP-RELAY with suitable hostnames.
+.DS
+% vi channel domain
+.DE
+%END(L)
+.IP \n+(Ct.
+Run dbmbuild (found in directory %CMDDIR%).
+.DS
+% %CMDDIR%/dbmbuild -v
+.DE
+.IP \n+(Ct.
+Run ckconfig (found in the directory %CMDDIR%) and see if everything looks
+reasonable.
+.DS
+% %CMDDIR%/ckconfig
+.DE
+.IP \n+(Ct.
+Start the pptsapd and the qmgr
+.DS
+% %CMDDIR%/pptsapd >& /dev/null
+% %CMDDIR%/qmgr >& /dev/null
+.DE
+.IP \n+(Ct.
+Add an appropriate line to the /etc/inetd.conf file to allow smtp
+incoming connections. An example might be
+.DS
+smtp stream tcp nowait pp /usr/pp/cmds/chans/smtpsrvr smtpsrvr smtp
+.DE
+After this you will need to do a kill -HUP on the inetd process to get
+it to reread the configuration file.
+If you are running another smtp service (e.g sendmail), make sure this
+is no longer running.
+.DS
+% su
+Password:
+# vi /etc/inetd.conf
+# ps -x
+# kill -HUP <pid>
+.DE
+.LP
+PP should now be ready for use. At this point it is worth testing out
+a few things. Some simple tests are as follows:
+.LP
+Submit a message to local user you configured in and see if it is
+delivered. This is easiest done by using the PP supplied mail program.
+This is normally installed in the %CMDDIR% directory. A command such as
+.DS
+% %CMDDIR%/mail -s test pp < /etc/motd
+.DE
+is a good start.
+.LP
+Submit a message to some other local machine using the same syntax as
+above.
+.LP
+If that works too, try a message to someone further afield. Use the
+same method, just pick a remote address for testing.
+.LP
+This configuration is meant only to get you started. Once this is
+running you will almost certainly want to do some of the following.
+.IP o
+Add all your users to the users and ch.local table by means of some
+shell/awk script from local databases.
+.IP o
+Create some lists to be expanded by the list channel.
+.IP o
+Rebuild the domain and channel tables to take account of local knowledge.
+.IP o
+Add in the ability to use X.400. This is at present rather too
+complicated to automate.
+%BEGIN(J)
+.IP o
+For the addressign of all sites on JANET, you should process the nrs
+database. There is a program available to do this, c-nrs. It is
+available from pb@cam.cl and has a PP mode which will produce suitable
+output for PP.
+%END(J)
+.LP
+Full details for all these procedures are laid out in Volume 1 of the
+PP manual.

@@ -1,0 +1,118 @@
+.TH DBMEDIT 8
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man8/RCS/dbmedit.8,v 6.0 1991/12/18 20:44:03 jpo Rel $
+.\"
+.\" $Log: dbmedit.8,v $
+.\" Revision 6.0  1991/12/18  20:44:03  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+dbmedit \- edit the pp database file
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+dbmedit \%[-v] \%[-d\ database] \%[cmd ...]
+.SH DESCRIPTION
+.I Dbmedit
+is a program to manually edit the \fIdbm\fR(3) database used by PP.
+It is intended to be used by the system maintainer for quick
+and simple changes to the database.
+It can also be used by careful setuid programs to make controlled
+changes on behalf of users.
+For example, a \fIforwardmail\fR command might use
+dbmedit to change a user's entry in the
+dbm database after changing the mail forwarding alias file.
+.PP
+The \-v option may be used to get a verbose description of the
+program's activities.
+.PP
+The \-d option may be used to specify an alternate database.  The
+default is given in the PP tailor file.
+.PP
+If no arguments are given to \fIdbmedit\fR then the program
+goes into an interactive mode, and prompts the user for each
+command. Otherwise the arguments are taken as one command.
+.PP
+Commands in \fIdbmedit\fR refer to keys, tables, and values.
+Tables are hashed into the database using \fIdbmbuild\fR(8).
+The keys appear on the LHS of the tables and the values on the RHS.
+In general, only the first occurence of a value for a given
+key/table pair is significant.  
+For example, the table entries:
+.nf
+.ta \w'table1:\0\0'u
+table1:
+	key1: val1      
+	key2: val2      
+table2:
+	key1: val3      
+	key1: val4      
+.fi
+get hashed into the following database entries:
+.nf
+key1  table1  val1
+key1  table2  val3
+key1  table2  val4
+key2  table1  val2
+.fi                        
+.PP
+The command lines in interactive mode are parsed using the standard
+PP string-to-argument routines so the same quoting
+and escape conventions are used.
+For example, if you want double-quotes or spaces
+in the value, they must be
+escaped with a backslash or the string must be quoted (for spaces).
+.PP
+The commands are:
+.RS
+.TP 4
+.I print key [table]
+Print the value of the key/table pair.
+If the table is omitted, then print the value of any
+table entry with this key.
+.TP 4
+.I add key table value
+Add a key/table entry with the given value.
+In verbose mode, a warning message is printed if the given
+key/table pair already has a value in the database.  
+.TP 4
+.I delete key [table [value]]
+Delete the values for the specified key.  If a table is specified,
+delete only the values for the specified key/table pair.  If a value
+is also specified, delete only entries for the pair with that value.
+It is an error to try to delete something which does not appear in
+the database as specified.
+.TP 4
+.I change key table [oldvalue] newvalue
+Change the value of the specified key/table pair to
+.I newvalue.
+If 
+.I oldvalue
+is specified, change the entry matching that value.  Otherwise,
+change the value of the first occurence or add a new key/table pair
+if none already exists.
+.TP 4
+.I help
+Give a brief summary of the commands
+.TP 4
+.I quit
+Exit the program.
+.RE
+.PP
+All commands may be shortened to their first character only.  
+If the wrong number of arguments is given to a command, a
+``Usage:'' message will be printed.  
+All changes are made in real time.
+This program may be used while PP processes are running.
+There is no temporary copy of the database while editing.
+.SH FILES
+.nf
+.ta \w'ppdbm.dir\0\0'u
+ppdbm.dir	The PP database
+ppdbm.pag	The PP database
+.fi
+.SH "SEE ALSO"
+dbm(3x), dbmbuild(8), dbmunbuild(8)
+.br
+\fIThe PP Manual: Volume 1 \- Installation and Operation\fP

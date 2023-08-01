@@ -1,0 +1,23 @@
+\File{asnfilter.tai},{12:11},{Dec  3 1991}
+\L{\LB{chan iso6937toia5}}
+\L{\LB{        prog=fcontrol,}}
+\L{\LB{        show=\S{}\"iso6937 \-\> ia5 conversion filter\"\SE{},}}
+\L{\LB{        bptin=iso6937, bptout=ia5,}}
+\L{\LB{        type=shaper, conv=loss, cost=99,}}
+\L{\LB{        outinfo=\S{}\"asn \-is iso\_6937\-2\-add \-os ccitt\_x.408\_ia5irv\"\SE{}}}
+\L{\LB{}}
+\L{\LB{chan ia5toiso6937}}
+\L{\LB{        prog=fcontrol,}}
+\L{\LB{        show=\S{}\"ia5 \-\> iso6937 conversion filter\"\SE{},}}
+\L{\LB{        bptin=ia5, bptout=iso6937,}}
+\L{\LB{        type=shaper, conv=loss, cost=99,}}
+\L{\LB{        outinfo=\S{}\"asn \-is ccitt\_x.408\_ia5irv \-os iso\_6937\-2\-add }}
+\L{\LB{             \-ia ia5 \-oa motis\-86\-6937\"\SE{}}}
+\L{\LB{}}
+\L{\LB{chan iso6937toteletex   }}
+\L{\LB{        prog=fcontrol,}}
+\L{\LB{        show=\S{}\"iso6937 \-\> teletex conversion filter\"\SE{},}}
+\L{\LB{        bptin=iso6937, bptout=ttx,}}
+\L{\LB{        type=shaper, conv=loss, cost=99,}}
+\L{\LB{        outinfo=\S{}\"asn \-is iso\_6937\-2\-add \-os t.61\-8bit }}
+\L{\LB{              \-ia motis\-86\-6937 \-oa teletex\"\SE{}}}

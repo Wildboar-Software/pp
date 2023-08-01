@@ -1,0 +1,57 @@
+#!/bin/sh
+#
+#
+#       awk.rfc2or - is an awk program that reformats the
+#       PP tables into the RFC-987 International ones.
+#
+#
+#       syntax :    awk.rfc2or  { first | multi } input-table
+#
+######################################################################
+
+
+AWK=/usr/bin/awk
+
+FILEIN=$1
+FILEOUT=rfc2or.temp
+
+if [ -z "$FILEIN" ]
+then
+        echo " "
+        echo "Usage:   awk.rfc2or input-table"
+        echo " "
+        exit 1
+fi
+
+
+grep ":C" $FILEIN > $FILEOUT
+grep ":ADMD" $FILEIN >> $FILEOUT
+grep ":PRMD" $FILEIN >> $FILEOUT
+grep ":O" $FILEIN | sort -u >> $FILEOUT
+
+
+
+#---------------------- Start of the awk routines  --------------------------#
+
+
+$AWK < $FILEOUT '
+BEGIN   {
+		print("#")
+		print("#=============================================================================")
+		print("#======================================================= United Kingdom ======")
+		print("#        Last update: 90.02.01")
+		print("#        Responsible: John Seymour <John.Seymour@ean-relay.ac.uk>")
+		print("#")
+		print("#    Beware of the quoted dots in this table!")
+		print("#")
+		FS =":"
+        }
+/^#.*/  {
+		continue
+        }
+        {
+		printf("%s#%s#\n", $1, $2)
+		continue
+        }
+END     {}
+'

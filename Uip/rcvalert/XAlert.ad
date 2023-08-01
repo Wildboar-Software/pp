@@ -1,0 +1,134 @@
+! X defaults for Xalert and XAlert with Photos
+!
+!
+
+!
+! xalert
+!
+!
+! xalert	toppane topform	box	Quit		prompt		dialog
+!									ok
+!				Clear					cancel
+!				Options		Options		Reset
+!								Bell
+!								AutoRaise
+!								Photo
+!				
+!				text
+!
+!			pbox	photolabel
+!				photo
+!
+
+! colours
+
+*foreground:			DarkSlateGrey
+*background:			LightSkyBlue1
+
+*topform*Command.background:		gainsboro
+*topform*Toggle.background:		gainsboro
+*topform*MenuButton.background:		gainsboro
+*topform*SimpleMenu.background:		gainsboro
+
+! shapes
+
+*Command.shapeStyle:	oval
+*Toggle.shapeStyle:	oval
+*MenuButton.shapeStyle:	oval
+
+! fonts
+
+*Command.font:	-adobe-new century schoolbook-bold-r-normal--12-*
+*Toggle.font:	-adobe-new century schoolbook-bold-r-normal--12-*
+*MenuButton.font: -adobe-new century schoolbook-bold-r-normal--12-*
+*SimpleMenu*font: -adobe-new century schoolbook-bold-r-normal--12-*
+
+*Form.defaultDistance:			1
+
+*toppane.orientation:			horizontal
+
+*topform.borderWidth:			0
+*topform.top:				ChainTop
+
+*topform.box.top:			ChainTop
+*topform.box.bottom:			ChainTop
+*topform.box.left:			ChainLeft
+*topform.box.right:			ChainLeft
+*topform.box.borderWidth:		0
+
+*topform.box.Clear.fromVert:		Quit
+*topform.box.Options.fromVert:		Clear
+
+*topform.text.scrollVertical:		whenNeeded
+*topform.text.scrollHorizontal:		whenNeeded
+*topform.text.width:			400
+*topform.text.fromHoriz:		box
+*topform.text.top:			ChainTop
+*topform.text.bottom:			ChainBottom
+*topform.text.left:			ChainLeft
+*topform.text.right:			ChainRight
+*topform.text*editType:			append
+*topform.text.height:			75
+
+!*text*font:	-adobe-new century schoolbook-medium-r-normal--12-*
+
+*toppane.pbox*resizable:	True
+*toppane.pbox.allowResize:	True
+*toppane.pbox.skipAdjust:	True
+*toppane.pbox.max:		250
+
+*toppane.pbox.photolabel.label:
+*toppane.pbox.photolabel.top:		ChainTop
+*toppane.pbox.photolabel.left:		ChainLeft
+*toppane.pbox.photolabel.right:		ChainLeft
+*toppane.pbox.photolabel.borderWidth:	0
+*toppane.pbox.photolabel.resizable:	true
+*toppane.pbox.photolabel.resize:	true
+*toppane.pbox.photolabel.justify:	left
+
+*toppane.pbox.photo.height:		150
+*toppane.pbox.photo.width:		150
+*toppane.pbox.photo.fromVert:		photolabel
+*toppane.pbox.photo.top:		rubber
+*toppane.pbox.photo.bottom:		ChainBottom
+*toppane.pbox.photo.left:		ChainLeft
+*toppane.pbox.photo.right:		ChainLeft
+*toppane.pbox.photo.resize:		True
+!*toppane.pbox.photo.resize:		False
+*toppane.pbox.photo.resizable:		True
+*toppane.pbox.photo.borderWidth:	0
+
+*toppane.pbox.photo.shapeStyle:		rectangle
+!*toppane.pbox.photo.background:		white
+!*toppane.pbox.photo.foreground:		black
+
+*Dialog.label: Really Quit?
+*ok.label:	OK
+*cancel.label:	Cancel
+*dialog.Label.font: -adobe-new century schoolbook-medium-r-normal--12-*
+
+! accelerators
+
+*Reset.accelerators:	#override\n\
+Meta<Key>R:		set() notify() unset()
+
+*Bell.accelerators:	#override\n\
+Meta<Key>B:		set() notify() unset()
+
+*AutoRaise.accelerators:#override\n\
+Meta<Key>A:		set() notify() unset()
+
+*Photo.accelerators:	#override\n\
+Meta<Key>P:		set() notify() unset()
+
+*Clear.accelerators:	#override\n\
+Meta<Key>C:		set() notify() unset()
+
+*Quit.accelerators:	#override\n\
+Ctrl<Key>C:		set() notify() unset()
+
+*cancel.accelerators:	#override\n\
+<Key>Return:		set() notify() unset()
+
+*ok.accelerators:	#override\n\
+Ctrl<Key>C:		set() notify() unset()

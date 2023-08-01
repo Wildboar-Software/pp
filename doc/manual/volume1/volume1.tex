@@ -1,0 +1,98 @@
+% run this through LaTeX
+
+% SEK - this is a PP document, designed to be easy to convert to 
+% an ISODE Manual Section if we want to
+
+\input lcustom
+
+
+\documentstyle[11pt,sfwmac,tgrind,twoside,a4]{report}
+
+\newcount\volnum
+\volnum=1
+\makeatletter
+\def\preface{\chapter*{Preface\@mkboth{PREFACE}{PREFACE}}}
+\makeatother
+
+\makeindex
+
+\input{dist-params}
+
+\pagenumbering{roman}
+
+\begin{document}
+
+\newcommand{\PP}{{\em PP}}
+\newcommand{\SP}{\vspace{.25in}}
+
+% \readauxfiles
+
+\title{{\Huge\bf PP} \\
+	\vskip 1.5em
+	\LARGE\sl Volume 1: Installation and Operation}
+\author{
+Julian Onions \\
+X-Tel Services Ltd \and
+Peter Cowen \\
+X-Tel Services Ltd \and
+Alina da Cruz \\
+Department of Computer Science \\
+University College London  \and
+Steve Kille \\
+Department of Computer Science \\
+University College London
+}
+\date{\ifdraft \versiondate/\\ \tt Draft Version \versiontag/
+	\else \today\\
+	(Version \ppversion/)\fi}
+
+\maketitle
+\newpage
+
+\thispagestyle{empty}
+\setcounter{page}{0}
+\mbox{}
+\newpage
+
+\tableofcontents
+
+\listoftables
+
+\listoffigures
+
+\include{preface}
+
+\newpage
+\ifodd\value{page} \else
+    \mbox{}
+    \newpage
+\fi
+\pagenumbering{arabic}
+
+
+\include{general}
+\include{install}
+\include{configure}
+\include{tables}
+\include{x400links}
+\include{addon}
+\include{management}
+\appendix
+\include{appendix}
+\include{x400tables}
+\include{mu}
+\include{qmgrproto}
+\bibliography{bcustom,pp}
+\bibliographystyle{alpha}
+
+\input volume1.ind
+
+\clearpage
+\ifodd\value{page} \else
+    \mbox{}
+    \newpage
+\fi
+
+%\typeout{you can usually ignore the message about Label(s) may have changed}
+
+\end{document}

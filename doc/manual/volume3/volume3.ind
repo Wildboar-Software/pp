@@ -1,0 +1,105 @@
+\begin{theindex}\makeatletter
+\raggedright
+\def\newindex#1{{\huge\hspace{-.5in}\parbox[t]{.5in}{\makebox[.35in][c]{\uppercase{#1}}}\vspace{-1.5ex}}}
+\item \#, 7
+\item 822-local, 5, 6
+\indexspace
+\newindex{a}
+\item .alert, 11, 12
+\item aliases, 19
+\indexspace
+\newindex{b}
+\item /bin/mail, 26
+\item body, 10
+\item Boolean operators, 5
+\indexspace
+\newindex{c}
+\item checking .mailfilter, 8
+\item checkmail, 26
+\item chkmf, 2
+\item ckmail, 2
+\item ckmf, 9
+\item comment, 7
+\item compound statement, 5
+\item conditionals, 5
+\item cron, 25
+\indexspace
+\newindex{d}
+\item delivered, 4, 6
+\item delivery states, 6
+\item dirlist, 19
+\item dl, 22
+\item dsaptailor, 19, 22
+\indexspace
+\newindex{e}
+\item else, 5
+\item else if, 5
+\item ETCDIR, 19
+\item exit, 7
+\item extra, 10
+\indexspace
+\newindex{f}
+\item file, 4
+\item flagmail, 2, 9, 11, 12
+\item flock, 15
+\item From, 10
+\indexspace
+\newindex{h}
+\item header fields, 6
+\indexspace
+\newindex{i}
+\item if, 5
+\item ignore, 4
+\item isoaliases, 19
+\indexspace
+\newindex{l}
+\item \LaTeX {}, 28
+\indexspace
+\newindex{m}
+\item mail, 2
+\item .mailfilter, 2, 3, 4, 5, 7, 8, 10, 13
+\item malias, 2, 19
+\item mlist, 2, 17, 18, 19
+\item more, 25
+\indexspace
+\newindex{p}
+\item PATH, 6
+\item pipe, 4
+\item print, 7
+\item printf, 10
+\indexspace
+\newindex{q}
+\item .quipurc, 22
+\indexspace
+\newindex{r}
+\item rcvstore, 7
+\item rcvtrip, 13
+\item regexp, 7
+\item regular expressions, 7
+\item resend, 2, 14
+\indexspace
+\newindex{s}
+\item .signature, 14
+\item size, 10
+\item strip\unhbox \voidb@x \kern .06em \vbox {\hrule width.3em}addr, 15
+\item strip\unhbox \voidb@x \kern .06em \vbox {\hrule width.3em}addr {}, 2
+\item system variables, 6
+\indexspace
+\newindex{t}
+\item triplog, 14
+\item tripnote, 13
+\item ttripnote, 14
+\item ttyalert, 2, 9, 11, 12, 13
+\item ttybiff, 12, 13
+\indexspace
+\newindex{u}
+\item unixfile, 4
+\item users, 19
+\indexspace
+\newindex{v}
+\item variables, 6
+\subitem  system, 6
+\indexspace
+\newindex{x}
+\item xalert, 2, 9, 11, 12
+\end{theindex}

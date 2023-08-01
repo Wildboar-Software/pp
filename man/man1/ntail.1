@@ -1,0 +1,53 @@
+.TH NTAIL 1L
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man1/RCS/ntail.1,v 6.0 1991/12/18 20:43:41 jpo Rel $
+.\"
+.\" $Log: ntail.1,v $
+.\" Revision 6.0  1991/12/18  20:43:41  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+ntaiL - Watch the growth of files.
+.SH SYNTAX
+.B ntail
+entry ...
+.SH DESCRIPTION
+.I Ntail
+monitors one or more files, and displays all data written to a file
+since command invocation.  It is very useful for monitoring multiple
+logfiles simultaneously.
+.P
+If an
+.I entry
+given on the command line is a directory, all files in that directory
+will be monitored, including those created after the
+.I ntail
+invocation.  If an
+.I entry
+given on the command line doesn't exist,
+.I ntail
+will watch for it and monitor it once created.  When switching files in
+the display, a banner showing the pathname of the file is printed.
+.P
+An interrupt character (usually CTRL/C or DEL) will display a list of the
+most recently modified files being watched.  Send a quit signal
+(usually CTRL/backslash) to stop
+.IR ntail .
+.SH SEE ALSO
+tail(1)
+.SH NOTES
+.I Ntail
+may be easily confused.  For example, if a file is renamed,
+.I ntail
+may or may not continue to monitor it.  If you ask it to monitor a file
+multiple times, it probably will.  If you misspell a filename,
+.I ntail
+will treat it as a nonexistent entry and happily wait for its creation.
+.P
+My favorite use is "ntail /usr/spool/uucp/.Log/*".
+.br
+Ntail was originally called xtail, and was changed for reasons you don't
+want to know about...
+.SH AUTHOR
+Chip Rosenthal <chip@vector.Dallas.TX.US>

@@ -1,0 +1,18 @@
+chan    822tofax        prog=fcontrol,type=shaper, 
+   hdrin=822-us,hdrout=g3fax,
+   outinfo="hdr2fax -table $(outtable) -from $(400sender)
+      -to $(400recip) -subject $(ua-id) -outmta $(outmta)",
+   outtable=fax, cost=20,solo-proc=yes,
+   show="hdr.822 -> g3fax mapper"
+
+chan    ia5tofax        prog=fcontrol,type=shaper,
+   bptin=ia5,bptout=g3fax,
+   outinfo="ia52fax -table $(outtable)",outtable=fax,
+   show="ia5 -> g3fax mapper"
+
+chan    fax             prog=G3Fax, show="Fax channel",type=both,
+   content-in=p22, maxproc=1,
+   hdrout=g3fax, bptout=g3fax, drchan=dr2rfc,
+   outtable=fax, sort="user time",
+   outinfo="out=/dev/faxout,confirm=always,softcar=used",
+   ininfo="in=/dev/faxin,softcar=used,master=faxmaster@xtel.co.uk"

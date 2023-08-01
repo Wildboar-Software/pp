@@ -1,0 +1,54 @@
+############################################################
+#
+# Tailor file for PP
+#
+#      This version for sites with local smtp
+#
+############################################################
+
+############################################################
+#
+# The following variables will need tailoring 
+#
+############################################################
+#
+# The loc_dom_mta is the host that the MTA will reside on and execute from
+# It is a fully qualified domain name and represent the physical machine
+#	Examples might be
+#		cheetah.nyser.net
+#      		violet.berkeley.edu
+#		john.cs.nott.ac.uk
+#
+loc_dom_mta	mylocalhost.localdomain.us
+#
+# The Sitename is what the rest of the world sees you as. This is typically
+# a domain shorter than the full domain name. It is the name used to represent
+# your site or group as a whole. This name normally hides the individual 
+# machine names
+#	Examples might be
+#		berkeley.edu
+#		nyser.net
+#		cs.nott.ac.uk
+#
+loc_dom_site	localdomain
+#
+# The postmaster should include the local site name
+# e.g. postmaster@berkeley.edu or postmaster@cs.nott.ac.uk
+#
+postmaster	postmaster@localdomain
+#
+# The pplogin should be the username of the owner of pp.
+#
+pplogin		pp
+#
+# The qmgrhost should be the same as the name found in isoentities file.
+# This can be the same as loc_dom_mta name
+#
+qmgrhost	mylocalhost
+#
+# The local or name should be the name of your site in X.400 terms.
+# This is attribute value based, and starts with organisational units and
+# works up to country. If you are unsure, leave it with just a country
+# a country component and blank admd, e.g. "/ADMD= /C=US/"
+#
+loc_or		"/ou=CS/o=NOTT/prmd=UK.AC/admd=GOLD 400/c=GB/"

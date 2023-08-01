@@ -1,0 +1,57 @@
+\begin{thebibliography}{{Mar}85}
+
+\bibitem[Dun]{BIND}
+Kevin~J. Dunlap.
+\newblock {\em {Name Server Operations Guide for BIND}}.
+\newblock University of California, Berkeley.
+\newblock {BSD 4.3 Release}.
+
+\bibitem[Kil88]{IFIP.PP}
+S.E. Kille.
+\newblock {PP} - a message transfer agent.
+\newblock In {\em IFIP WG 6.5 Conference on Message Handling Systems and
+  Distributed Applications}, pages 115--118. North Holland Publishing, October
+  1988.
+
+\bibitem[Kil89a]{String.Addresses}
+Stephen~E. Kille.
+\newblock {A string encoding of Presentation Address}.
+\newblock Research Note RN/89/14, Department of Computer Science, University
+  College London, February 1989.
+
+\bibitem[Kil89b]{RFC1148}
+Stephen~E. Kille.
+\newblock {Mapping between X.400(1988)/ISO10021 and RFC822}.
+\newblock Request for Comments 1148, DDN Network Information Center, SRI
+  International, July 1989.
+
+\bibitem[{Mar}85]{RFC934}
+{Marshall T. Rose and Einar A. Stefferud}.
+\newblock {Proposed Standard for Message Encapsulation}.
+\newblock Request for Comments 934, DDN Network Information Center, SRI
+  International, January 1985.
+
+\bibitem[RC87]{TSAP.on.TCP}
+Marshall~T. Rose and Dwight~E. Cass.
+\newblock {ISO Transport Services on top of the TCP}.
+\newblock Request for Comments 1006, DDN Network Information Center, SRI
+  International, May 1987.
+
+\bibitem[Ros86]{MH6.5}
+Marshall~T. Rose.
+\newblock {\em {Changes to the Rand MH Message Handling System: MH \#6.5 for
+  4.3BSD UNIX}}, May 1986.
+\newblock MH documentation set.
+
+\bibitem[Ros88]{POP}
+Marshall~T. Rose.
+\newblock {Post Office Protocol~---~Version 3}.
+\newblock Request for Comments 1081, DDN Network Information Center, SRI
+  International, December 1988.
+
+\bibitem[Ros89]{ISODE}
+Marshall~T. Rose.
+\newblock {\em {The ISO Development Environment: User's Manual}}.
+\newblock The Wollongong Group, 5.0 edition, March 1989.
+
+\end{thebibliography}

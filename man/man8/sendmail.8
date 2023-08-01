@@ -1,0 +1,26 @@
+.TH SENDMAIL 8
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man8/RCS/sendmail.8,v 6.0 1991/12/18 20:44:03 jpo Rel $
+.\"
+.\" $Log: sendmail.8,v $
+.\" Revision 6.0  1991/12/18  20:44:03  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+sendmail \- pretend sendmail that talks to PP
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+sendmail \%[sendmail args]
+.in -.5i
+.SH DESCRIPTION
+.I Sendmail
+is a forgery of the BSD \fIsendmail\fP program. It attempts to fool
+programs that have built into them the idea that sendmail is the way
+to send mail. It takes a range of standard sendmail options and passes
+the message to PP.
+.SH FILES
+Various
+.SH "SEE ALSO"
+\fIThe PP Manual: Volume 1 \- Installation and Operation\fP

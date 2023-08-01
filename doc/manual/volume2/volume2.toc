@@ -1,0 +1,56 @@
+\contentsline {chapter}{\numberline {1}General}{1}
+\contentsline {section}{\numberline {1.1}Overview}{1}
+\contentsline {section}{\numberline {1.2}Initialisation}{1}
+\contentsline {section}{\numberline {1.3}Runtime Tailoring}{2}
+\contentsline {section}{\numberline {1.4}Logging}{2}
+\contentsline {subsection}{\numberline {1.4.1}Logging Levels}{2}
+\contentsline {subsection}{\numberline {1.4.2}Logging Structures}{2}
+\contentsline {subsection}{\numberline {1.4.3}Logging Macros}{3}
+\contentsline {section}{\numberline {1.5}Code Location}{5}
+\contentsline {subsection}{\numberline {1.5.1}Library Code}{6}
+\contentsline {subsection}{\numberline {1.5.2}Core Programs}{6}
+\contentsline {subsection}{\numberline {1.5.3}Other Directories}{7}
+\contentsline {chapter}{\numberline {2}Message Submission}{8}
+\contentsline {section}{\numberline {2.1}Overview}{8}
+\contentsline {section}{\numberline {2.2}The io\unhbox \voidb@x \kern .06em \vbox {\hrule width.3em} Interface}{8}
+\contentsline {subsection}{\numberline {2.2.1}Major Structures}{8}
+\contentsline {subsubsection}{Channel Lists}{9}
+\contentsline {subsubsection}{Encoded Information Types}{10}
+\contentsline {subsubsection}{Management Parameters}{11}
+\contentsline {subsubsection}{The Per-Message Information}{12}
+\contentsline {subsubsection}{The Address structure}{17}
+\contentsline {subsection}{\numberline {2.2.2}Reply Value Structure}{22}
+\contentsline {subsection}{\numberline {2.2.3}Procedure Calls}{23}
+\contentsline {subsubsection}{Initialisation}{23}
+\contentsline {subsubsection}{Message Management Parameters}{23}
+\contentsline {subsubsection}{Per-Message Parameters}{25}
+\contentsline {subsubsection}{Originator and Recipient Addresses}{25}
+\contentsline {subsubsection}{Body Part Submission}{25}
+\contentsline {subsubsection}{Termination}{26}
+\contentsline {subsection}{\numberline {2.2.4}Example}{26}
+\contentsline {section}{\numberline {2.3}The RFC\penalty \@M \ 822 Interface}{28}
+\contentsline {subsection}{\numberline {2.3.1}Initialisation}{28}
+\contentsline {subsection}{\numberline {2.3.2}Addresses and Headers}{28}
+\contentsline {subsection}{\numberline {2.3.3}Text Submission}{29}
+\contentsline {subsection}{\numberline {2.3.4}Termination}{30}
+\contentsline {section}{\numberline {2.4}Debugging}{30}
+\contentsline {chapter}{\numberline {3}Channels}{31}
+\contentsline {section}{\numberline {3.1}Overview}{31}
+\contentsline {section}{\numberline {3.2}The Queue Interface}{31}
+\contentsline {subsection}{\numberline {3.2.1}Major Structures}{31}
+\contentsline {subsection}{\numberline {3.2.2}Basic Access}{33}
+\contentsline {subsubsection}{Queue Manager Interaction}{33}
+\contentsline {subsubsection}{Address File Routines}{36}
+\contentsline {subsubsection}{Message files}{37}
+\contentsline {subsection}{\numberline {3.2.3}Delivery Notifications}{38}
+\contentsline {subsection}{\numberline {3.2.4}Successful Delivery}{39}
+\contentsline {subsection}{\numberline {3.2.5}Verification and Trust}{40}
+\contentsline {section}{\numberline {3.3}Example Usage}{41}
+\contentsline {subsection}{\numberline {3.3.1}Outbound Channels}{41}
+\contentsline {subsection}{\numberline {3.3.2}Address Parsing}{43}
+\contentsline {subsection}{\numberline {3.3.3}Local Pickup}{44}
+\contentsline {subsection}{\numberline {3.3.4}TWA Channel}{44}
+\contentsline {subsection}{\numberline {3.3.5}Delivery Reports}{45}
+\contentsline {section}{\numberline {3.4}Formatters and Converters}{45}
+\contentsline {subsection}{\numberline {3.4.1}Simple Converters}{45}
+\contentsline {subsection}{\numberline {3.4.2}Complex Filters}{45}

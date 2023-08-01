@@ -1,0 +1,53 @@
+############################################################
+#
+# Tailor file for PP
+#
+#      This version for Janet site
+#
+############################################################
+
+############################################################
+#
+# The following variables will need tailoring 
+#
+############################################################
+#
+# The loc_dom_mta is the host that the MTA will reside on and execute from
+# It is a fully qualified domain name and represent the physical machine
+#	Examples might be
+#		lancaster.xtel.co.uk
+#      		bells.cs.ucl.ac.uk
+#
+loc_dom_mta	mylocalhost.localdomain.uk
+#
+# The Sitename is what the rest of the world sees you as. This is typically
+# a domain shorter than the full domain name. It is the name used to represent
+# your site or group as a whole. This name normally hides the individual 
+# machine names
+#	Examples might be
+#		xtel.co.uk
+#		cs.ucl.ac.uk
+#
+loc_dom_site	localdomain.uk
+#
+# The postmaster should include the local site name
+# e.g. postmaster@berkeley.edu or postmaster@nyser.net
+#
+postmaster	postmaster@localdomain.uk
+#
+# The pplogin should be the username of the owner of pp.
+#
+pplogin		pp
+#
+# The qmgrhost should be the same as the name found in isoentities file.
+# This can be the same as loc_dom_mta name
+#
+qmgrhost	mylocalhost
+#
+# The local or name should be the name of your site in X.400 terms.
+# This is attribute value based, and starts with organisational units and
+# works up to country. If you are unsure, leave it with just a country
+# a country component and blank admd, e.g. "/ADMD= /C=GB/"
+#
+loc_or		"/ou=research/o=Brumchester University/prmd=UK.AC/admd= /c=GB/"
+

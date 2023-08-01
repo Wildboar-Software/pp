@@ -1,0 +1,11 @@
+#! /bin/sh
+
+if [ -f ../../../Make.defs ]
+then
+	PATH=/usr/ucb:/bin:/usr/bin exec \
+		make -f ../../../Make.defs -f Makefile ${1+"$@"}
+else
+	PATH=/usr/ucb:/bin:/usr/bin exec \
+		make -f ../Make.defs -f Makefile ${1+"$@"}
+fi
+

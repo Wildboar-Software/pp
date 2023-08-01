@@ -1,0 +1,91 @@
+\File{qstruct.h},{10:22},{Nov 20 1991}
+\L{\LB{typedef struct Qstruct \{}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{msgtype;}\Tab{40}{\C{}\/* Type of message *\/\CE{}}}
+\L{\LB{\#define MT\_UMPDU                1}}
+\L{\LB{\#define MT\_DMPDU                2}}
+\L{\LB{\#define MT\_PMPDU                3}}
+\L{\LB{}}
+\L{\LB{\C{}\/* \-\- MTS Parameters *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{long}\Tab{24}{msgsize;}\Tab{40}{\C{}\/* Size of message *\/\CE{}}}
+\L{\LB{}\Tab{8}{UTC}\Tab{24}{defertime;}\Tab{40}{\C{}\/* Deffered time *\/\CE{}}}
+\L{\LB{}\Tab{8}{UTC}\Tab{24}{latest\_time;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{latest\_time\_crit;}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{nwarns;}\Tab{40}{\C{}\/* Number of warning msgs to send *\/\CE{}}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{warninterval;}\Tab{40}{\C{}\/* Interval between warning msgs *\/\CE{}}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{retinterval;}\Tab{40}{\C{}\/* Interval after which return mail *\/\CE{}}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{*cont\_type;}\Tab{40}{\C{}\/* Content type of message *\/\CE{}}}
+\L{\LB{}\Tab{8}{EncodedIT}\Tab{24}{orig\_encodedinfo; \C{}\/* Original Encoded Info Types *\/\CE{}}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{priority;}\Tab{40}{\C{}\/* Priority of message *\/\CE{}}}
+\L{\LB{\#define PRIO\_NORMAL             0}}
+\L{\LB{\#define PRIO\_NONURGENT          1}}
+\L{\LB{\#define PRIO\_URGENT             2}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{disclose\_recips;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{implicit\_conversion\_prohibited;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{alternate\_recip\_allowed;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{content\_return\_request;}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{recip\_reassign\_prohibited;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{recip\_reassign\_crit;}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{dl\_expansion\_prohibited;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{dl\_expansion\_crit;}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{conversion\_with\_loss\_prohibited;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{conversion\_with\_loss\_crit;}}
+\L{\LB{}\Tab{8}{}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{*ua\_id;}\Tab{40}{\C{}\/* UA content id *\/\CE{}}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{*pp\_content\_correlator; }}
+\L{\LB{}\Tab{40}{\C{}\/* PP preferred string form  *\/\CE{}}}
+\L{\LB{}\Tab{8}{struct qbuf}\Tab{24}{*general\_content\_correlator;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{content\_correlator\_crit;}}
+\L{\LB{}\Tab{40}{\C{}\/* ASN.1 uninterpreted *\/\CE{}}}
+\L{\LB{}\Tab{40}{}}
+\L{\LB{}\Tab{8}{FullName}\Tab{24}{*originator\_return\_address;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{originator\_return\_address\_crit;}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{forwarding\_request;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{forwarding\_request\_crit;}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{struct qbuf}\Tab{24}{*originator\_certificate;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{originator\_certificate\_crit;}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{struct qbuf}\Tab{24}{*algorithm\_identifier;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{algorithm\_identifier\_crit;}}
+\L{\LB{ }\Tab{24}{\C{}\/* content confidentiality *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{struct qbuf}\Tab{24}{*message\_origin\_auth\_check; }}
+\L{\LB{}\Tab{32}{\C{}\/* also for Probe *\/\CE{}}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{message\_origin\_auth\_check\_crit;}}
+\L{\LB{}\Tab{32}{}}
+\L{\LB{}\Tab{8}{struct qbuf}\Tab{24}{*security\_label;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{security\_label\_crit;}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{proof\_of\_submission\_request;}\Tab{56}{\C{}\/* boolean *\/\CE{}}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{proof\_of\_submission\_crit;}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{X400\_Extension}\Tab{24}{*per\_message\_extensions;}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{ADDR}\Tab{24}{*Oaddress;}\Tab{40}{\C{}\/* Orig addr \- linked list *\/\CE{}}}
+\L{\LB{}\Tab{8}{ADDR}\Tab{24}{*Raddress;}\Tab{40}{\C{}\/* Recip addrs \- linked list *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{\C{}\/* \-\- MTA AS Parameters *\/\CE{}}}
+\L{\LB{}\Tab{8}{LIST\_RCHAN}\Tab{24}{*inbound;}\Tab{40}{\C{}\/* Inbound MTA\/Channel *\/\CE{}}}
+\L{\LB{}\Tab{8}{MPDUid}\Tab{24}{msgid;}\Tab{40}{\C{}\/* Message ID *\/\CE{}}}
+\L{\LB{}\Tab{8}{Trace}\Tab{24}{*trace;}\Tab{40}{\C{}\/* Trace info *\/\CE{}}}
+\L{\LB{}\Tab{8}{DLHistory}\Tab{24}{*dl\_expansion\_history;}}
+\L{\LB{}\Tab{8}{char}\Tab{24}{dl\_expansion\_history\_crit;}}
+\L{\LB{}}
+\L{\LB{\C{}\/* \-\- PP calculated parameters *\/\CE{}}}
+\L{\LB{}\Tab{8}{EncodedIT}\Tab{24}{encodedinfo;}\Tab{40}{\C{}\/* Encoded information types *\/\CE{}}}
+\L{\LB{}\Tab{8}{UTC}\Tab{24}{queuetime;}\Tab{40}{\C{}\/* Time that message was enqueued *\/\CE{}}}
+\L{\LB{}\Tab{8}{UTC}\Tab{24}{departime;}\Tab{40}{\C{}\/* Time that message left the queue *\/\CE{}}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{n\_bodyparts;}}
+\L{\LB{}\Tab{8}{int}\Tab{24}{n\_forwarded;}}
+\L{\LB{}}
+\L{\LB{}\Tab{8}{\C{}\/* \-\- Queue Control File offsets for fixed length variables \-\- *\/\CE{}}}
+\L{\LB{}\Tab{8}{off\_t}\Tab{24}{nwarns\_offset;}\Tab{40}{\C{}\/* offset param for nwarns *\/\CE{}}}
+\L{\LB{\} Q\_struct;}}

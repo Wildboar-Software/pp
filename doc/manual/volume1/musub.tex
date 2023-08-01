@@ -1,0 +1,24 @@
+\File{musub.c},{17:06},{Jan 10 1989}
+\L{\LB{io\_init(rp);      \C{}\/* initialisation *\/\CE{}}}
+\L{\LB{io\_wprm(\&prm,rp); \C{}\/* write management parameters *\/\CE{}}}
+\L{\LB{io\_wrq(\&q,rp);    \C{}\/* per message parameters *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{ap = ad\_originator;             \C{}\/* originator *\/\CE{}}}
+\L{\LB{io\_wadr(ap,AD\_ORIGINATOR,rp);}}
+\L{\LB{ap = ad\_recipient;}}
+\L{\LB{\K{do} \{                            \C{}\/* list of recipients *\/\CE{}}}
+\L{\LB{    io\_wadr(ap,AD\_RECIPIENT,rp);}}
+\L{\LB{    ap = ap\-\>ad\_next;}}
+\L{\LB{    \} \K{while} ( ap != NULL );}}
+\L{\LB{io\_adend(rp);                   \C{}\/* terminate address list *\/\CE{}}}
+\L{\LB{}}
+\L{\LB{\Proc{if}\K{if}((p=next\_arg(\S{}\"body\"\SE{},argv)) != NULL) \{}}
+\L{\LB{    io\_tinit(rp);               \C{}\/* prepare for body part(s) *\/\CE{}}}
+\L{\LB{    \K{do} \{}}
+\L{\LB{        io\_tpart(p,FALSE,rp);   \C{}\/* prepare one body part *\/\CE{}}}
+\L{\LB{        loop\_data(p);           \C{}\/* transmit with io\_tdata() \/*}}
+\L{\LB{        io\_tdend(rp);           \/* end one file *\/\CE{}}}
+\L{\LB{    \} \K{while}(p=next\_arg(\S{}\"body\"\SE{},argv));}}
+\L{\LB{\}}}
+\L{\LB{io\_tend(rp));   \C{}\/* complete message *\/\CE{}}}
+\L{\LB{io\_end(type);   \C{}\/* terminate session with submit *\/\CE{}}}

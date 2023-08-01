@@ -1,0 +1,11 @@
+chan 822touk prog=fcontrol,type=shaper,
+	     hdrin=822,hdrout=822-jntmail,
+	     outinfo="rfc822norm -jnt -jntsender $(sender) -fold 50"
+
+chan g3faxtotxt prog=fcontrol, type=shaper, bptin=g3fax,
+	        bptout=ia5, outinfo='removebp "Group 3 Fax"',
+	        show="Fax -> Text Mapper",cost=100,conv=loss
+
+chan dmd2odif prog=fcontrol, type=shaper, bptin=dmd,
+	      bptout=odif, outinfo=f-dmd2odif, 
+	      show="Diamond -> Odif",cost=5,conv=conv

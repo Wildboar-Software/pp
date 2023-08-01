@@ -1,0 +1,38 @@
+\catcode`@=11
+\expandafter\ifx\csname graph\endcsname\relax \alloc@4\box\chardef\insc@unt\graph\fi
+\catcode`@=12
+\setbox\graph=\vtop{%
+  \baselineskip=0pt \lineskip=0pt \lineskiplimit=0pt
+  \vbox to0pt{\hbox{%
+    \special{pn 8}%
+    \rlap{\kern  1.250in\lower 1.291in\hbox to0pt{Message Handling Environment\hss}}%
+    \rlap{\kern  1.250in\lower 1.291in\hbox to0pt{MHS\hss}}%
+    \rlap{\kern  1.250in\lower 1.291in\hbox to0pt{MTS\hss}}%
+    \special{pa 0 1250}%
+    \special{pa 1250 625}%
+    \special{fp}%
+    \special{pa 0 1250}%
+    \special{pa 1250 1875}%
+    \special{fp}%
+    \special{pa 625 1875}%
+    \special{pa 1875 625}%
+    \special{fp}%
+    \special{pa 1250 1250}%
+    \special{pa 1250 0}%
+    \special{fp}%
+    \special{pa 625 625}%
+    \special{pa 1875 1875}%
+    \special{fp}%
+    \special{pa 0 1250}%
+    \special{pa 2500 1250}%
+    \special{fp}%
+    \special{pa 1875 625}%
+    \special{pa 3125 1875}%
+    \special{fp}%
+    \special{pa 4375 1875}%
+    \special{pa 625 625}%
+    \special{fp}%
+    \kern  4.376in
+  }\vss}%
+  \kern  1.876in
+}

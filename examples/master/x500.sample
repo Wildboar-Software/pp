@@ -1,0 +1,5 @@
+objectClass= top & applicationEntity & quipuObject
+cn= pp qmgr
+description= {T.61}Submit to Qmgr - iaed must NOT listen on this one !
+presentationAddress= '1001'H/Internet=lancaster.xtel.co.uk+18000
+supportedApplicationContext= 0.9.2342.60200172.201.1

@@ -1,0 +1,284 @@
+.TH PP-GEN 8 "25 Nov 1989"
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man8/RCS/pp-gen.8,v 6.0 1991/12/18 20:44:03 jpo Rel $
+.\"
+.\" $Log: pp-gen.8,v $
+.\" Revision 6.0  1991/12/18  20:44:03  jpo
+.\" Release 6.0
+.\"$
+.\"
+.ds VD pp\-6.0/
+.ds VN 6.0
+.ds Iv 7.0
+.SH NAME
+pp\-gen \- generating the PP message system
+.PP
+You should read over this entire document first,
+before typing any commands.
+.SH "READ THIS"
+This documentation describes how to configure, generate, and install the
+PP message system. It is intended only as a quick guide. The full
+details are in the PP documentation set - \fIPP Manual$
+Installation and Operation\fP. This can be found in the
+\fBdoc/manual/volume1\fP directory
+.SH SYNOPSIS
+make
+.SH DESCRIPTION
+This is a description of how one can bring up the PP message system.
+It is assumed that you have super-user privileges in order to (re-)install
+the software.
+Super-user privileges are not required to configure or generate this
+software.
+.PP
+PP is normally installed with most programs and directories owned by a
+single user. Conventionally this username is \*(lqpp\*(rq and is not a
+normal user id but this is not required. You should normally do most
+of the compilation and configuration as this user.
+.PP
+The distribution tape contains the hierarchy for the \fB\*(VD\fR directory.
+Bring the sources on-line by changing to a directory for local sources and
+running tar as the pp username you have chosen, e.g.:
+.sp
+.in +.5i
+.nf
+% cd /usr/src/local/
+% tar xf \fItarfile\fP
+% cd \*(VD
+.fi
+.in -.5i
+.SH CONFIGURATION
+First, go to the \fBconfig/\fR directory:
+.sp
+.in +.5i
+.nf
+% cd config
+.fi
+.in -.5i
+.PP
+Select the Makefile and include-file skeletons which most closely match
+your system.
+The current choices are:
+.sp
+.in +.5i
+.nf
+.ta \w'ultrix\0\0'u
+sun	Fairly standard sun configuration
+vax	Fairly standard vax configuration
+s5r4	System Five, release 4
+hpux	Hewlet Packard
+.sp
+\fImore samples welcome\fP
+.re
+.fi
+.in -.5i
+.sp
+The makefile skeleton has the extension \fB.make\fR,
+and the include-file skeleton has the extension \fB.h\fR.
+.SS MAKEFILE
+Copy the makefile skeleton of your choice to \fBpickle.make\fR,
+where \*(lqpickle\*(rq is the name of your system.
+Now edit this file to set the \fImake\fR variables.
+There are many of these, please refer to \fIThe PP Manual: Volume 1 \-
+Installation and Operation\fP. However, some of the more obvious
+variables are documented in \fB./OPTIONS.make\fP.
+.PP
+Link \fBpickle.make\fR to \fBMake.defs\fR in the base directory.
+.sp
+.in +.5i
+.nf
+% ln pickle.make ../Make.defs
+.re
+.fi
+.in -.5i
+.sp
+.SS INCLUDE\-FILE
+Copy the include-file skeleton of your choice to \fBpickle.h\fR,
+where \*(lqpickle\*(rq is the name of your system.
+Now add any additional definitions you may need.
+Consult the file \fB./OPTIONS.h\fR for a list.
+.PP
+Now, link \fBpickle.h\fR to \fB../h/config.h\fR.
+.sp
+.in +.5i
+.nf
+% ln pickle.h ../h/config.h
+.re
+.fi
+.in -.5i
+.SH GENERATION
+It is assumed that you have ISODE \*(Iv installed on the machine in
+question, including the X.500 libraries \fB\-ldsap \-lisode\fP. If you
+wish to build the grey book channels for JANET mail, you should first
+build and install the unix-niftp package.
+.PP
+Go to the \fB\*(VD\fR directory and generate the basic system:
+.sp
+.in +.5i
+.nf
+% cd ..
+% ./make
+.fi
+.in -.5i
+.sp
+.PP
+This will cause a complete generation of the system.  If all goes
+well, proceed with the installation.  If not, complain, as there
+\*(lqshould be no problems\*(rq at this step.  It may be worth saving
+the output of the make stage in a file in case things do go wrong.
+.SH INSTALLATION
+You will need to be the super-user to install the software.  There are
+two kinds of activities: once-only activities that you perform the
+first time the software is installed; and each-time activities that
+you perform every time the software is installed.
+.PP
+The first once-only activity is to create the necessary basic
+directories to install the commands. This is done by issuing the
+command as super-user:
+.sp
+.in +.5i
+.nf
+# su
+# ./make dirs
+.re
+.fi
+.in -.5i
+.sp
+Note that the pp user id needs to have been allocated at this point.
+.PP
+The second once-only activity is to make sure that PP will run when
+when the machine goes multi-user.  On Berkeley UNIX systems, add
+something along these lines to the \fB/etc/rc.local\fR file:
+.sp
+.in +.5i
+.nf
+if [ \-f /usr/lib/pp/pp.start ]; then
+    /usr/lib/pp/pp.start & (echo \-n ' pp') > /dev/console
+fi
+.fi
+.in -.5i
+.sp
+There are some examples of this start-up script in the config directory.
+.SS NOTE
+If you wish to use smtp then it may be appropriate to start the smtp
+server for \fI/etc/inetd\fP by adding a suitable line to
+\fB/etc/inetd.conf\fP. See Volume 1 for more details, but the basic
+format is something like:
+.sp
+.in +.75i
+.ti -.25i
+smtp stream \%tcp \%nowait \%pp \%/usr/lib/pp/cmds/chans/smtpd \%smtpd
+\%/usr/lib/pp/cmds/chans/smtpsrvr \%smtp
+.in -.75i
+.sp
+.PP
+To allow processes to contact the \fBqmgr\fP you must add a line to your
+isoentities file,
+.sp
+.in +.5in
+pickle "pp qmgr" 1.17.6.2.1 #1001/Internet=pickle+18000
+.in -.5in
+.PP
+You will need to replace \*(lqpickle\*(rq by your local host, and you
+may need to change the isomacro \*(lqInternet\*(rq to something else
+if you have a local ethernet or similar.
+.PP
+Alternatively you may add a suitable entry to the directory if this is
+being used as a nameserver. Some samples are given below the
+\fBexamples\fP directory.
+.PP
+Then to install the following each-time activity is:
+.sp
+.in +.5i
+.nf
+% su
+Password:
+# ./make install
+.fi
+.in -.5i
+.PP
+If you plan to run the \fBMTAconsole\fP program (and you should!) you
+will need to install the application defaults file. This is in the
+\fBMTAconsole\fP directory and it should be installed as
+\fBMTAconsole\fP in the \fBapp-defaults\fP directory in your X
+hierarchy. For instance:
+.sp
+.in +.5i
+.nf
+# cd Src/MTAconsole
+# cp MTAconsole.ad /usr/lib/X11/app-defaults/MTAconsole
+.fi
+.in -.5i
+.PP
+The same is true of the user utility \fBxalert\fP. This has a similar
+set of application defaults that should be installed.
+.PP
+That's about it.  This will install everything.
+To clean-up the source tree as well,
+then use:
+.sp
+.in +.5i
+.nf
+% make clean
+.fi
+.in -.5i
+.sp
+at this point. (However, unless you are very tight for space save this
+step until you are sure things are working.)
+.PP
+If this is the first time you have used PP it is worth picking one of
+the example configurations in the \fBexamples/\fP directory. Choose a
+sample that is close to your requirements as a starting point. The
+available samples are
+.sp
+.in +.5i
+.nf
+.ta \w'LOCALSMTP\0\0'u
+LOCALSMTP	Very simple local smtp only
+JANET	A simple JANET configuration
+INTERNET	A simple Internet site
+.re
+.fi
+.in -.5i
+.sp
+Change to one of these directories, and read the README there. This
+will tell you to do various things, depending on what configuration
+you have chosen. Remember, this is only an example and will not deal
+with all your needs.
+.PP
+After all is set up, and at regular intervals, you should check all is
+ok by running \fIckconfig\fP (found in the tools directory) which will
+check things are installed correctly.
+.PP
+Finally, if you are interested in discussing PP with others running
+the software, drop a note to the Janet mailbox
+\*(lqpp\-people\-request@cs.ucl.ac.uk\*(rq, and ask to be added to the
+\*(lqpp-people@cs.ucl.ac.uk\*(rq list.
+.SH TAILORING
+Tailoring is an essential part of running PP. This is somewhat complex
+to achieve the correct setup and so is described in Volume 1 of the PP
+manual. It is important that this is followed carefully.
+.SH "GENERATING DOCUMENTATION"
+The directory \fBdoc/\fR contains the documentation set for this
+release.  Consult the file \fBdoc/READ\-ME\fR for a description of
+each document.  The directory \fBdoc/ps/\fR contains PostScript
+versions of each document.  These can be used to generate standard
+documentation on PostScript printers, but users who want to preview
+the documentation should generate the .dvi files from the SLiTeX and
+LaTeX sources.
+.PP
+If you received this distribution from the network,
+then the directory \fBdoc/ps/\fR does not contain any PostScript files.
+There should be a separate compressed \fItar\fR file,
+containing only PostScript files,
+available on the machine where you retrieved this distribution.
+.SH "REPORTING PROBLEMS"
+Comments concerning this release should be directed to the authors.
+Consult the preface in the \fIUser's Manual\fR for a current postal
+address.  Alternately, if you have access to the Janet network,
+comments may be sent to the mailbox
+\*(lqpp\-support@cs.ucl.ac.uk\*(rq.  Do \fBnot\fR send bug reports to
+the pp-people discussion group.
+.SH "SEE ALSO"
+ckconfig(8), dbmbuild(8)
+.br
+\fIThe PP Manual: Volume 1 \- Installation and Operation\fR
+

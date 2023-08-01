@@ -1,0 +1,18 @@
+~pp/doc/manual/README
+---------------------
+The PP manual is contained in the three directories volume1, 2 and 3.
+Each shares some files from the directory /texinputs.
+
+	Four subdirectories
+		volume0/
+			Introduction and credits
+		volume1/
+			Installation and Operation
+		volume2/
+			Programmers Manual.
+		volume3/
+			PP user manual
+
+By default these documents use the a4.sty style to produce a4 paper
+output. If you don't use a4 paper - create an empty file a4.sty in 
+each directory and this will disable this feature.

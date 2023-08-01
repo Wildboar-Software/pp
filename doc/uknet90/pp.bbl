@@ -1,0 +1,40 @@
+\begin{thebibliography}{CCI88}
+
+\bibitem[CCI88]{CCITT.MHS}
+{Message Handling: System and Service Overview}.
+\newblock International Telegraph and Telephone Consultative Committee, 1988.
+\newblock Recommendation X.400.
+
+\bibitem[Cro82]{RFC822}
+David~H. Crocker.
+\newblock {Standard for the Format of ARPA Internet Text Messages}.
+\newblock Request for Comments 822, DDN Network Information Center, SRI
+  International, August 1982.
+
+\bibitem[III84]{MMDFII}
+Douglas P.~Kingston III.
+\newblock {MMDFII: A Technical Review}.
+\newblock In {\em Proceedings, Summer Usenix Conference and Exhibition}, pages
+  32--41, June 1984.
+\newblock Salt Lake City, Utah.
+
+\bibitem[Kil88]{PP.MTA}
+Stephen~E. Kille.
+\newblock {PP~---~A Message Transfer Agent}.
+\newblock In Einar Stefferud, editor, {\em {Proceedings, Fourth International
+  Symposium on Computer Message Systems}}, pages 115--128, September 1988.
+\newblock Costa Mesa, California.
+
+\bibitem[Pos82]{SMTP}
+Jon~B. Postel.
+\newblock {Simple Mail Transfer Protocol}.
+\newblock Request for Comments 821, DDN Network Information Center, SRI
+  International, August 1982.
+\newblock See also \milstd/ 1781.
+
+\bibitem[Ros90]{ISODE}
+Marshall~T. Rose.
+\newblock {\em {The ISO Development Environment: User's Manual}}, 6.0 edition,
+  January 1990.
+
+\end{thebibliography}

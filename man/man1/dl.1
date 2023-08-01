@@ -1,0 +1,106 @@
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man1/RCS/dl.1,v 6.0 1991/12/18 20:43:41 jpo Rel $
+.\"
+.\" $Log: dl.1,v $
+.\" Revision 6.0  1991/12/18  20:43:41  jpo
+.\" Release 6.0
+.\"
+.\"
+.TH DL 1
+.SH NAME
+dl \- X.500 Directory Based Distribution List Management tool.
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+dl
+\%[\-u\0distinguished-name] 
+\%[\-c\0name-or-address] 
+\%[-m]
+\%[-q]
+\%[-p]
+\%[-v]
+\%[listname]
+.br
+.in -.5i
+.SH DESCRIPTION
+The
+.I dl
+program is used to modify the list specified on the command line.
+If no list is specified, dl enters an
+interactive mode prompting the user for lists to modify.
+When modifying a list, \fIdl\fR allows the user to create, add,
+remove, display, and check distribution lists via menu items.
+.PP
+Lists can also be created or converted from file based lists using
+this tool.
+.PP
+The `\-u' flag is used to change the default distinguished name of the user
+the specified name, the default is read from \fI.quipurc\fR.
+.PP
+The `\-c' flag is used to specify the name or address of the DSA to
+call.
+.PP
+The `\-p' flag is used to ask for the list to be printed, then dl will exit.
+.PP
+The `\-q' flag put dl into "quiet" mode.  This is particularly useful
+when running with the `\-v' flag.
+.PP
+The `\-m' flag is used to persuade \fIdl\fR that the user bound does
+have sufficient access rights to modify the directory based list.
+This is useful for directory managers.
+.PP
+The `\-v' flag asks dl the verify the specified list (or all local lists in
+none specified). If is useful to run with this option from cron(1) at
+reqular intervals to detect any changed mail addresses.
+If used with the `\-m' flag, out of date addresses are modified.
+.SH ATTRIBUTE SYNTAXES
+.PP
+There are various attribute syntaxes defined in addition to the standard 
+syntaxes used by \fIdish\fR.
+The most important of these is the  \fIORName\fR syntax, used for the
+\fImhsDLMembers\fR attribute.
+.PP
+An ORName consists of an optional directory name, and an ORAddress.
+The two components are seperated by a `$' thus:
+.sp
+.in +.5i
+.nf
+ORName ::= [<DirectoryName>] [$ <ORAddress>]
+.fi
+.in -.5i
+.sp
+The DirectoryName is either a Quipu style Distinguished 
+Name, or a name in Steve Kille's user-friendly notation.
+This notation is ordered but untyped,
+with components separated by commas.
+Typical names include:
+.sp
+.in +.5i
+.nf
+kille, cs, ucl
+rose, psi, USA
+L. Eagle, \*(lqSue, Grabbit and Runn\*(rq, GB
+.fi
+.in -.5i
+.sp
+The ORaddress is an X.400 style mail address.
+If a DirectoryName is supplied, the the ORAdress can be omitted, 
+\fIdl\fR will fill it in by looking at the mail attributes of the entry for
+`DirectoryName' in the X.500 directory.
+.sp
+.SH FILES
+.nf
+\*(EDdsaptailor	system QUIPU tailoring file
+$HOME/\&.quipurc	user's QUIPU tailoring file
+\*(EDufnrc	system UFN runcom file
+$HOME/\&.ufnrc	user's UFN runcom file
+.re
+.fi
+.SH "SEE ALSO"
+The PP Manual: Volume 3 \- Users Guide,
+.br
+Using the OSI Directory to achieve User Friendly Naming,
+.br
+dish(1c).
+.SH AUTHOR
+Colin Robbins,
+University College London

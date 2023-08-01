@@ -1,0 +1,47 @@
+\addvspace {10pt}
+\addvspace {10pt}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Example of Log Tailoring}}{23}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Example of Table Tailoring}}{25}
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Example of Channel Tailor Entry}}{31}
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Example of Filter Control Tailoring}}{38}
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Simple Shell Script Filter}}{38}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Example of Alias Table}}{52}
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Example of Users Table}}{54}
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Example of Domain Table}}{57}
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Example of Or Table}}{61}
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Example of Channel Table}}{62}
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Example of or2rfc Table}}{65}
+\contentsline {figure}{\numberline {4.7}{\ignorespaces Example of rfc2or Table}}{66}
+\contentsline {figure}{\numberline {4.8}{\ignorespaces Example of RFC\penalty \@M \ 1148 Gateway Table}}{66}
+\contentsline {figure}{\numberline {4.9}{\ignorespaces Example of X.400 Outbound Channel Table}}{76}
+\contentsline {figure}{\numberline {4.10}{\ignorespaces Example of X.400 inbound Channel table}}{77}
+\contentsline {figure}{\numberline {4.11}{\ignorespaces Example of List Table}}{78}
+\contentsline {figure}{\numberline {4.12}{\ignorespaces Example of Shell Table}}{80}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Example of an O/R Table to Edit}}{84}
+\contentsline {figure}{\numberline {5.2}{\ignorespaces O/R Table after Editing}}{85}
+\contentsline {figure}{\numberline {5.3}{\ignorespaces Example of X.400 Outbound Table}}{88}
+\contentsline {figure}{\numberline {5.4}{\ignorespaces Example of Channel Table}}{88}
+\contentsline {figure}{\numberline {5.5}{\ignorespaces Example of X.400 Inbound Table}}{91}
+\contentsline {figure}{\numberline {5.6}{\ignorespaces Example of X.400 Incoming Logs}}{92}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {6.1}{\ignorespaces Example of Fax Table}}{97}
+\contentsline {figure}{\numberline {6.2}{\ignorespaces Example Tailoring of Fax Channels}}{99}
+\contentsline {figure}{\numberline {6.3}{\ignorespaces Examples of the asn filter}}{103}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {7.1}{\ignorespaces Extract From the Console's Tailoring}}{116}
+\contentsline {figure}{\numberline {7.2}{\ignorespaces Example of Address File}}{135}
+\contentsline {figure}{\numberline {7.3}{\ignorespaces Example Delivery Report Format}}{135}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {A.1}{\ignorespaces An Example Tailor File}}{143}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {B.1}{\ignorespaces An Example Start Script}}{144}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {C.1}{\ignorespaces An Example Nightly Script}}{146}
+\addvspace {10pt}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {E.1}{\ignorespaces io\unhbox \voidb@x \kern .06em \vbox {\hrule width.3em} Interface}}{153}
+\addvspace {10pt}
+\contentsline {figure}{\numberline {F.1}{\ignorespaces QMGR ROS}}{163}

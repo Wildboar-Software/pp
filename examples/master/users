@@ -1,0 +1,15 @@
+############################################################
+#
+# This file registers all the users that PP knows to deliver
+# to. It has on the LHS the local address with domain
+# components removed. On the RHS the channel to use to
+# deliver the mail. For the present, you should put all
+# local users in here with the channel "822-local" as the
+# delivery channel
+#
+############################################################
+pp:822-local
+#
+# Here is the mapping showing how local delivery for J.Bloggs is done
+#
+J.Bloggs:822-local

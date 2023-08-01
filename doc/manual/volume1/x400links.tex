@@ -1,0 +1,481 @@
+\chapter {Setting Up X.400 Links}
+
+This chapter shows how to go about setting up X.400 interconnection
+with other sites.
+
+Information on X.400 routing and connection establishment is entirely
+table driven. As yet there is no standardised support by the message
+directory service. This section describes how to set up the \file{or}
+routing tables, and the other tables needed for bilaterally agreed
+linkage.
+
+To set up an X.400 connection, information about the remote site
+needs to be obtained and an entry needs to be inserted in the PP tables.
+
+\section {Remote Site Information}
+
+Obtain the information below prior to setting up an X.400 link.
+
+\label {lab.remoteinfo}
+\begin {tabular}{l l p{0.5\textwidth}}
+\tt&	Technical Contact:&	The person you contact if things go wrong.\\
+\tt&	Telephone:&		Telephone number of the technical contact.\\
+\tt*&	O/R Address:&		Address of a contact person.\\
+\tt*&	MTA Name:&		Name by which the remote site identifies itself.\\
+\tt*&	MTA Password:&		Password by which the remote site identifies itself.\\
+\tt*&	Transport Selector:&	A port identifier at the transport level.\\
+\tt&	Network Address:&	The X.25 DTE and/or IP address of the remote site.\\
+\tt*&	X.25 Protocol ID:&	A port identifier at the X.25 level.\\
+\tt*&	ManagementDomains:&	Any management domain/s (MD) that 
+			the remote site provides a connection to.\\
+\end{tabular}
+
+Any information prefixed with an ``*'' may be optional.
+
+Examples of the format are shown in Tables~\ref{remoteinfo.example1}
+and~\ref{remoteinfo.example2}.
+
+\tagtable[hbpt]{x400info1}{Example of X.400 Information for
+NASA}{remoteinfo.example1}
+
+\tagtable[hbpt]{x400info2}{Example of X.400 Information for UCL}{remoteinfo.example2}
+
+
+\subsection{Conventions}
+These are some of the conventions that PP uses for X.400 links. These
+need not be followed strictly but make a good starting point.
+
+\begin{itemize}
+\item ISODE uses a transport selector. This should be ASCII-encoded
+and should be all numeric (to conform to X.400(84)). The value ``591''
+is often used.
+
+\item The MTA name is usually an appropriate domain. In the UK this 
+is in NRS (i.e., big endian domain) order.
+
+\item The MTA password is usually a single space.
+\end{itemize}
+
+\section {Setting Up the Routing Tables}
+
+The following steps need to be taken to set up the X.400 routing
+tables.  
+
+\subsection{Routing and Mapping tables}
+First, a number of mapping tables need to be installed. If
+you do not have a copy of them, you will need to get one. Copies should be
+obtained from University College London (see Appendix~\ref{app:tables}
+for details).
+
+\begin{describe}
+\item[\verb|or|:] The O/R Table (See Figure~\ref{lab.or.tbl1} below and
+Section~\ref{sect:ortables}). 
+\item[\verb|rfc2or|:] The RFC~822 to O/R Table (See
+Figure~\ref{example:rfc2or}) .
+\item[\verb|or2rfc|:] The O/R to RFC~822 Table (See
+Figure~\ref{example:or2rfc}).
+\item[\verb|rfc1148gate|:] The RFC~1148 known gateways file.
+\end{describe}
+
+The \file{rfc2or}, \file{or2rfc} and \file{rfc1148} are the RFC~1148
+tables which should be placed in the Table directory.
+
+\subsection{Editing the O/R Table}
+
+Replace the \verb|_DEFAULT_MTA_| occurrences with appropriate remote
+site names. These are the names by which the sites are internally
+identifiable within PP.  The choice of name is up to the PP
+administrator, and is used for identification purposes only.
+
+Local information should be prepended to this table, and will override
+later entries.
+
+When observing the example O/R tables in Figures~\ref{lab.or.tbl1}
+and \ref{lab.or.tbl2} please note that:
+
+\begin{itemize}
+\item The O/R skeleton table in Figure~\ref{lab.or.tbl1} on
+page~\pageref{lab.or.tbl1} is a truncated example of the {\em
+retrieved} UCL O/R master table.
+
+\item The O/R skeleton table in Figure~\ref{lab.or.tbl2} on
+page~\pageref{lab.or.tbl2}, is a truncated example of an {\em edited}
+UCL O/R master table.
+\end{itemize}
+
+\tagrind[hbtp]{exampleortbl}{Example of an O/R Table to Edit}{lab.or.tbl1}
+
+\tagrind[hbtp]{exampleortbl2}{O/R Table after Editing}{lab.or.tbl2}
+
+\subsubsection{X.400 Outbound Procedures}
+
+A brief description of how the X.400 outbound table is used within PP follows:
+
+\begin{itemize}
+\item PP connects to a remote site using the address specified in the
+\verb|rpsap| field.  These address are tried in the order definined in
+the \verb|ts_communities|\index{ts\_communities} ISODE variable.
+If all addresses fail, and the entry in the x.400 outbound table
+contains a \verb|trynext| entry, that site will be tried too.
+
+\item When the connection is requested, PP gives its local MTA name 
+and password as identification.
+
+\item The remote site {\em either} accepts connection and returns 
+its own MTA name and password {\em or} it rejects the connection and
+gives as its reason ``validation failure''.
+
+\item If the remote site rejects the connection, PP terminates 
+the X.400 connection.
+
+\item If the remote site has accepted the connection, PP 
+matches the returned MTA name and password against the values held for
+the remote site, in the X.400 outbound table (i.e the \verb|rmta| and
+\verb|rpass| fields).
+
+\item If the remote site's MTA name and password match, then
+connection has been set up, and PP starts to transmit a message;
+otherwise PP terminates the X.400 connection.
+\end{itemize}
+ 
+\subsection{Editing the X.400 Outbound Table} 
+
+Insert a default entry in the X.400 outbound table if it does not
+exist, where the key has the value ``default'' with the following
+fields set.  These are the default values by which the the local PP
+identifies itself to a remote site when an outgoing X.400 connection
+is made.  Refer to the X.400 outbound table in
+Figure~\ref{lab.x400out.tbl} when doing this.
+\begin{describe}
+\item[\verb|lmta|:] Local MTA name.
+\item[\verb|lpass|:] Local password.
+\item[\verb|lpsap|:] Local network address (same format as \verb|rpsap|).
+\end{describe}
+
+When the O/R table was previously edited, the remote site names that
+were chosen by the PP administrator should have been carefully
+recorded. These are the names that are now used to ``key'' into the
+X.400 outbound table.  In addition to this, the information below is
+also required (refer to Figure~\ref{lab.remoteinfo}).
+\begin{itemize}
+\item MTA name and password (both optional).
+\item Network address (mandatory)
+\item Transport selector (optional)
+\item Protocol ID or PID (optional).
+\end{itemize}
+
+Insert an entry in the X.400 outbound table, 
+where the remote site information maps into the following fields. 
+Refer to the X.400 outbound table example in Figure~\ref{lab.x400out.tbl} 
+when doing this.
+
+\begin{itemize}
+\item remote site name - \verb|key|.
+\item MTA name - \verb|rmta|.
+\item Password - \verb|rpass|.
+\item Network address, TSAP and PID - \verb|rpsap|.
+\end{itemize}
+
+\subsection*{NOTE}
+
+\begin{itemize}
+
+\item All keys in the X.400 outbound table must be unique.
+
+\item If the \verb|rmta| and \verb|rpass| are not specified, this
+means that the remote site is using {\em either} some other method 
+of validation {\em or} no validation at all.
+
+\item The \verb|rpsap| field has a number of different types of formats, 
+some of which may be seen in Figure~\ref{lab.x400out.tbl}.
+The formats are described in \cite{String.Addresses}.
+
+\end{itemize}
+
+The X.400 outbound table below gives the NASA and UCL entries using
+the remote site information specified in Figures~\ref{remoteinfo.example1}
+and~\ref{remoteinfo.example2}. Some possible \verb|rpsap| formats are also
+shown.
+
+\tagrind[hbpt]{chx400out}{Example of X.400 Outbound Table}{lab.x400out.tbl}
+
+\subsection{Channel Table Usage}
+The section describes briefly the actions that are taken to validate
+an X.400 address.
+
+\begin{enumerate}
+\item Parse an address in X.400 style using the \file{rfc2or} and 
+\file{or2rfc} tables if necessary to convert from RFC~822 format.
+
+\item Use the \file{or} table to try and locate a remote site 
+name, through which the address may be relayed 
+
+\item If a remote site name is associated with the address, then 
+look at the channel table to locate the cheapest route by which that
+remote site may be reached.
+\end{enumerate}
+
+
+\subsection{Edit the Channel Table} 
+
+The channel table below gives the NASA and UCL entries using the
+remote site information specified in the tables in
+Figure~\ref{remoteinfo.example1}.
+
+\begin{itemize}
+\item Note  that the key to this table has the same value as that in
+the X.400 outbound table in Figure~\ref{lab.x400out.tbl}.
+
+\item Also, note that the name specified in the rounded brackets is the 
+name of the X.400 outbound channel, and possesses the same value as
+that specified in the \file{tailor} file.
+\end{itemize}
+
+\tagrind[hbtp]{chanx400examp}{Example of Channel Table}{lab.channel.tbl}
+
+\subsection{X.400 Inbound Procedures}
+
+A brief description of how the X.400 inbound table is used within PP.
+
+\begin{itemize}
+\item A remote site requests a connection with the local PP system, 
+and within the request its remote network address, MTA name and 
+password are specified. 
+
+\item The local PP uses the remote network address as a key into 
+the X.400 inbound table. 
+
+\item If the key is invalid, then the local PP sends a rejection 
+back to the remote site, giving ``validation failure'' as the reason.
+
+\item If the key is valid, then the remote site's MTA name 
+and password are checked against its {\em rmta} and {\em rpass} 
+values specified within the X.400 inbound table. 
+
+\item If the values match, then the local PP accepts the request
+by returning its MTA name and password, and begins to get ready 
+for remote message transmission.
+
+\item If the values do not match, then the local PP sends a rejection 
+back to the remote site, giving ``validation failure'' as the reason.
+\end{itemize}
+
+{\bf NOTE:} 2 additional fields may be set to facilitate 
+X.400 inbound connection testing. 
+
+\begin{describe}
+
+\item[\verb|ininfo=sloppy|:] If this is set in the \file{tailor} file,
+allows the acceptance of all incoming connections. All validation
+checks are bypassed.
+
+\item[\verb|other=sloppy|:] set in the X.400 inbound table
+against a particular remote site entry bypasses the  
+validation checks for that site's remote MTA name and password.
+\end{describe}
+
+\subsection{Editing the X.400 Inbound Table} 
+
+Before editing this table the PP administrator needs to:
+\begin {itemize}
+\item Decide whether or not to be selective over the acceptance 
+of remote site connections. If {\em all} remote site connections are 
+to be accepted, then in the \file{tailor} file the X.400 inbound
+channel is tailored with \verb|ininfo=sloppy|, and {\em no} entries 
+need to be registered in this table. If entries are registered, 
+they will be bypassed. 
+
+\item Decide whether or not remote site MTA name and password 
+validation checks are to be done. This decision should only 
+be taken if \verb|ininfo=sloppy| is not set in the \file{tailor} file
+for the X.400 inbound channel. If no MTA name and password 
+validation checks are to be carried out, then for that remote entry 
+in the X.400 inbound table, set \verb|other=sloppy|. 
+\end {itemize}
+
+Please note when taking these decisions:  
+\begin{itemize}
+\item If \verb|ininfo=sloppy| is set within the \file{tailor} file for the 
+X.400 inbound channel, the network address of a remote site 
+is still used as a key into the X.400 inbound table to obtain its 
+remote site name (\verb|rname|).
+If the key is invalid, then the remote site name is set to its 
+network address. 
+This will cause problems, if delivery notifications are requested 
+by such a site, as the local PP would be unable to use 
+the remote site name to key into the X.400 outbound table. 
+Therefore \verb|ininfo=sloppy| should be set for testing purposes only.
+
+\item That for each remote site an X.400 inbound and outbound entry 
+should exist.
+Otherwise if \verb|ininfo=sloppy| is set,
+and a remote site's network address keys successfully into the 
+X.400 inbound table, unless there 
+is a corresponding entry in the X.400 outbound table, no mail 
+will be able to be sent to that site.
+\end{itemize}
+ 
+When the X.400 outbound table was previously edited, the following 
+remote site information should have been obtained: 
+
+\begin{itemize}
+\item remote site name (chosen by the PP administrator).
+\item MTA name and password (both optional).
+\item Network address (mandatory).
+\item Transport selector (optional) .
+\end{itemize}
+
+As the X.400 inbound table is very similar to the X.400 outbound 
+table the same information is again required,
+only this time, instead of making a connection to a remote site,
+the concern is centered on a remote site requesting a local connection. 
+
+The fields in the X.400 inbound table (see
+Figure~\ref{lab.x400in.tbl}) are very similar to the ones in the X.400
+outbound table (see Figure~\ref{lab.x400out.tbl}), and should be set
+accordingly, except for two main differences:
+
+\begin {describe}
+\item[\verb|rpsap|:] acts as the table entry key.
+\item[\verb|rname|:] is an extra parameter which specifies the remote site name.
+This should have the same value as the remote site \verb|key| in the 
+X.400 outbound table.
+\end{describe}
+
+The X.400 inbound table below gives the NASA and UCL entries using the
+remote site information specified in Figure~\ref{remoteinfo.example1}.
+
+\tagrind[hbtp]{x400in-examp2}{Example of X.400 Inbound Table}{lab.x400in.tbl}
+
+In Figure~\ref{lab.x400in.tbl} above, it can be seen that:
+
+\begin{itemize} 
+\item The PID field is {\em never} used in the \verb|rpsap| key.
+
+\item If a remote site has a number of network addresses, 
+all may be specified in the \verb|rpsap| of the remote site's X.400
+outbound entry (see Figure~\ref{lab.x400out.tbl})  but there
+will need to be a number of inbound
+\verb|rpsap| entries for each network address belonging to that remote site.
+Though all other details (\verb|rname|, \verb|rmta|, \verb|rpass|)
+would be the same.
+\end {itemize} 
+
+
+\subsection {Testing Outbound Connections}
+
+\begin{itemize}
+\item Go to the PP log directory.
+\item Look at the X.400 incoming log. The log should look like those
+in Figure~\ref{examp:log}.
+\end{itemize}
+
+\tagrind[hbpt]{logx400-examp}{Example of X.400 Incoming Logs}{examp:log}
+
+From this log, the following remote site information may be obtained,
+which can then be inserted as two entries in the X.400 inbound and
+outbound tables.
+
+\begin{itemize}
+\item The TSAP:  None for the first entry and ``PHL'' for the second.
+
+\item The Network Address: 5052334300018 for the first entry and 
+302049600717 for the second.
+
+\item The MTA Name: ``manta.cng.dit.csiro.au'' for the first entry and 
+``foo'' for the second.
+
+\item The password - `` '' for the first and ``foobar'' for the second.
+\end{itemize}
+
+However, note that:
+
+\begin{itemize}
+
+\item A remote site does not have to be specified in the X.400 inbound table
+for a connection to be successful.  If in the \file{tailor} file the
+X.400 Inbound Channel is tailored with \verb|ininfo=sloppy|, then all
+remote connections are accepted.
+
+\item If on the other hand MTA name and password validation is to 
+be ignored, then for that remote entry in the X.400 inbound table, 
+\verb|other=sloppy| is added. 
+\end{itemize}
+
+\subsection {How to make a test X.400 connection to a remote site}
+
+\begin{itemize}
+\item Go to the table directory.
+\item Put the remote site information in the appropriate tables. 
+\item Use the channel in ``ping'' mode to
+make an RTS connection to the remote site. This is done by running the
+channel binary as follows:
+\begin{quote}\small\begin{verbatim}
+x400out88 ping -m mta -c channel
+\end{verbatim}\end{quote}
+Similarly for \pgm{x400out84}.
+
+\item Check the PP logs. The failure/success will be recorded there.
+
+\item The following failure reasons may be given:
+
+\begin{itemize}
+\item ``Validation failure'': The remote site has either got 
+an erroneous PP entry in their tables, or they haven't recorded 
+your entry at all.
+
+\item ``Unacceptable dialogue mode'':  Either the remote site does not 
+support monologue or the RTS ASN.1 encoding is bust.
+
+\item ``Connect request refused on this network connection'':
+ remote site is either down or its network listener is not running.
+
+\item ``Busy'':  remote site is busy, try again later. 
+
+\item ``Protocol Error'': protocol problems. 
+
+\item ``Remote system problem'': remote site's process has terminated
+abruptly.
+
+\item ``Timer expired'': remote system's process is looping.
+\end{itemize} 
+
+\item If the ``ping'' was successful, then  
+try transmitting a proper message, using the `mail'
+program. If during transmission a protocol error is received then this 
+needs to be resolved.
+To analyse this problem, it may be necessary to obtain the required 
+X.400 information by turning up the rts, session, 
+and transport logging in the PP \file{tailor} file. This can be done 
+by adding the following 3 entries: 
+
+\begin{description}
+\item isodelog rtsaplevel file=rts level=pdus 
+\item isodelog ssaplevel file=session level=pdus
+\item isodelog tsaplevel file=transport level=pdus 
+\end{description}
+\end{itemize}
+
+\subsection{A Common X.400 Incoming Connection Problem}
+
+Sometimes a remote site attempts to do an RTS recovery, due to some
+transmission failure. PP at the moment, does not support recovery, and
+so a ``cannotRecover'' reason is given. This sometimes does not
+terminate the connection due to a bug in the remote site's software,
+and so it keeps on trying, which leads to much network activity.
+
+The X.400 Incoming logs will look something like: 
+
+\begin{quote}\small\begin{verbatim}
+ 2/ 8  8:30:31 x400in   01392 (#52     )  
+        Starting x400in (via X400(84) inbound)
+ 2/ 8  8:30:33 x400in   01392 (#52     )  
+        RtBInit, [Congestion at RtSAP] 
+        rejecting attempted recovery
+\end{verbatim}\end{quote}
+
+
+To get the network address of the remote site attempting the recovery,
+look at the ISODE tsapd.log, and then match the network address
+against the X.400 inbound table keys.
+

@@ -1,0 +1,216 @@
+.TH OR 3
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man3/RCS/or.3,v 6.0 1991/12/18 20:43:58 jpo Rel $
+.\"
+.\" $Log: or.3,v $
+.\" Revision 6.0  1991/12/18  20:43:58  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+or \- library of O/R-address routines.
+.SH SYNOPSIS
+cc [flags] files libpp.a [libraries]
+.SH DESCRIPTION
+The
+.I or
+library provids a set of routines for building, transforming and
+manipulating X.400 O/R Names. Most routines work on a doubly linked list
+of structures representing the elements of the O/R Name. The list is
+kept in an ordered sequence of elements, with the "most significant"
+elements at the top.
+Significance is determined by "lowness" in the assocaited #defines.
+This is an extension of the precedence defined in RFC 987.
+Some of the choices are arbitrary, and do not really matter.
+The basic type is the
+.I OR_ptr
+which is defined in the header file
+.IR or.h .
+The routines are provided to work at various levels of complexity.
+.SS "PRIMITIVE ROUTINES"
+.nf
+#include "or.h"
+.sp
+or_init ()
+.sp
+OR_ptr or_add (list, or, before)
+OR_ptr list, or;
+int before;
+.sp
+or_cmp (or1, or2)
+OR_ptr or1, or2;
+.sp
+OR_ptr or_dup (or)
+OR_ptr or;
+.sp
+OR_ptr or_find (tree, type, ddname)
+OR_ptr tree;
+int type;
+char *ddname;
+.sp
+or_free (or)
+OR_ptr or;
+.sp
+OR_ptr or_lastpart (or)
+OR_ptr or;
+.sp
+OR_ptr  or_locate (or, type)
+OR_ptr or;
+int type;
+.sp
+OR_ptr or_new (type, ddname, value)
+int type;
+char *ddname, *value;
+.sp
+char    *or_value (or, type)
+OR_ptr or;
+int type;
+.sp
+.fi
+These routines are the primitive interface to the
+.I or
+package. Most routines use symbolic values to refer to the different
+components. These are the following
+.sp
+.nf
+.in +4
+#define OR_C            1
+#define OR_ADMD         2
+#define OR_PRMD         3
+#define OR_O            4
+#define OR_OU           5
+#define OR_X121         6
+#define OR_TID          7
+#define OR_UAID         8
+#define OR_S            9
+#define OR_G            10
+#define OR_I            11
+#define OR_GQ           12
+#define OR_DD           99
+.fi
+.sp
+.in -4
+In general if a routine fails then it returns either
+.I NOTOK
+if the return value is an integer,
+.I NULLOR
+if the return value is an or element and
+.I NULLCP
+if the return value is a character string.
+.I or_init
+initialises the package. It should be called before any other routines
+although more commonly a higher level initialising function is used.
+.I or_new
+creates a new element of the given type with the given value. If the
+element is a domain defined attribute, then ddname is the name of the
+attribute. All parameters are copied into allocated memory.
+.I or_add
+adds a new or element to the list, and inserts it in the correct place
+in the hierarchy.
+It will not allow duplicates, except for DDs and OUs.
+If the flag before is set and the
+element type is a recurring type, then the element is added before
+other elements of the same type.
+This flag is to cope with some of the oddities of EAN and RFC 987.
+.I or_cmp
+compares two elements. It returns true if the two elements are the
+same.
+.I or_dup
+duplicates an or element.
+Finally,
+.I or_free
+releases the storage associated with an element when finished with.
+.I or_locate
+locates an element of a specified type in a tree.
+.I or_find
+is a version generalised to acces domain defined.
+.I or_lastpart
+identifeis the last element of an or_tree.
+.I or_value
+returns the value of the first occurence of the specified type.
+.SS "CONVERSION ROUTINES"
+.nf
+or_or2std (or, buf, nicepn)
+OR_ptr or;
+char *buf;
+int nicepn;
+.sp
+OR_ptr or_std2or (str)
+char *str;
+.sp
+or_or2dmn (first, last, buf)
+OR_ptr first, last;
+char *buf;
+.sp
+OR_ptr or_dmn2or (istr)
+char *istr;
+or_or2rfc (or, result)
+OR_ptr or;
+char *result;
+.sp
+or_rfc2or (rfc, or)
+char *rfc;
+OR_ptr *or;
+.sp
+PE or2pe (or)
+OR_ptr or;
+.sp
+OR_ptr pe2or (pe)
+PE pe;
+.sp
+.fi
+These routines, in general, manipulate between OR_ptr trees
+and various forms of string.
+.I or_or2std
+maps an OR_ptr into RFC 987 \%std-orname (for human consumption).
+If nicepn is set, it produces a more readable, but illegal, version.
+.I or_std2or
+performs the reverse mapping.
+.I or_or2dmn
+and
+.I or_dmn2or
+do the same for the machine interpretable \%dmn-orname encodings of RFC
+987.
+For
+.I or_or2dmn ,
+the first and list paramters enable specification of an (inclusive)
+section of an OR_ptr tree to be encoded.
+.I or_or2rfc
+and
+.I or_rfc2or
+perform mappings between RFC 822 addresses and OR_ptr trees, according
+to RFC 987.
+.I or2pe
+and
+.I pe2or
+perform mappings between OR_ptr trees and PE pointer ones.
+They are PEPY generated routines. See the ISODE 5.0 documentation
+for more details.
+.SS "STRING ROUTINES"
+.nf
+or_asc2ps (ascii, ps)
+char *ascii, *ps;
+.sp
+or_ps2asc (ps, ascii)
+char *ps, *ascii;
+.sp
+.fi
+The first two routines convert between ascii character strings and the
+printable string encoding of the ascii string as specified in RFC-987.
+.SS "OTHER ROUTINES"
+.nf
+OR_ptr or_default (or)
+OR_ptr or;
+.sp
+.fi
+.I or_default
+inserts local default components into partially specified OR Names.
+.SH "SEE ALSO"
+ISODE 5.0 documentation.
+.br
+\fIThe PP Manual: Volume 1 \- Installation and Operation\fP
+.SH FILES
+Various tables, including: rfc2or/or2rfc (for 987 mappings);
+or (for or_check).
+.SH BUGS
+Need to add an or_undefault function.

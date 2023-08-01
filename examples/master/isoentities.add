@@ -1,0 +1,23 @@
+#
+# Isoentnties addition for the qmgr monitor program
+#
+#
+
+#
+# Change,
+# mylocalhostname - this should be the name of the host on which the
+# qmgr is to run
+# Network-address should be the Network address in string format for this
+# entity. It must contain a TCP port or X.25 PID.
+# Examples of this might be
+# 	Internet=128.243.20.1+18000
+#	LOCAL-ETHER=128.243.20.1+18000
+#	Janet=000021000018+PID+04018100
+# A Complete example might be
+# john "pp-qmgr"		1.17.6.2.1	\
+#		LOCAL-ETHER=john+18000
+#
+#
+
+mylocalhostname "pp qmgr"		1.17.6.2.1	\
+		INTERNET=mylocalhostname+18000

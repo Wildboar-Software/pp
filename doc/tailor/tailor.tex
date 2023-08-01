@@ -1,0 +1,203 @@
+\documentstyle [11pt,a4] {article}
+\author {S.E. Kille}
+\date {\today}
+\title {A system for tailoring C programs}
+
+
+\begin {document}
+\maketitle
+
+\begin {abstract}
+This document defines a proposed design for tailoring C programs.
+It is specifically intended for ISODE, QUIPU, and PP.
+\end {abstract}
+
+
+\section {Introduction}
+
+
+It seems wrong to require a C format, a tailor format, and hand generated
+code to map between them.  I propose that we devise a format which specifies
+both, and can be used to generate what is needed. 
+
+
+We need to be able to specify the following:
+
+\begin {itemize}
+\item
+NUMBER types, which will be mapped onto int
+
+\item STRING types, which will be mapped onto char*
+
+\item ENUMERATED types, which will be mapped onto int
+
+\item FLAG types, which will be mapped onto int
+
+\item LIST types. These are structure types, which are linked into a list.
+Thus, a "next" and a "key" is always generated.  
+Can contain STRING, ENUMERATED or FLAG.
+and also DEF, which points to a previously defined type (typically to get at 
+taiored defines for ENUMERATED, or to point at identified LIST types)
+
+\end {itemize}
+
+\section {BNF Defintion}
+
+The following BNF for the single file is proposed.  Tokens are separated by
+LWSP or braces.
+
+\begin {verbatim}
+
+<tailor-definition> ::= <preamble> <CRLF> <line-list>
+<lines> ::= <line> | <line> <CRLF> <line-list>
+<line> ::= "--" <global-comment> 
+	| "#" <local-comment>
+	| <item>
+
+<preamble> ::= "PREFIX" <word>
+
+<item> ::= <number> | <enum> | <flag> | <string> | <list> |
+		<enumvalues> | <flagvalues>
+
+<optwordlist> ::= <optword> | <optword> "," <optwordlist>
+<optword> ::= <word> ["(" <word> ")"]		
+
+<number> ::= "NUMBER" <optword>
+
+<enum> ::= "ENUM" <optword> <word>
+
+<flag> ::= "FLAG" <optword> <word>
+
+<string> ::= "STRING" <optword>
+
+<enumvalues> ::= "ENUMVALUES" <word> <optwordlist>
+
+<flagvalues> ::= "FLAGVALUES" <word> <optwordlist>
+
+<list> ::= "LIST" <optword> "{" <listitemlist> "}"
+
+<listitemlist> ::= <listitem> | <listitem> <CRLF> <listitemlist>
+
+<listitem> ::= <number> | <enum> | <flag> | <string> | <ptr>
+
+<ptr> ::= "PTR" <optword> <word>
+\end{verbatim}
+
+\section {Behaviour}
+
+
+\begin {itemize}
+\item
+An h file is made with 
+Typedefs for any structures generated, and 
+extern references to all variables.
+
+
+\item
+A C file with variable definitions, initialiased to zero
+
+
+\item
+Documentation on the format of the tailor file.  This should be unix manual
+or LaTeX.  {\tt <global-comment>} is interspersed into the mechanically
+generated structure.
+
+\item A routine {\tt <prefix>\_tai()} to parse a tailor file and initialise
+each variables.
+
+\item {\tt <prefix>\_tai\_build()} to take 
+tailor file, and generate a file of static definitios
+(esssentially to replace 3., with values frozen in).  This would allow a
+site to ``compile in'' an operational tailor file, and thus gain performance.
+Only deltas would need to be runtime tailored.  
+
+\item Code to print/log the value of tailored variables ({\tt <prefix>\_<item>\_print()}).
+
+\item Code to call all of the functions in 7 (list-config) - a sort of
+print\_config ({\tt <prefix>\_tai\_print()}).
+
+\item  
+Code to select structures from lists 
+ ({\tt  <item>\_nm2struct()) }).
+
+\end {itemize}
+
+Some more notes on building the structures:
+
+\begin {itemize}
+\item For variables or structure items, the name of the variable is used, or
+the bracketed value if present.
+
+\item For ENUMVALUES, the definitions for ENUM are associated with the
+strings concerned.  If bracketed values are present, these are references to
+external \#defines.  Otherwise, {\tt <prefix>\_<value>} is allocated
+incrementally, and the \#defines created.
+Similarly for ENUMFLAGS.  
+\end {itemize}
+
+
+\section {Examples}
+
+Example format
+
+\begin {verbatim}
+	STRING authwarn
+\end{verbatim}
+
+
+generates char* authwarn; and recognises 'authwarn "joe foobar"' in a tailor
+file.
+
+\begin {verbatim}
+	NUMBER mcount(maxcount)
+\end{verbatim}
+
+generates 'int maxcount;' and recognises 'mcount 22'
+
+\begin {verbatim}
+
+ENUMVALUES logvalues bst(LLOG_BST), fst(LLOG_FST)
+
+log LIST {
+    STRING show (ll_show) 
+    ENUM level(ll_level) logvalues
+    }
+    
+chan(ch_struct) LIST {
+    STRING show(ch_show) 
+    PTR log(ch_log) log
+    ENUM loglevel(ch_level) logvalues
+    }
+
+
+generates strucutures:
+
+log {
+   struct *log log_next;
+   char *log_key;
+   char* ll_show;
+   char ll_level;
+};
+
+ch_struct {
+   struct *ch_struct ch_struct_next;
+   char *ch_struct_key;
+   char *ch_show;
+   struct *log ch_log;
+   char ch_level;
+}
+\end{verbatim}
+
+It generates routines chan\_nm2struct (key) and log\_nm2struct (key).
+One might initialise logs by (e.g.) authlog = log\_nm2struct ("auth");
+
+It would recognise formats:
+
+\begin {verbatim}
+log auth show="authorisation log", level=bst
+
+chan xchan show="funny channel", log=auth, level=fst
+\end{verbatim}
+
+
+\end {document}

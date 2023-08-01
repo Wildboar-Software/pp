@@ -1,0 +1,1001 @@
+# PP specific routines
+#
+############################################################
+#
+# @(#) $Header: /xtel/pp/pp-beta/Lib/pp/RCS/Makefile,v 6.0 1991/12/18 20:49:15 jpo Rel $
+#
+# $Log: Makefile,v $
+# Revision 6.0  1991/12/18  20:49:15  jpo
+# Release 6.0
+#
+#
+############################################################
+#
+# Definitions
+#
+############################################################
+
+
+
+SRCS =  adr2txt.c chan_acheck.c conf.c dchan_acheck.c dr2txt.c get_dr.c \
+           lchan_acheck.c list_bpt.c list_rchan.c mta2txt.c p32txt.c \
+           pps_mail.c prm2txt.c q2txt.c set_1dr.c static.c tb_a.c tb_bpt84.c \
+           tb_bpt88.c tb_dr.c tb_misc.c tb_p1.c tb_p3prm.c tb_prm.c tb_q.c \
+           txt2adr.c txt2dr.c txt2mta.c txt2p3.c txt2prm.c txt2q.c ut_a.c \
+           ut_com.c ut_dlh.c ut_dr.c ut_fn.c ut_free.c ut_gldm.c ut_mm2p1.c \
+           ut_mpduid.c ut_msg.c ut_p12mm.c ut_p1_st.c ut_prm.c ut_q.c \
+           ut_qid.c ut_trace.c wr_stat.c ut_aparse.c ut_postie.c \
+	   ut_redirect.c
+OBJS =  adr2txt.o chan_acheck.o conf.o dchan_acheck.o dr2txt.o get_dr.o \
+           lchan_acheck.o list_bpt.o list_rchan.o mta2txt.o p32txt.o \
+           pps_mail.o prm2txt.o q2txt.o set_1dr.o static.o tb_a.o tb_bpt84.o \
+           tb_bpt88.o tb_dr.o tb_misc.o tb_p1.o tb_p3prm.o tb_prm.o tb_q.o \
+           txt2adr.o txt2dr.o txt2mta.o txt2p3.o txt2prm.o txt2q.o ut_a.o \
+           ut_com.o ut_dlh.o ut_dr.o ut_fn.o ut_free.o ut_gldm.o ut_mm2p1.o \
+           ut_mpduid.o ut_msg.o ut_p12mm.o ut_p1_st.o ut_prm.o ut_q.o \
+           ut_qid.o ut_trace.o wr_stat.o ut_aparse.o ut_postie.o \
+	   ut_redirect.o
+# DO NOT DELETE THIS LINE MAKE DEFINE NEEDS IT
+
+HEADERS         = ../../h
+
+CFLAGS          = $(LIBCCOPTIONS) -I$(HEADERS) $(LCF)
+LLFLAGS         = $(LINTFLAGS) -I$(HEADERS) -u
+SHADOW          = pp-made
+
+LINTLIBS        = ../addr/llib-laddr.ln \
+		  ../charset/llib-lcs.ln \
+		  ../format/llib-lfmt.ln \
+		  ../io/llib-lio.ln \
+		  ../or/llib-lor.ln \
+		  ../parse/llib-lparse.ln \
+		  ../qmgr/llib-lqmgr.ln \
+		  ../table/llib-ltable.ln \
+		  ../tai/llib-ltai.ln \
+		  ../util/llib-lutil.ln \
+		  ../x400/llib-lx400.ln
+
+
+############################################################
+#
+# Building Rules
+#
+############################################################
+
+default: ${SHADOW}
+
+${SHADOW}: $(OBJS)
+	$(AR) r$(ARFLAGS) ../libpp.a $?
+	touch $@
+
+saber_src: $(SRCS)
+	#load -C $(CFLAGS) $(SRCS) $(LIBPP) $(LIBSYS)
+
+saber_obj: $(OBJS) 
+	#load -C $(OBJS) $(LIBPP) $(LIBSYS)
+
+lintlib:llib-lpp.ln
+llib-lpp.ln: ${SRCS}
+	$(LINT) -Cpp $(LLFLAGS) ${SRCS}
+
+lint:
+	$(LINT) $(LLFLAGS) $(SRCS) $(LINTLIBS) $(LINTISODE)
+
+install:;
+
+clean: tidy
+	rm -f $(OBJS) llib-lpp.ln
+
+tidy:
+	rm -f core ${SHADOW} *.old a.out *.BAK
+
+depend:
+	$(DEPEND) -I$(HEADERS) $(SRCS)
+
+define:
+	$(DEFINE) Makefile
+
+conf.o: conf.c ../../Make.defs
+	$(CC) $(CFLAGS) -c \
+		'-DTAILOR="$(TAILOR)"' \
+		'-DCMDDIR="$(CMDDIR)"' \
+		'-DLOGDIR="$(LOGDIR)"' \
+		'-DQUEDIR="$(QUEDIR)"' \
+		'-DTBLDIR="$(TBLDIR)"' \
+		conf.c
+
+############################################################
+#
+# End of building rules
+#
+############################################################
+
+# DO NOT DELETE THIS LINE MAKE DEPEND NEEDS IT
+# Dependencies follow
+adr2txt.o: adr2txt.c
+adr2txt.o: ../../h/util.h
+adr2txt.o: ../../h/config.h
+adr2txt.o: ../../h/ll_log.h
+adr2txt.o: ../../h/adr.h
+adr2txt.o: ../../h/list_rchan.h
+adr2txt.o: ../../h/chan.h
+adr2txt.o: ../../h/table.h
+adr2txt.o: ../../h/list_bpt.h
+adr2txt.o: ../../h/auth.h
+adr2txt.o: ../../h/list_bpt.h
+adr2txt.o: ../../h/extension.h
+adr2txt.o: ../../h/mta.h
+adr2txt.o: ../../h/adr.h
+adr2txt.o: ../../h/list_bpt.h
+adr2txt.o: ../../h/aparse.h
+adr2txt.o: ../../h/ap.h
+adr2txt.o: ../../h/util.h
+adr2txt.o: ../../h/or.h
+adr2txt.o: ../../h/chan.h
+adr2txt.o: ../../h/auth.h
+adr2txt.o: ../../h/list_rchan.h
+adr2txt.o: ../../h/tb_com.h
+adr2txt.o: ../../h/tb_a.h
+chan_acheck.o: chan_acheck.c
+chan_acheck.o: ../../h/util.h
+chan_acheck.o: ../../h/config.h
+chan_acheck.o: ../../h/ll_log.h
+chan_acheck.o: ../../h/adr.h
+chan_acheck.o: ../../h/list_rchan.h
+chan_acheck.o: ../../h/chan.h
+chan_acheck.o: ../../h/table.h
+chan_acheck.o: ../../h/list_bpt.h
+chan_acheck.o: ../../h/auth.h
+chan_acheck.o: ../../h/list_bpt.h
+chan_acheck.o: ../../h/extension.h
+chan_acheck.o: ../../h/mta.h
+chan_acheck.o: ../../h/adr.h
+chan_acheck.o: ../../h/list_bpt.h
+chan_acheck.o: ../../h/aparse.h
+chan_acheck.o: ../../h/ap.h
+chan_acheck.o: ../../h/util.h
+chan_acheck.o: ../../h/or.h
+chan_acheck.o: ../../h/chan.h
+chan_acheck.o: ../../h/auth.h
+chan_acheck.o: ../../h/list_rchan.h
+chan_acheck.o: ../../h/qmgr.h
+chan_acheck.o: ../../h/Qmgr-types.h
+chan_acheck.o: ../../h/Qmgr-ops.h
+conf.o: conf.c
+dchan_acheck.o: dchan_acheck.c
+dchan_acheck.o: ../../h/util.h
+dchan_acheck.o: ../../h/config.h
+dchan_acheck.o: ../../h/ll_log.h
+dchan_acheck.o: ../../h/adr.h
+dchan_acheck.o: ../../h/list_rchan.h
+dchan_acheck.o: ../../h/chan.h
+dchan_acheck.o: ../../h/table.h
+dchan_acheck.o: ../../h/list_bpt.h
+dchan_acheck.o: ../../h/auth.h
+dchan_acheck.o: ../../h/list_bpt.h
+dchan_acheck.o: ../../h/extension.h
+dchan_acheck.o: ../../h/mta.h
+dchan_acheck.o: ../../h/adr.h
+dchan_acheck.o: ../../h/list_bpt.h
+dchan_acheck.o: ../../h/aparse.h
+dchan_acheck.o: ../../h/ap.h
+dchan_acheck.o: ../../h/util.h
+dchan_acheck.o: ../../h/or.h
+dchan_acheck.o: ../../h/chan.h
+dchan_acheck.o: ../../h/auth.h
+dchan_acheck.o: ../../h/list_rchan.h
+dchan_acheck.o: ../../h/qmgr.h
+dchan_acheck.o: ../../h/Qmgr-types.h
+dchan_acheck.o: ../../h/Qmgr-ops.h
+dr2txt.o: dr2txt.c
+dr2txt.o: ../../h/util.h
+dr2txt.o: ../../h/config.h
+dr2txt.o: ../../h/ll_log.h
+dr2txt.o: ../../h/dr.h
+dr2txt.o: ../../h/extension.h
+dr2txt.o: ../../h/mta.h
+dr2txt.o: ../../h/adr.h
+dr2txt.o: ../../h/list_rchan.h
+dr2txt.o: ../../h/chan.h
+dr2txt.o: ../../h/table.h
+dr2txt.o: ../../h/list_bpt.h
+dr2txt.o: ../../h/auth.h
+dr2txt.o: ../../h/list_bpt.h
+dr2txt.o: ../../h/extension.h
+dr2txt.o: ../../h/mta.h
+dr2txt.o: ../../h/aparse.h
+dr2txt.o: ../../h/ap.h
+dr2txt.o: ../../h/util.h
+dr2txt.o: ../../h/or.h
+dr2txt.o: ../../h/chan.h
+dr2txt.o: ../../h/auth.h
+dr2txt.o: ../../h/list_rchan.h
+dr2txt.o: ../../h/list_bpt.h
+dr2txt.o: ../../h/tb_dr.h
+get_dr.o: get_dr.c
+get_dr.o: ../../h/util.h
+get_dr.o: ../../h/config.h
+get_dr.o: ../../h/ll_log.h
+get_dr.o: ../../h/adr.h
+get_dr.o: ../../h/list_rchan.h
+get_dr.o: ../../h/chan.h
+get_dr.o: ../../h/table.h
+get_dr.o: ../../h/list_bpt.h
+get_dr.o: ../../h/auth.h
+get_dr.o: ../../h/list_bpt.h
+get_dr.o: ../../h/extension.h
+get_dr.o: ../../h/mta.h
+get_dr.o: ../../h/adr.h
+get_dr.o: ../../h/list_bpt.h
+get_dr.o: ../../h/aparse.h
+get_dr.o: ../../h/ap.h
+get_dr.o: ../../h/util.h
+get_dr.o: ../../h/or.h
+get_dr.o: ../../h/chan.h
+get_dr.o: ../../h/auth.h
+get_dr.o: ../../h/list_rchan.h
+get_dr.o: ../../h/q.h
+get_dr.o: ../../h/adr.h
+get_dr.o: ../../h/mta.h
+get_dr.o: ../../h/dr.h
+get_dr.o: ../../h/extension.h
+get_dr.o: ../../h/mta.h
+get_dr.o: ../../h/retcode.h
+lchan_acheck.o: lchan_acheck.c
+lchan_acheck.o: ../../h/util.h
+lchan_acheck.o: ../../h/config.h
+lchan_acheck.o: ../../h/ll_log.h
+lchan_acheck.o: ../../h/adr.h
+lchan_acheck.o: ../../h/list_rchan.h
+lchan_acheck.o: ../../h/chan.h
+lchan_acheck.o: ../../h/table.h
+lchan_acheck.o: ../../h/list_bpt.h
+lchan_acheck.o: ../../h/auth.h
+lchan_acheck.o: ../../h/list_bpt.h
+lchan_acheck.o: ../../h/extension.h
+lchan_acheck.o: ../../h/mta.h
+lchan_acheck.o: ../../h/adr.h
+lchan_acheck.o: ../../h/list_bpt.h
+lchan_acheck.o: ../../h/aparse.h
+lchan_acheck.o: ../../h/ap.h
+lchan_acheck.o: ../../h/util.h
+lchan_acheck.o: ../../h/or.h
+lchan_acheck.o: ../../h/chan.h
+lchan_acheck.o: ../../h/auth.h
+lchan_acheck.o: ../../h/list_rchan.h
+lchan_acheck.o: ../../h/qmgr.h
+lchan_acheck.o: ../../h/Qmgr-types.h
+lchan_acheck.o: ../../h/Qmgr-ops.h
+list_bpt.o: list_bpt.c
+list_bpt.o: ../../h/util.h
+list_bpt.o: ../../h/config.h
+list_bpt.o: ../../h/ll_log.h
+list_bpt.o: ../../h/list_bpt.h
+list_rchan.o: list_rchan.c
+list_rchan.o: ../../h/util.h
+list_rchan.o: ../../h/config.h
+list_rchan.o: ../../h/ll_log.h
+list_rchan.o: ../../h/list_rchan.h
+list_rchan.o: ../../h/chan.h
+list_rchan.o: ../../h/table.h
+list_rchan.o: ../../h/list_bpt.h
+list_rchan.o: ../../h/auth.h
+list_rchan.o: ../../h/list_bpt.h
+mta2txt.o: mta2txt.c
+mta2txt.o: ../../h/util.h
+mta2txt.o: ../../h/config.h
+mta2txt.o: ../../h/ll_log.h
+mta2txt.o: ../../h/mta.h
+mta2txt.o: ../../h/adr.h
+mta2txt.o: ../../h/list_rchan.h
+mta2txt.o: ../../h/chan.h
+mta2txt.o: ../../h/table.h
+mta2txt.o: ../../h/list_bpt.h
+mta2txt.o: ../../h/auth.h
+mta2txt.o: ../../h/list_bpt.h
+mta2txt.o: ../../h/extension.h
+mta2txt.o: ../../h/mta.h
+mta2txt.o: ../../h/aparse.h
+mta2txt.o: ../../h/ap.h
+mta2txt.o: ../../h/util.h
+mta2txt.o: ../../h/or.h
+mta2txt.o: ../../h/chan.h
+mta2txt.o: ../../h/auth.h
+mta2txt.o: ../../h/list_rchan.h
+mta2txt.o: ../../h/list_bpt.h
+mta2txt.o: ../../h/tb_com.h
+mta2txt.o: ../../h/tb_a.h
+mta2txt.o: ../../h/tb_p1.h
+p32txt.o: p32txt.c
+p32txt.o: ../../h/util.h
+p32txt.o: ../../h/config.h
+p32txt.o: ../../h/ll_log.h
+p32txt.o: ../../h/q.h
+p32txt.o: ../../h/adr.h
+p32txt.o: ../../h/list_rchan.h
+p32txt.o: ../../h/chan.h
+p32txt.o: ../../h/table.h
+p32txt.o: ../../h/list_bpt.h
+p32txt.o: ../../h/auth.h
+p32txt.o: ../../h/list_bpt.h
+p32txt.o: ../../h/extension.h
+p32txt.o: ../../h/mta.h
+p32txt.o: ../../h/adr.h
+p32txt.o: ../../h/list_bpt.h
+p32txt.o: ../../h/aparse.h
+p32txt.o: ../../h/ap.h
+p32txt.o: ../../h/util.h
+p32txt.o: ../../h/or.h
+p32txt.o: ../../h/chan.h
+p32txt.o: ../../h/auth.h
+p32txt.o: ../../h/list_rchan.h
+p32txt.o: ../../h/mta.h
+p32txt.o: ../../h/tb_p3prm.h
+pps_mail.o: pps_mail.c
+pps_mail.o: ../../h/head.h
+pps_mail.o: ../../h/util.h
+pps_mail.o: ../../h/config.h
+pps_mail.o: ../../h/ll_log.h
+pps_mail.o: ../../h/retcode.h
+pps_mail.o: ../../h/prm.h
+pps_mail.o: ../../h/q.h
+pps_mail.o: ../../h/adr.h
+pps_mail.o: ../../h/list_rchan.h
+pps_mail.o: ../../h/chan.h
+pps_mail.o: ../../h/table.h
+pps_mail.o: ../../h/list_bpt.h
+pps_mail.o: ../../h/auth.h
+pps_mail.o: ../../h/list_bpt.h
+pps_mail.o: ../../h/extension.h
+pps_mail.o: ../../h/mta.h
+pps_mail.o: ../../h/adr.h
+pps_mail.o: ../../h/list_bpt.h
+pps_mail.o: ../../h/aparse.h
+pps_mail.o: ../../h/ap.h
+pps_mail.o: ../../h/util.h
+pps_mail.o: ../../h/or.h
+pps_mail.o: ../../h/chan.h
+pps_mail.o: ../../h/auth.h
+pps_mail.o: ../../h/list_rchan.h
+pps_mail.o: ../../h/mta.h
+pps_mail.o: ../../h/adr.h
+prm2txt.o: prm2txt.c
+prm2txt.o: ../../h/util.h
+prm2txt.o: ../../h/config.h
+prm2txt.o: ../../h/ll_log.h
+prm2txt.o: ../../h/prm.h
+prm2txt.o: ../../h/tb_prm.h
+q2txt.o: q2txt.c
+q2txt.o: ../../h/util.h
+q2txt.o: ../../h/config.h
+q2txt.o: ../../h/ll_log.h
+q2txt.o: ../../h/q.h
+q2txt.o: ../../h/adr.h
+q2txt.o: ../../h/list_rchan.h
+q2txt.o: ../../h/chan.h
+q2txt.o: ../../h/table.h
+q2txt.o: ../../h/list_bpt.h
+q2txt.o: ../../h/auth.h
+q2txt.o: ../../h/list_bpt.h
+q2txt.o: ../../h/extension.h
+q2txt.o: ../../h/mta.h
+q2txt.o: ../../h/adr.h
+q2txt.o: ../../h/list_bpt.h
+q2txt.o: ../../h/aparse.h
+q2txt.o: ../../h/ap.h
+q2txt.o: ../../h/util.h
+q2txt.o: ../../h/or.h
+q2txt.o: ../../h/chan.h
+q2txt.o: ../../h/auth.h
+q2txt.o: ../../h/list_rchan.h
+q2txt.o: ../../h/mta.h
+q2txt.o: ../../h/tb_com.h
+q2txt.o: ../../h/tb_q.h
+q2txt.o: ../../h/mta.h
+set_1dr.o: set_1dr.c
+set_1dr.o: ../../h/util.h
+set_1dr.o: ../../h/config.h
+set_1dr.o: ../../h/ll_log.h
+set_1dr.o: ../../h/adr.h
+set_1dr.o: ../../h/list_rchan.h
+set_1dr.o: ../../h/chan.h
+set_1dr.o: ../../h/table.h
+set_1dr.o: ../../h/list_bpt.h
+set_1dr.o: ../../h/auth.h
+set_1dr.o: ../../h/list_bpt.h
+set_1dr.o: ../../h/extension.h
+set_1dr.o: ../../h/mta.h
+set_1dr.o: ../../h/adr.h
+set_1dr.o: ../../h/list_bpt.h
+set_1dr.o: ../../h/aparse.h
+set_1dr.o: ../../h/ap.h
+set_1dr.o: ../../h/util.h
+set_1dr.o: ../../h/or.h
+set_1dr.o: ../../h/chan.h
+set_1dr.o: ../../h/auth.h
+set_1dr.o: ../../h/list_rchan.h
+set_1dr.o: ../../h/q.h
+set_1dr.o: ../../h/adr.h
+set_1dr.o: ../../h/mta.h
+set_1dr.o: ../../h/dr.h
+set_1dr.o: ../../h/extension.h
+set_1dr.o: ../../h/mta.h
+set_1dr.o: ../../h/retcode.h
+static.o: static.c
+static.o: ../../h/util.h
+static.o: ../../h/config.h
+static.o: ../../h/ll_log.h
+static.o: ../../h/chan.h
+static.o: ../../h/table.h
+static.o: ../../h/list_bpt.h
+static.o: ../../h/list_bpt.h
+tb_a.o: tb_a.c
+tb_a.o: ../../h/util.h
+tb_a.o: ../../h/config.h
+tb_a.o: ../../h/ll_log.h
+tb_a.o: ../../h/tb_a.h
+tb_a.o: ../../h/adr.h
+tb_a.o: ../../h/list_rchan.h
+tb_a.o: ../../h/chan.h
+tb_a.o: ../../h/table.h
+tb_a.o: ../../h/list_bpt.h
+tb_a.o: ../../h/auth.h
+tb_a.o: ../../h/list_bpt.h
+tb_a.o: ../../h/extension.h
+tb_a.o: ../../h/mta.h
+tb_a.o: ../../h/adr.h
+tb_a.o: ../../h/list_bpt.h
+tb_a.o: ../../h/aparse.h
+tb_a.o: ../../h/ap.h
+tb_a.o: ../../h/util.h
+tb_a.o: ../../h/or.h
+tb_a.o: ../../h/chan.h
+tb_a.o: ../../h/auth.h
+tb_a.o: ../../h/list_rchan.h
+tb_bpt84.o: tb_bpt84.c
+tb_bpt84.o: ../../h/tb_bpt84.h
+tb_bpt88.o: tb_bpt88.c
+tb_bpt88.o: ../../h/tb_bpt88.h
+tb_dr.o: tb_dr.c
+tb_dr.o: ../../h/util.h
+tb_dr.o: ../../h/config.h
+tb_dr.o: ../../h/ll_log.h
+tb_dr.o: ../../h/dr.h
+tb_dr.o: ../../h/extension.h
+tb_dr.o: ../../h/mta.h
+tb_dr.o: ../../h/adr.h
+tb_dr.o: ../../h/list_rchan.h
+tb_dr.o: ../../h/chan.h
+tb_dr.o: ../../h/table.h
+tb_dr.o: ../../h/list_bpt.h
+tb_dr.o: ../../h/auth.h
+tb_dr.o: ../../h/list_bpt.h
+tb_dr.o: ../../h/extension.h
+tb_dr.o: ../../h/mta.h
+tb_dr.o: ../../h/aparse.h
+tb_dr.o: ../../h/ap.h
+tb_dr.o: ../../h/util.h
+tb_dr.o: ../../h/or.h
+tb_dr.o: ../../h/chan.h
+tb_dr.o: ../../h/auth.h
+tb_dr.o: ../../h/list_rchan.h
+tb_dr.o: ../../h/list_bpt.h
+tb_dr.o: ../../h/tb_com.h
+tb_dr.o: ../../h/tb_dr.h
+tb_misc.o: tb_misc.c
+tb_misc.o: ../../h/util.h
+tb_misc.o: ../../h/config.h
+tb_misc.o: ../../h/ll_log.h
+tb_p1.o: tb_p1.c
+tb_p1.o: ../../h/util.h
+tb_p1.o: ../../h/config.h
+tb_p1.o: ../../h/ll_log.h
+tb_p1.o: ../../h/adr.h
+tb_p1.o: ../../h/list_rchan.h
+tb_p1.o: ../../h/chan.h
+tb_p1.o: ../../h/table.h
+tb_p1.o: ../../h/list_bpt.h
+tb_p1.o: ../../h/auth.h
+tb_p1.o: ../../h/list_bpt.h
+tb_p1.o: ../../h/extension.h
+tb_p1.o: ../../h/mta.h
+tb_p1.o: ../../h/adr.h
+tb_p1.o: ../../h/list_bpt.h
+tb_p1.o: ../../h/aparse.h
+tb_p1.o: ../../h/ap.h
+tb_p1.o: ../../h/util.h
+tb_p1.o: ../../h/or.h
+tb_p1.o: ../../h/chan.h
+tb_p1.o: ../../h/auth.h
+tb_p1.o: ../../h/list_rchan.h
+tb_p1.o: ../../h/tb_com.h
+tb_p1.o: ../../h/tb_p1.h
+tb_p1.o: ../../h/extension.h
+tb_p3prm.o: tb_p3prm.c
+tb_p3prm.o: ../../h/util.h
+tb_p3prm.o: ../../h/config.h
+tb_p3prm.o: ../../h/ll_log.h
+tb_p3prm.o: ../../h/tb_p3prm.h
+tb_prm.o: tb_prm.c
+tb_prm.o: ../../h/util.h
+tb_prm.o: ../../h/config.h
+tb_prm.o: ../../h/ll_log.h
+tb_prm.o: ../../h/tb_prm.h
+tb_prm.o: ../../h/prm.h
+tb_q.o: tb_q.c
+tb_q.o: ../../h/util.h
+tb_q.o: ../../h/config.h
+tb_q.o: ../../h/ll_log.h
+tb_q.o: ../../h/q.h
+tb_q.o: ../../h/adr.h
+tb_q.o: ../../h/list_rchan.h
+tb_q.o: ../../h/chan.h
+tb_q.o: ../../h/table.h
+tb_q.o: ../../h/list_bpt.h
+tb_q.o: ../../h/auth.h
+tb_q.o: ../../h/list_bpt.h
+tb_q.o: ../../h/extension.h
+tb_q.o: ../../h/mta.h
+tb_q.o: ../../h/adr.h
+tb_q.o: ../../h/list_bpt.h
+tb_q.o: ../../h/aparse.h
+tb_q.o: ../../h/ap.h
+tb_q.o: ../../h/util.h
+tb_q.o: ../../h/or.h
+tb_q.o: ../../h/chan.h
+tb_q.o: ../../h/auth.h
+tb_q.o: ../../h/list_rchan.h
+tb_q.o: ../../h/mta.h
+tb_q.o: ../../h/tb_q.h
+txt2adr.o: txt2adr.c
+txt2adr.o: ../../h/util.h
+txt2adr.o: ../../h/config.h
+txt2adr.o: ../../h/ll_log.h
+txt2adr.o: ../../h/adr.h
+txt2adr.o: ../../h/list_rchan.h
+txt2adr.o: ../../h/chan.h
+txt2adr.o: ../../h/table.h
+txt2adr.o: ../../h/list_bpt.h
+txt2adr.o: ../../h/auth.h
+txt2adr.o: ../../h/list_bpt.h
+txt2adr.o: ../../h/extension.h
+txt2adr.o: ../../h/mta.h
+txt2adr.o: ../../h/adr.h
+txt2adr.o: ../../h/list_bpt.h
+txt2adr.o: ../../h/aparse.h
+txt2adr.o: ../../h/ap.h
+txt2adr.o: ../../h/util.h
+txt2adr.o: ../../h/or.h
+txt2adr.o: ../../h/chan.h
+txt2adr.o: ../../h/auth.h
+txt2adr.o: ../../h/list_rchan.h
+txt2adr.o: ../../h/tb_com.h
+txt2adr.o: ../../h/tb_a.h
+txt2adr.o: ../../h/list_bpt.h
+txt2adr.o: ../../h/list_rchan.h
+txt2dr.o: txt2dr.c
+txt2dr.o: ../../h/util.h
+txt2dr.o: ../../h/config.h
+txt2dr.o: ../../h/ll_log.h
+txt2dr.o: ../../h/dr.h
+txt2dr.o: ../../h/extension.h
+txt2dr.o: ../../h/mta.h
+txt2dr.o: ../../h/adr.h
+txt2dr.o: ../../h/list_rchan.h
+txt2dr.o: ../../h/chan.h
+txt2dr.o: ../../h/table.h
+txt2dr.o: ../../h/list_bpt.h
+txt2dr.o: ../../h/auth.h
+txt2dr.o: ../../h/list_bpt.h
+txt2dr.o: ../../h/extension.h
+txt2dr.o: ../../h/mta.h
+txt2dr.o: ../../h/aparse.h
+txt2dr.o: ../../h/ap.h
+txt2dr.o: ../../h/util.h
+txt2dr.o: ../../h/or.h
+txt2dr.o: ../../h/chan.h
+txt2dr.o: ../../h/auth.h
+txt2dr.o: ../../h/list_rchan.h
+txt2dr.o: ../../h/list_bpt.h
+txt2dr.o: ../../h/tb_dr.h
+txt2dr.o: ../../h/retcode.h
+txt2mta.o: txt2mta.c
+txt2mta.o: ../../h/util.h
+txt2mta.o: ../../h/config.h
+txt2mta.o: ../../h/ll_log.h
+txt2mta.o: ../../h/mta.h
+txt2mta.o: ../../h/adr.h
+txt2mta.o: ../../h/list_rchan.h
+txt2mta.o: ../../h/chan.h
+txt2mta.o: ../../h/table.h
+txt2mta.o: ../../h/list_bpt.h
+txt2mta.o: ../../h/auth.h
+txt2mta.o: ../../h/list_bpt.h
+txt2mta.o: ../../h/extension.h
+txt2mta.o: ../../h/mta.h
+txt2mta.o: ../../h/aparse.h
+txt2mta.o: ../../h/ap.h
+txt2mta.o: ../../h/util.h
+txt2mta.o: ../../h/or.h
+txt2mta.o: ../../h/chan.h
+txt2mta.o: ../../h/auth.h
+txt2mta.o: ../../h/list_rchan.h
+txt2mta.o: ../../h/list_bpt.h
+txt2mta.o: ../../h/tb_com.h
+txt2mta.o: ../../h/tb_p1.h
+txt2mta.o: ../../h/tb_a.h
+txt2p3.o: txt2p3.c
+txt2p3.o: ../../h/util.h
+txt2p3.o: ../../h/config.h
+txt2p3.o: ../../h/ll_log.h
+txt2p3.o: ../../h/mta.h
+txt2p3.o: ../../h/adr.h
+txt2p3.o: ../../h/list_rchan.h
+txt2p3.o: ../../h/chan.h
+txt2p3.o: ../../h/table.h
+txt2p3.o: ../../h/list_bpt.h
+txt2p3.o: ../../h/auth.h
+txt2p3.o: ../../h/list_bpt.h
+txt2p3.o: ../../h/extension.h
+txt2p3.o: ../../h/mta.h
+txt2p3.o: ../../h/aparse.h
+txt2p3.o: ../../h/ap.h
+txt2p3.o: ../../h/util.h
+txt2p3.o: ../../h/or.h
+txt2p3.o: ../../h/chan.h
+txt2p3.o: ../../h/auth.h
+txt2p3.o: ../../h/list_rchan.h
+txt2p3.o: ../../h/list_bpt.h
+txt2p3.o: ../../h/tb_p3prm.h
+txt2prm.o: txt2prm.c
+txt2prm.o: ../../h/util.h
+txt2prm.o: ../../h/config.h
+txt2prm.o: ../../h/ll_log.h
+txt2prm.o: ../../h/prm.h
+txt2prm.o: ../../h/tb_com.h
+txt2prm.o: ../../h/tb_prm.h
+txt2q.o: txt2q.c
+txt2q.o: ../../h/util.h
+txt2q.o: ../../h/config.h
+txt2q.o: ../../h/ll_log.h
+txt2q.o: ../../h/q.h
+txt2q.o: ../../h/adr.h
+txt2q.o: ../../h/list_rchan.h
+txt2q.o: ../../h/chan.h
+txt2q.o: ../../h/table.h
+txt2q.o: ../../h/list_bpt.h
+txt2q.o: ../../h/auth.h
+txt2q.o: ../../h/list_bpt.h
+txt2q.o: ../../h/extension.h
+txt2q.o: ../../h/mta.h
+txt2q.o: ../../h/adr.h
+txt2q.o: ../../h/list_bpt.h
+txt2q.o: ../../h/aparse.h
+txt2q.o: ../../h/ap.h
+txt2q.o: ../../h/util.h
+txt2q.o: ../../h/or.h
+txt2q.o: ../../h/chan.h
+txt2q.o: ../../h/auth.h
+txt2q.o: ../../h/list_rchan.h
+txt2q.o: ../../h/mta.h
+txt2q.o: ../../h/tb_com.h
+txt2q.o: ../../h/tb_q.h
+txt2q.o: ../../h/mta.h
+ut_a.o: ut_a.c
+ut_a.o: ../../h/head.h
+ut_a.o: ../../h/util.h
+ut_a.o: ../../h/config.h
+ut_a.o: ../../h/ll_log.h
+ut_a.o: ../../h/retcode.h
+ut_a.o: ../../h/adr.h
+ut_a.o: ../../h/list_rchan.h
+ut_a.o: ../../h/chan.h
+ut_a.o: ../../h/table.h
+ut_a.o: ../../h/list_bpt.h
+ut_a.o: ../../h/auth.h
+ut_a.o: ../../h/list_bpt.h
+ut_a.o: ../../h/extension.h
+ut_a.o: ../../h/mta.h
+ut_a.o: ../../h/adr.h
+ut_a.o: ../../h/list_bpt.h
+ut_a.o: ../../h/aparse.h
+ut_a.o: ../../h/ap.h
+ut_a.o: ../../h/util.h
+ut_a.o: ../../h/or.h
+ut_a.o: ../../h/chan.h
+ut_a.o: ../../h/auth.h
+ut_a.o: ../../h/list_rchan.h
+ut_a.o: ../../h/dr.h
+ut_a.o: ../../h/extension.h
+ut_a.o: ../../h/mta.h
+ut_com.o: ut_com.c
+ut_com.o: ../../h/util.h
+ut_com.o: ../../h/config.h
+ut_com.o: ../../h/ll_log.h
+ut_dlh.o: ut_dlh.c
+ut_dlh.o: ../../h/util.h
+ut_dlh.o: ../../h/config.h
+ut_dlh.o: ../../h/ll_log.h
+ut_dlh.o: ../../h/mta.h
+ut_dlh.o: ../../h/adr.h
+ut_dlh.o: ../../h/list_rchan.h
+ut_dlh.o: ../../h/chan.h
+ut_dlh.o: ../../h/table.h
+ut_dlh.o: ../../h/list_bpt.h
+ut_dlh.o: ../../h/auth.h
+ut_dlh.o: ../../h/list_bpt.h
+ut_dlh.o: ../../h/extension.h
+ut_dlh.o: ../../h/mta.h
+ut_dlh.o: ../../h/aparse.h
+ut_dlh.o: ../../h/ap.h
+ut_dlh.o: ../../h/util.h
+ut_dlh.o: ../../h/or.h
+ut_dlh.o: ../../h/chan.h
+ut_dlh.o: ../../h/auth.h
+ut_dlh.o: ../../h/list_rchan.h
+ut_dlh.o: ../../h/list_bpt.h
+ut_dr.o: ut_dr.c
+ut_dr.o: ../../h/util.h
+ut_dr.o: ../../h/config.h
+ut_dr.o: ../../h/ll_log.h
+ut_dr.o: ../../h/dr.h
+ut_dr.o: ../../h/extension.h
+ut_dr.o: ../../h/mta.h
+ut_dr.o: ../../h/adr.h
+ut_dr.o: ../../h/list_rchan.h
+ut_dr.o: ../../h/chan.h
+ut_dr.o: ../../h/table.h
+ut_dr.o: ../../h/list_bpt.h
+ut_dr.o: ../../h/auth.h
+ut_dr.o: ../../h/list_bpt.h
+ut_dr.o: ../../h/extension.h
+ut_dr.o: ../../h/mta.h
+ut_dr.o: ../../h/aparse.h
+ut_dr.o: ../../h/ap.h
+ut_dr.o: ../../h/util.h
+ut_dr.o: ../../h/or.h
+ut_dr.o: ../../h/chan.h
+ut_dr.o: ../../h/auth.h
+ut_dr.o: ../../h/list_rchan.h
+ut_dr.o: ../../h/list_bpt.h
+ut_fn.o: ut_fn.c
+ut_fn.o: ../../h/util.h
+ut_fn.o: ../../h/config.h
+ut_fn.o: ../../h/ll_log.h
+ut_fn.o: ../../h/mta.h
+ut_fn.o: ../../h/adr.h
+ut_fn.o: ../../h/list_rchan.h
+ut_fn.o: ../../h/chan.h
+ut_fn.o: ../../h/table.h
+ut_fn.o: ../../h/list_bpt.h
+ut_fn.o: ../../h/auth.h
+ut_fn.o: ../../h/list_bpt.h
+ut_fn.o: ../../h/extension.h
+ut_fn.o: ../../h/mta.h
+ut_fn.o: ../../h/aparse.h
+ut_fn.o: ../../h/ap.h
+ut_fn.o: ../../h/util.h
+ut_fn.o: ../../h/or.h
+ut_fn.o: ../../h/chan.h
+ut_fn.o: ../../h/auth.h
+ut_fn.o: ../../h/list_rchan.h
+ut_fn.o: ../../h/list_bpt.h
+ut_free.o: ut_free.c
+ut_free.o: ../../h/util.h
+ut_free.o: ../../h/config.h
+ut_free.o: ../../h/ll_log.h
+ut_free.o: ../../h/mta.h
+ut_free.o: ../../h/adr.h
+ut_free.o: ../../h/list_rchan.h
+ut_free.o: ../../h/chan.h
+ut_free.o: ../../h/table.h
+ut_free.o: ../../h/list_bpt.h
+ut_free.o: ../../h/auth.h
+ut_free.o: ../../h/list_bpt.h
+ut_free.o: ../../h/extension.h
+ut_free.o: ../../h/mta.h
+ut_free.o: ../../h/aparse.h
+ut_free.o: ../../h/ap.h
+ut_free.o: ../../h/util.h
+ut_free.o: ../../h/or.h
+ut_free.o: ../../h/chan.h
+ut_free.o: ../../h/auth.h
+ut_free.o: ../../h/list_rchan.h
+ut_free.o: ../../h/list_bpt.h
+ut_gldm.o: ut_gldm.c
+ut_gldm.o: ../../h/util.h
+ut_gldm.o: ../../h/config.h
+ut_gldm.o: ../../h/ll_log.h
+ut_gldm.o: ../../h/mta.h
+ut_gldm.o: ../../h/adr.h
+ut_gldm.o: ../../h/list_rchan.h
+ut_gldm.o: ../../h/chan.h
+ut_gldm.o: ../../h/table.h
+ut_gldm.o: ../../h/list_bpt.h
+ut_gldm.o: ../../h/auth.h
+ut_gldm.o: ../../h/list_bpt.h
+ut_gldm.o: ../../h/extension.h
+ut_gldm.o: ../../h/mta.h
+ut_gldm.o: ../../h/aparse.h
+ut_gldm.o: ../../h/ap.h
+ut_gldm.o: ../../h/util.h
+ut_gldm.o: ../../h/or.h
+ut_gldm.o: ../../h/chan.h
+ut_gldm.o: ../../h/auth.h
+ut_gldm.o: ../../h/list_rchan.h
+ut_gldm.o: ../../h/list_bpt.h
+ut_gldm.o: ../../h/or.h
+ut_mm2p1.o: ut_mm2p1.c
+ut_mm2p1.o: ../../h/util.h
+ut_mm2p1.o: ../../h/config.h
+ut_mm2p1.o: ../../h/ll_log.h
+ut_mpduid.o: ut_mpduid.c
+ut_mpduid.o: ../../h/util.h
+ut_mpduid.o: ../../h/config.h
+ut_mpduid.o: ../../h/ll_log.h
+ut_mpduid.o: ../../h/mta.h
+ut_mpduid.o: ../../h/adr.h
+ut_mpduid.o: ../../h/list_rchan.h
+ut_mpduid.o: ../../h/chan.h
+ut_mpduid.o: ../../h/table.h
+ut_mpduid.o: ../../h/list_bpt.h
+ut_mpduid.o: ../../h/auth.h
+ut_mpduid.o: ../../h/list_bpt.h
+ut_mpduid.o: ../../h/extension.h
+ut_mpduid.o: ../../h/mta.h
+ut_mpduid.o: ../../h/aparse.h
+ut_mpduid.o: ../../h/ap.h
+ut_mpduid.o: ../../h/util.h
+ut_mpduid.o: ../../h/or.h
+ut_mpduid.o: ../../h/chan.h
+ut_mpduid.o: ../../h/auth.h
+ut_mpduid.o: ../../h/list_rchan.h
+ut_mpduid.o: ../../h/list_bpt.h
+ut_msg.o: ut_msg.c
+ut_msg.o: ../../h/head.h
+ut_msg.o: ../../h/util.h
+ut_msg.o: ../../h/config.h
+ut_msg.o: ../../h/ll_log.h
+ut_msg.o: ../../h/retcode.h
+ut_p12mm.o: ut_p12mm.c
+ut_p12mm.o: ../../h/util.h
+ut_p12mm.o: ../../h/config.h
+ut_p12mm.o: ../../h/ll_log.h
+ut_p1_st.o: ut_p1_st.c
+ut_p1_st.o: ../../h/util.h
+ut_p1_st.o: ../../h/config.h
+ut_p1_st.o: ../../h/ll_log.h
+ut_p1_st.o: ../../h/mta.h
+ut_p1_st.o: ../../h/adr.h
+ut_p1_st.o: ../../h/list_rchan.h
+ut_p1_st.o: ../../h/chan.h
+ut_p1_st.o: ../../h/table.h
+ut_p1_st.o: ../../h/list_bpt.h
+ut_p1_st.o: ../../h/auth.h
+ut_p1_st.o: ../../h/list_bpt.h
+ut_p1_st.o: ../../h/extension.h
+ut_p1_st.o: ../../h/mta.h
+ut_p1_st.o: ../../h/aparse.h
+ut_p1_st.o: ../../h/ap.h
+ut_p1_st.o: ../../h/util.h
+ut_p1_st.o: ../../h/or.h
+ut_p1_st.o: ../../h/chan.h
+ut_p1_st.o: ../../h/auth.h
+ut_p1_st.o: ../../h/list_rchan.h
+ut_p1_st.o: ../../h/list_bpt.h
+ut_prm.o: ut_prm.c
+ut_prm.o: ../../h/util.h
+ut_prm.o: ../../h/config.h
+ut_prm.o: ../../h/ll_log.h
+ut_prm.o: ../../h/prm.h
+ut_q.o: ut_q.c
+ut_q.o: ../../h/util.h
+ut_q.o: ../../h/config.h
+ut_q.o: ../../h/ll_log.h
+ut_q.o: ../../h/q.h
+ut_q.o: ../../h/adr.h
+ut_q.o: ../../h/list_rchan.h
+ut_q.o: ../../h/chan.h
+ut_q.o: ../../h/table.h
+ut_q.o: ../../h/list_bpt.h
+ut_q.o: ../../h/auth.h
+ut_q.o: ../../h/list_bpt.h
+ut_q.o: ../../h/extension.h
+ut_q.o: ../../h/mta.h
+ut_q.o: ../../h/adr.h
+ut_q.o: ../../h/list_bpt.h
+ut_q.o: ../../h/aparse.h
+ut_q.o: ../../h/ap.h
+ut_q.o: ../../h/util.h
+ut_q.o: ../../h/or.h
+ut_q.o: ../../h/chan.h
+ut_q.o: ../../h/auth.h
+ut_q.o: ../../h/list_rchan.h
+ut_q.o: ../../h/mta.h
+ut_qid.o: ut_qid.c
+ut_qid.o: ../../h/util.h
+ut_qid.o: ../../h/config.h
+ut_qid.o: ../../h/ll_log.h
+ut_qid.o: ../../h/adr.h
+ut_qid.o: ../../h/list_rchan.h
+ut_qid.o: ../../h/chan.h
+ut_qid.o: ../../h/table.h
+ut_qid.o: ../../h/list_bpt.h
+ut_qid.o: ../../h/auth.h
+ut_qid.o: ../../h/list_bpt.h
+ut_qid.o: ../../h/extension.h
+ut_qid.o: ../../h/mta.h
+ut_qid.o: ../../h/adr.h
+ut_qid.o: ../../h/list_bpt.h
+ut_qid.o: ../../h/aparse.h
+ut_qid.o: ../../h/ap.h
+ut_qid.o: ../../h/util.h
+ut_qid.o: ../../h/or.h
+ut_qid.o: ../../h/chan.h
+ut_qid.o: ../../h/auth.h
+ut_qid.o: ../../h/list_rchan.h
+ut_trace.o: ut_trace.c
+ut_trace.o: ../../h/util.h
+ut_trace.o: ../../h/config.h
+ut_trace.o: ../../h/ll_log.h
+ut_trace.o: ../../h/mta.h
+ut_trace.o: ../../h/adr.h
+ut_trace.o: ../../h/list_rchan.h
+ut_trace.o: ../../h/chan.h
+ut_trace.o: ../../h/table.h
+ut_trace.o: ../../h/list_bpt.h
+ut_trace.o: ../../h/auth.h
+ut_trace.o: ../../h/list_bpt.h
+ut_trace.o: ../../h/extension.h
+ut_trace.o: ../../h/mta.h
+ut_trace.o: ../../h/aparse.h
+ut_trace.o: ../../h/ap.h
+ut_trace.o: ../../h/util.h
+ut_trace.o: ../../h/or.h
+ut_trace.o: ../../h/chan.h
+ut_trace.o: ../../h/auth.h
+ut_trace.o: ../../h/list_rchan.h
+ut_trace.o: ../../h/list_bpt.h
+wr_stat.o: wr_stat.c
+wr_stat.o: ../../h/util.h
+wr_stat.o: ../../h/config.h
+wr_stat.o: ../../h/ll_log.h
+wr_stat.o: ../../h/q.h
+wr_stat.o: ../../h/adr.h
+wr_stat.o: ../../h/list_rchan.h
+wr_stat.o: ../../h/chan.h
+wr_stat.o: ../../h/table.h
+wr_stat.o: ../../h/list_bpt.h
+wr_stat.o: ../../h/auth.h
+wr_stat.o: ../../h/list_bpt.h
+wr_stat.o: ../../h/extension.h
+wr_stat.o: ../../h/mta.h
+wr_stat.o: ../../h/adr.h
+wr_stat.o: ../../h/list_bpt.h
+wr_stat.o: ../../h/aparse.h
+wr_stat.o: ../../h/ap.h
+wr_stat.o: ../../h/util.h
+wr_stat.o: ../../h/or.h
+wr_stat.o: ../../h/chan.h
+wr_stat.o: ../../h/auth.h
+wr_stat.o: ../../h/list_rchan.h
+wr_stat.o: ../../h/mta.h
+ut_aparse.o: ut_aparse.c
+ut_aparse.o: ../../h/aparse.h
+ut_aparse.o: ../../h/ap.h
+ut_aparse.o: ../../h/util.h
+ut_aparse.o: ../../h/config.h
+ut_aparse.o: ../../h/ll_log.h
+ut_aparse.o: ../../h/or.h
+ut_aparse.o: ../../h/chan.h
+ut_aparse.o: ../../h/table.h
+ut_aparse.o: ../../h/list_bpt.h
+ut_aparse.o: ../../h/auth.h
+ut_aparse.o: ../../h/list_bpt.h
+ut_aparse.o: ../../h/list_rchan.h
+ut_aparse.o: ../../h/chan.h
+ut_aparse.o: ../../h/auth.h
+
+# DEPENDENCIES MUST END AT END OF FILE
+# IF YOU PUT STUFF HERE IT WILL GO AWAY
+# see make depend above

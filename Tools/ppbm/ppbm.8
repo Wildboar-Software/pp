@@ -1,0 +1,63 @@
+.TH PPBM 8 "November 1991"
+.\" @(#) $Header: /xtel/pp/pp-beta/Tools/ppbm/RCS/ppbm.8,v 6.0 1991/12/18 20:32:20 jpo Rel $
+.\"
+.\" $Log: ppbm.8,v $
+.\" Revision 6.0  1991/12/18  20:32:20  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+ppbm \- PP throughput measurement tool
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+ppbm
+\%[\-c\ nchilden] \%[\-d\ base] \%[\-f] \%[\-F] \%[\-n\ nbatch] 
+\%[\-m\ nmessage] \%[\-s\ secs] \%[\-S\ nsubdirs] \%[\-v]
+.in -.5i
+.SH DESCRIPTION
+.I Ppbm
+is a utility to estimate the throughput that PP will achieve on a
+given system. It does this by simulating the creation and deletion of
+messages in a replica queue directory. 
+.PP
+There are a number of flags that can be given to try different senarios.
+.TP
+\-c nchildren
+Create this number of child processes to do the test. The default is 5.
+.TP
+\-d base
+Use the given directory as the test basis. The default is the current
+directory. 
+.TP
+\-f
+Do not use the fsync flag to flush data to disk. The default is to
+flush data after writing the file.
+.TP
+\-F
+Do not use the flock call when writing to files.
+.TP
+\-n batch
+The number of cycles for each child to create and delete messages. The
+default is to go through the cycle 3 times.
+.TP
+\-m messages
+The number of messages to create and delete in each batch.
+.TP
+\-s secs
+Sleep for given seconds between batches.
+.TP
+\-S count
+Use this number of subdirectories as in the PP queue structure.
+.TP
+\-v
+verbose flag. Prints messages about what is happening. Probably should
+not be used for real runs.
+.SH FILES
+None specifically.
+.SH "Author"
+Alan Young, Concurrent Computer Corporation.
+.br
+Tweaked by Julian Onions, X-tel Services Ltd.
+

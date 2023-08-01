@@ -1,0 +1,1746 @@
+\chapter {Managing PP}
+
+This chapter covers the
+tools which allow the system administrator to keep up to date
+with the status of the system and to take action to fix or avoid problems.
+It also gives some guidance on what is entailed in daily maintenance of 
+the system, and how new users and MTAs may be added. 
+
+\section{QMGR}
+
+The QMGR operates without ever reading the queue.  The key ASN.1
+structure is MsgStruct.  This is the ASN.1 representation of the
+message as held by the queue manager.  This is held in a sparse
+matrix, initially sorted by channel, host/user, and priority.  The
+queue manager is not, inherently, a trusted process, as it does not
+access the queue directly. The protocol is listed in
+Appendix~\ref{qmgrros} in Figure~\ref{proto:qmgr}.
+
+\subsection{Message Submission}
+
+When \pgm{submit} is started, it asynchronously establishes an association
+with the QMGR.  When a message is submitted to the queue, a ROS
+message is sent to the queue manager which will hold all of the
+information needed by the QMGR.  This allows the message to be
+processed without the QMGR actually reading the queue.
+
+\subsection{Queue Reading}
+
+A ROS operation allows the queue to be read by calling up the
+\pgm{qmgrload} channel.  This is used at startup and for occasional
+refresh of the queue. Note that when the queue is reread only new
+messages are added, messages that are already known to the QMGR are ignored.
+
+\subsection{Active Channel}
+
+An active channel is invoked by the QMGR, which starts a ROS
+association.  The channel is synchronous. The first operation is
+ChannelInitialise, which identifies the channel to the process (which
+may act as several channels).  Subsequent ChannelInitialise operations
+serve to change the role of the channel.  The ProcessMessage operation
+allows the QMGR to control the channel, which will access the queue
+directly.
+
+\subsection{Passive Channel}
+
+Passive channels have not yet been implemented.
+
+\subsection{Cleanups, Timeouts, Warnings and Debris}
+
+Message are deleted by the \pgm{msg-clean} channel. This is invoked
+after all recipients have been processed.
+
+Messages are returned after a certain time by the QMGR invoking
+the \pgm{timout} channel. This process creates a delivery report and
+changes the status of the message to non-delivery.
+
+Message that have been in the queue for a long period may generate
+warning messages to the originator. This is done via the \pgm{warning}
+channel.
+
+Partially submitted messages and general debris are cleaned up quietly
+by debris channel after being in the queue for a certain amount of
+time. This channel is invoked at intervals.
+
+\subsection{QMGR Management and Tailoring}\label{sect:qmgrmgr}
+
+The QMGR is managed mostly through the MTA console interface.
+However, there are several options you can give when starting up the
+QMGR to change the mode of operation. These are listed here, in
+approximate order of usefulness:
+
+\begin{describe}
+\item[\verb|-m|:] This switch sets the default maximum number of
+channels that can be run simultaneously. This parameter needs to be set
+carefully (see below).
+
+\item[\verb|-c seconds|:] This switch sets the default time to cache a
+channel that has failed. It defaults to 5 minutes. The cache value is
+multiplied by 1.5 to obtain a delay for failed MTAs, and multiplied by
+2 for failed messages. Successive failures will multiply this value up
+to some maximum.
+
+\item[\verb|-D|:] This switch starts up the QMGR with all channels
+disabled. This is most useful to allow controlled startup of
+channels. Once started in this mode, channels can be gradually enabled
+by use of appropriate management tools.
+
+\item[\verb|-d hours|:] This switch sets the time between successive
+runs of the debris channel. This is the channel that removes
+extraneous bits of messages, etc. Its default value is about six hours.
+
+\item[\verb|-l hours|:] This switch sets the time between successive
+runs of the load channel. This channel is run at intervals to check
+consistency between the image of the queue in memory and that on disk.
+
+\item[\verb|-t hours|:] This switch sets the time between successive
+calls to the timeout channel. This channel is run at intervals to time
+out messages that have been in the queue too long.
+
+\item[\verb|-C|:] Do not change directory to the queue directory. Stay
+in the current directory.
+
+\item[\verb|-b|:] Do not run in the background, stay in the foreground.
+
+\item[\verb|-T file|:] Use this file as the pp \file{tailor} file.
+
+\item[\verb|-X|:] Turn up the debugging.
+
+\item[\verb|-s|:] Inhibit submission of messages. If this is set, the
+QMGR will ignore all incoming messages.
+
+\item[\verb|-M|:] This flag allows the \pgm{msg-clean} channel to run
+concurrently with the \pgm{qmgr-load} channel. There is a slight
+possibility of a race condition occuring if this is enabled, which
+may mean a message is not processed. The chance is slight however. If
+your queues are reasonably small (say < 1000 messages normally) this
+flag should not be used. If you have large queues commonly, the load
+phase can take up to an hour, in which case allowing deletions during
+this time is useful.
+\end{describe}
+
+The QMGR also responds to various signals (where available). A
+\verb|SIGTERM| signal will cause the QMGR to gracefully
+shutdown. This is the same as QMGR control option. A \verb|SIGUSR1|
+signal will increase the debugging level and a \verb|SIGUSR2| will
+reset the level, or decrease it. All other signals default to their
+normal actions.
+
+The loading on a given machine varies and it is controlled mainly
+through the maximum number of channels variable. Consequently, it is
+important to get this factor correct, otherwise response will suffer.
+
+The main adjustable parameter is the maximum number of channels that
+can be run at any one time. This parameter should be set with care. It
+can be set by the above-mentioned flag at QMGR start time, or can be
+modified dynamically through the use of the MTA console. This
+parameter should be used in conjunction with the per channel maximum
+number of processes.  The QMGR has a number of built in heuristics as
+to how useful running several invocations of a channel at once is.
+This can be overridden by the per-channel maximums, but these should be
+used sparingly.  Suitable cases for imposing a per-channel maximum are
+the following:
+\begin{itemize}
+\item	Channels which run very quickly. Such channels are usually
+reformatters that do their job quickly. Allowing only one or two
+instances of these channels can help loading in some cases. These
+channels can create a large load on the machine as they have no external
+influence and run as fast as the machine will let them.
+
+\item Special network channels. If you have a channel that uses a
+dedicated resource, then this may be a candidate for setting a maximum
+on. Such a resource might be a modem or a non-multiplexed line.
+Clearly, if there is only one logical stream that a channel can use,
+starting multiple instances of such a channel is pointless.
+\end{itemize}
+
+Cases that should generally not have a per-channel maximum are the
+following.
+\begin{itemize}
+\item	Network channels. Unless you have an amazingly fast network
+and instantaneous response from remote hosts, network channels do not
+usually create too much load. They tend to be self-throttling, as they
+spend much of their time waiting for I/O to complete or for response
+from the remote host.
+
+\item QMGR special channels. Such channels as QMGR-load and timeout 
+are special to the QMGR and will only be invoked one at a time.
+\end{itemize}
+
+The maximum number of channels defaults to three, which is a reasonable
+number for a small machine that is doing other things besides mail. If
+you are running a dedicated mail server you will probably get better
+throughput with a larger number. However, it is worth spending some
+time watching what happens and increasing and decreasing this number
+via the MTA consoles to get a reasonable value. If you specify a value
+of 10, for instance, you may end up just wiping out any trace of
+performance on your machine, as the machine will just be thrashing
+between processes. On the other hand, 10 channels talking to 300 baud
+modems will probably not be noticeable.
+Once you have determined a reasonable value, add this to your
+pp.start script using the \verb|-m| switch detailed above.
+
+To begin with it is recommended that the default configuration with
+no per-channel maxima is used and that it is run for a while before
+adjustment is made.
+
+\section {MTA Console}
+
+The MTA console is a management tool that can be used to monitor
+and/or control a QMGR.  This tool uses the Athena widget set on top of
+X11 release~4 (or greater).
+
+\subsection	{The MTA Console's Display}
+
+The MTA console's display has two modes, the {\em monitor} mode
+and the {\em control} mode.
+Toggling between these modes is done via the appropriate button.
+
+The top section of the display is common to both modes. 
+This section contains a box within which the states of all the
+channels are displayed.
+
+The {\em state} of an entity (channel, MTA or message) represents how
+``bad'' that entity is, compared to the upperbound on ``badness''
+(maximum badness).
+The badness of an entity can reflect various things like number of
+messages on that entity or the age of the oldest message on that
+entity.
+Section~\ref{sect:badness} describes what badness represents, how
+badness is calculated, and how this calculation can be tailored.
+
+\subsubsection	{The Monitor Mode}
+
+The {\em monitor} mode provides a passive display of the overall state
+of the QMGR.
+
+In this mode, the lower part of the display presents an ordered list
+of the states of the channels.
+The list is ordered on the basis of comparative badness.
+The list is laid out vertically with the
+worst state channel at the top.
+
+The states of the ``n worst state'' MTAs on each channel are displayed
+to the right of the channel they are on.
+They are ordered on the basis of comparative badness with the worst
+state MTA being display directly to the right of the channel.
+How many of the MTAs on a channel are actually displayed depends on
+the heuristic being employed.
+The MTA console has a number of possible heuristics.
+These are described in Section~\ref{sect:heur}.
+
+\subsubsection	{The Control Mode}
+
+The {\em control} mode allows the user to focus on particular
+channels, MTAs or messages and control their passage through and their
+behaviour in the QMGR.
+
+The amount of control the console can invoke depends on how the
+console connected to the QMGR.
+There are two types of connection the QMGR allows, unauthorised
+and authorised.
+With an authorised connection, the console can control the QMGR
+by disabling entities, enabling entities and so on.
+With an unauthorised connection, the console has no control over the
+QMGR.
+To get an authorised connection, the user has to specify a name and
+password when he or she requests the connection.
+
+In the {\em control} mode, the lower part of the console's display presents
+information on the entity the user has focused on and allows the user
+to focus on other entities.
+
+\subsection	{Configuring The MTA Console}
+
+This section details how the MTA console may be 
+configured by users to suit their own individual tastes.
+There are three static mechanisms that can be used for this configuration:
+\begin{enumerate}
+\item command line arguments
+\item user defaults
+\item application defaults
+\end{enumerate}
+As well as these static mechanisms, the MTA console contains a
+configuration menu.
+This menu can be used dynamically to configure many of the options
+described below.
+
+\subsubsection	{Totals Configuration.}
+
+The MTA console displays the total number of messages and the total volume
+of messages in the queue.
+It also indicates how full the queue is by comparing these totals with
+specific maximum values.
+These maximum values can be statically tailored on the command line
+(e.g., \verb+-number 1000000+ and \verb+-volume 100000000+) or in the X
+defaults (e.g., \verb+MTAconsole.totalnumber: 1000000+ and
+\verb+MTAconsole.totalvolume: 100000000+)
+The values can also be tailored from the badness tailoring as
+described in Section~\ref{sect:badness}.
+The default values are, for volume of messages, 1000000 and, for number
+of messages, 10000.
+
+\subsubsection	{Colour Configuration.}
+
+On a colour screen the MTA console will display entities of
+significantly different badness as different colours, with the colour
+ranging from green for 
+entities with low badness to red for entities with high badness.
+The number of colours the console will use can be statically tailored
+from the command line (e.g., \verb+-ncolours 20+) or in the Xdefaults
+(e.g., \verb+MTAconsole.ncolours 20+).
+The console will use a range of 10 colours by default.
+
+\subsubsection	{Static Connection Configuration.}
+
+The user must specify which QMGR to attempt to connect to.
+Usually this is done dynamically from the connect popup.
+However it can be done statically from the command line (e.g.
+\verb+-Queue trellis+) or in the X defaults \\ 
+(e.g., \verb+MTAconsole.connectHost: trellis+).
+If the QMGR to connect to is statically specified, the MTA console
+will automatically attempt to open an unauthorised connection to the
+specified QMGR.
+
+\subsubsection	{Confirmation Configuration.}
+
+Certain of the MTA console's commands request confirmation via a
+popup.
+This feature can be turned off dynamically from the confirmation menu
+or statically from the command line (e.g., \verb+-NoConfirm+) or in the
+X defaults (e.g., \verb+MTAconsole.confirm: false+).
+
+\subsubsection 	{Heuristic Configuration} \label{sect:heur}
+
+When in monitor mode, the MTA console displays some of the MTAs on each
+channel.
+There are different heuristics that the console can use to decide
+how many MTAs to display for each channel.
+These heuristics are:
+
+\begin{description}
+\item[\verb|channelonly|:] This heuristic shows only the information
+about the channels and no per MTA information. This is useful when the
+QMGR has many messages loaded into it and so refreshing the display
+takes a while.
+
+\item [\verb+line based+:] This heuristic limits the display of MTAs
+on each channel to a specific number of vertical lines.  This number
+can be tailored dynamically from the configuration menu or statically
+on the command line (e.g., \verb+-downLines 6+) or in the X defaults
+(e.g., \verb+MTAconsole.maxvert: 6+).  The default value is 4.
+
+\item [\verb+percentage based+:] This heuristic displays a specific
+percentage of the MTAs on each channel.  The percentage to display is
+calculated by multiplying the badness of the channel (expressed as a
+percentage of the maximum badness) by a constant percentage.  This
+constant percentage can be tailored dynamically from the configuration
+menu or statically on the command line (e.g.  {\verb+-percent 70+}) or
+in the X defaults (e.g.  {\verb+MTAconsole.percentage: 70+}).  The
+default value for this constant is 50.
+
+There is a lower bound on the number of MTAs displayed using this
+heuristic.
+The MTA console will endeavour to ensure that the number of MTAs displayed
+for each channel is at least the lower bound.
+This lower bound can be tailored dynamically from the
+configuration menu or statically on the command line (e.g.
+\verb+-lowerbound 15+) or in the X defaults (e.g.
+\verb+MTAconsole.lowerbound: 15+).
+The default value for this lower bound is 20.
+
+\item [\verb+all+:] This heuristic instructs the MTA console in
+monitor mode to display all the MTAs on each channel.
+
+
+\end{description}
+
+The choice of heuristic can be changed dynamically from the
+configuration menu or statically on the command line (e.g.
+\verb+-heuristic all+) or in the X defaults (e.g.
+\verb+MTAconsole.heuristic: all+).
+The line-based heuristic is used by default.
+
+\subsubsection	{Configuration of Timeouts and Retries.}
+
+There are various timeouts and retry intervals associated with the MTA
+console.
+These can be configured or disabled from the configuration menu and
+are as follows:
+\begin{description}
+
+\item[auto-refresh timeout:] If no activity occurs on the connection
+between the MTA console and the QMGR during a specified interval, the
+console will consult with the QMGR and automatically refresh the
+information on display.
+This particular timeout interval can also be configured on the command line
+(e.g., \verb+-refresh 3m30s+) or in the X defaults (e.g.
+\verb+MTAconsole.refresh: 3m30s+).
+The default interval is 5 minutes.  Note: to stop the console hogging
+the QMGR's resources, a minimum value for this interval is enforced.
+This minimum is 30 seconds.
+
+\item[inactive timeout] If the console is in {\em control} mode and no
+user input has been received during a specified interval, the MTA
+console automatically toggles to the {\em monitor} mode.
+The default interval is 10 minutes.
+
+\item[reconnection retry interval] If the connection between the
+MTA console and the QMGR breaks, the console will attempt to reconnect
+to the QMGR.
+After an unsuccessful reconnection attempt, the console will wait for
+a specified time and then try to reconnect again.
+The intervals between reconnection attempts increases in duration by a
+specified increment up to a maximum interval.
+The initial duration of the wait interval, the increment added to
+the interval after each unsuccessful reconnection attempt and the
+maximum interval can all be set dynamically  from the configuration menu.
+This menu can also disable the reconnection mechanism and/or the
+increasing duration.
+
+\end{description}
+
+\subsection	{The Effect of the Mouse Buttons and Keys}
+
+This section describes how a user can use the mouse buttons and the
+keyboard to operate the MTA console. The following tables show the
+effect of the command buttons that can be found on the
+MTA console.
+
+\[\begin{tabular}{l p{0.6\textwidth}}
+	\multicolumn{2}{c}{\bf Top row of buttons} \\
+	\multicolumn{1}{c}{\bf Button}&
+		\multicolumn{1}{c}{\bf Effect}\\	
+	\tt Refresh/Reconnect & Refresh the data or reconnect to the
+				QMGR. \\
+	\tt quit & Exit the console program. \\
+	\tt connect/disconnect & Connect to or disconnect from the QMGR. \\
+	\tt control/monitor & Change between the two modes. \\
+	\tt configuration & Set various parameters. \\
+	\tt Qmgr control & Perform global QMGR control (only if authorised). \\
+\end{tabular}\]
+
+\[\begin{tabular}{l p{0.6\textwidth}}
+	\multicolumn{2}{c}{\bf Channel buttons} \\
+	\multicolumn{1}{c}{\bf Button}&
+		\multicolumn{1}{c}{\bf Effect}\\	
+	\tt info & Display information about the channel. \\
+	\tt ++ & Select next channel \\
+	\tt -- & Select previous channel \\
+	\multicolumn{2}{c}{If connected in authorised mode} \\
+	\tt disable & Disable this channel. \\
+	\tt enable & Enable this channel. \\
+	\tt clear delay & Clear any delays on this channel. \\
+	\tt add delay & Specify a delay. The channel will wait this
+			time before starting again. \\
+	\tt downward force attempt & Invoke this channel now if
+			possible, clearing any delays and those
+			messages and MTAs waiting on this channel. \\
+\end{tabular}\]
+
+\[\begin{tabular}{l p{0.6\textwidth}}
+	\multicolumn{2}{c}{\bf MTA buttons}\\
+	\multicolumn{1}{c}{\bf Button}&
+		\multicolumn{1}{c}{\bf Effect}\\	
+	\tt info & Display information on this MTA. \\
+	\tt ++ & Select the next MTA \\
+	\tt -- & Select the previous MTA \\
+	\multicolumn{2}{c}{If connected in authorised mode} \\
+	\tt disable & Disable this MTA. \\
+	\tt enable & Enable this MTA. \\ 
+	\tt clear delay & Clear any delays for this MTA. \\
+	\tt add delay & Specify a delay before next retry. \\
+	\tt force attempt & Clear any delays for this MTA, an
+			similarly for the channel this is on. \\
+	\tt downward force attempt & Clear delays for this MTA and
+			those of any messages on this MTA. \\
+\end{tabular}\]
+
+\[\begin{tabular}{l p{0.6\textwidth}}
+	\multicolumn{2}{c}{\bf Message Buttons}\\
+	\multicolumn{1}{c}{\bf Button}&
+		\multicolumn{1}{c}{\bf Effect}\\
+	\tt info & Display information about this message .\\
+	\tt ++ & Select next message \\
+	\tt -- & Select previous message \\
+	\tt show all & By default only information on ten messages is
+		shown. This button will show all messages on this
+		MTA/channel. \\
+	\multicolumn{2}{c}{If connected in authorised mode} \\
+	\tt freeze & Stop this message being delivered. \\
+	\tt thaw & Allow this message to be delivered (this is the
+		opposite of freeze). \\
+	\tt clear delay & Clear the next delivery attempt time. \\
+	\tt add delay & Set a next delivery attempt time. \\	
+	\tt force attempt & Try and deliver the message now by clearing
+		all delays associated with this message.\\
+\end{tabular}\]
+
+
+Here are the effects each button has when pressed within the MTA
+console's display. It is based on a three-button mouse. Different
+configurations are tailorable through the X defaults mechanism for
+other hardware.
+\begin{description}
+\item[\verb+left hand button+:] If this button is pressed while the
+cursor is over one of the many {\em command} buttons in the console,
+that command is invoked.
+
+If the console is in monitor mode and the left-hand button is pressed
+while the cursor is over the area occupied by the display of an entity,
+the console toggles to control mode, focuses on that entity, and
+displays information about the entities directly below it.
+For example, if in monitor mode the left-hand button was pressed while the
+cursor was over the area occupied by the channel \verb+x400out84+,
+then the console would toggle modes, make \verb+x400out84+ the current
+channel and display information about the MTAs currently on that channel.
+
+If the console is in control mode and the left-hand button is pressed
+while the cursor is over the area occupied by the display of an
+entity, then the console focuses on that entity and displays
+information about the entities directly below it.
+For example, if in control mode the left-hand button was pressed while
+the cursor was over the area occupied by the channel \verb+x40084+,
+then the console would make \verb+x40084+ the current channel and
+display information about the MTAs currently on that channel.
+
+\item[\verb+middle button+:] If the console is in monitor mode and the
+middle button is pressed while the cursor is over the area occupied by
+the display of an entity, the console toggles to control mode and
+focuses on that entity.
+
+If the console is in control mode and the middle button is pressed
+while the cursor is over the area occupied by the display of an
+entity, the console toggles the focus on that entity (i.e., if the focus
+at that level is not on the entity, the focus is set on that entity.
+However, if the focus is already on that entity, the focus is unset).
+
+\item[\verb+right button+:] This button has a similar effect in both
+modes.
+If it is pressed while the cursor is over the area occupied by the
+display of an entity then the information displayed relating to that
+entity is refreshed and redisplayed.
+\end{description}
+
+There are various ``accelerators'' installed in the MTA console.
+These are key presses that allow the user to invoke commands that
+would otherwise have to be invoked by moving the cursor to a specific
+area on the screen and then pressing one of the mouse buttons.  The
+accelerators installed in the console all provide alternative ways to
+invoke some of the commands represented by {\em command} buttons.
+Some have prerequisites for use.  Table~\ref{tab:accelerators} shows
+the accelerators, their prerequisites, and the commands they invoke.
+This table has two modifier keys that must be held down together with
+the other keys mentioned in the accelerator for that accelerator to
+work  -- the {\em Meta} key and the {\em Control} key.
+
+\tagtable{console_accels}{MTA Console Accelerators}{tab:accelerators}
+
+Several of the popups have various text boxes into which a user can
+type.  At any one instant only one of these boxes can have the
+keyboard focus (the box with the keyboard focus gets the text the user
+types in).  This is indicated by the text box with the focus having a
+border around it.  All other text boxes will have no border.  There
+are accelerators installed in the MTA console to allow the user to
+change the keyboard focus.  The up arrow key when pressed will change
+the focus to the box above the one currently with the focus.  The down
+arrow key when pressed will change the focus to the box below the one
+currently with the focus.  The tab key has the same effect as the down
+arrow key.  If the left-hand button on the mouse is pressed when the
+cursor is over one of the text boxes, that text box gets the focus.
+
+
+\subsection	{Badness} \label{sect:badness}
+
+The {\em badness} of an entity (channel, MTA or message) is a value
+used to compare the state of one entity with that of another.
+This comparison is used throughout the MTA console to order the
+displayed lists of entities, to choose which colour to display that
+entity in, and so on.
+
+The badness of an entity is calculated from the sum of up to four
+factors.
+\begin{describe}
+\item [\verb+number+:]	The number of messages on an entity.
+\item [\verb+volume+:] The volume of messages on an entity.
+\item [\verb+age+:] For channel and MTA entities, this is the oldest
+message on the entity. 
+For message entities, this factor is the age of the message itself.
+\item [\verb+last+:] The last successful attempt on an entity.
+\end{describe}
+
+Each factor has a specific upperbound and these upperbounds are
+tailorable (this is described below).
+In the badness summation, the factors are expressed in terms of
+percentages of their respective upperbounds.
+So if the upper bound on the number factor is represented as {\em
+ub\_number} and similarly for the other factors then the badness
+summation would be calculated as follows:
+\begin{math}
+(number/ub\_number)*100 + (volume/ub\_volume)*100 + (age/ub\_age)*100
++ (last/ub\_last)*100
+\end{math},
+or, put more concisely, \(\sum^{factors}(factor/ub\_factor)*100\).
+
+\subsubsection	{Tailoring of Upperbounds}
+
+When the console connects to a queue, it builds a database of
+tailoring entries.
+It can get the information for the database from any of three sources.
+The file specified in the connect popup, the hardwired defaults and
+the X defaults.
+Entries in the file override equivalent entries in the defaults.
+The file specified in the connect popup should be relative either to
+the current directory, a full path name, or the home directory.
+
+An entry in this database has the form:
+\begin{quote}\small\begin{verbatim}
+<key> ":" <value>
+\end{verbatim}\end{quote}
+
+The \verb+key+ is a tuple indicating which channel, or type of channel and
+which type of entity on that channel the tailoring information in the
+value relates to. 
+The channel or channel type and the entity are separated a~``\verb+-+''.
+The entity must be one of:
+\begin{quote}\small\begin{verbatim}
+chan
+mta
+msg
+\end{verbatim}\end{quote}
+If the tailoring information is related to a specific channel, then
+the channel's name must be before the~\verb+-+.
+For example, if ``822local,'' ``x400in84,'' and ``p2explode'' are all
+names of channels, then the following are valid keys that can be used
+in the database: ``822local-chan,'' ``x400in84-mta,'' and
+``p2explode-msg''.
+
+If the tailoring information is related to a type of channel then the
+type of the channel appears before the~\verb+-+.
+The type of a channel is constructed from the \verb+type+ of that channel
+given in the \file{tailor} file and the \verb+access+ of that channel also in
+the \file{tailor} file.
+Table~\ref{tab:consolemapping} gives all the types of channels that can
+be used in keys and how they are constructed.
+Some
+valid keys of this form are ``mtaboth-chan'', ``passive-msg'',
+``internal-msg.''
+
+When the console searches through the database, it searches first for
+keys with the specific channel name in them  (i.e., ``channelname-entity'').
+If this fails, it searches for keys with the channel type in them
+(i.e., ``channeltype-entity'').
+This second search will never fail as there are default entries for all possible
+channel types.
+
+\tagtable{console_mapping}{Tailor File Entries to Console Keys.}{tab:consolemapping}
+
+The \verb+value+ is a comma-separated list of expressions.
+These expressions are of the form \verb+keyword<upperbound+, where
+keyword is one of:
+\begin{quote}\small\begin{verbatim}
+age
+vol
+num
+last
+\end{verbatim}\end{quote}
+and upperbound is a number and an optional letter representing a unit.
+The possible units are
+\begin{description}
+\item[\verb+h+:] Hour (number * 60).
+\item[\verb+d+:] Day (number * 24 * 60).
+\item[\verb+k+:] Kilo (number * 1000).
+\item[\verb+M+:] Mega (number * 1000000).
+\end{description}
+Note that if one of the four keywords is missing from a value, the
+associated factor is ignored in the badness summation.
+
+Figure~\ref{example:console.tai} shows an extract from the MTA
+console's hardwired defaults.
+
+\tagrind[hbtp]{console_tai}{Extract From the Console's Tailoring}{example:console.tai}
+
+\section {LINEconsole}
+
+The \pgm{LINEconsole} provides similar functionality to the control
+mode of the MTA console.  The \pgm{LINEconsole} does not work on top
+of the X-windowing system and so can be used to manage the QMGR from a
+terminal or from the comfort of your own home over a modem connection.
+
+The \pgm{LINEconsole} has a three level hierarchical view of the queue
+and its contents.  These three levels are channels, MTAs, and
+messages.  The prompt specifies which level the user is currently
+studying and is constructed from the names of the entities chosen in
+the levels above.  For example, if the user was examining the MTAs on
+the channel
+\verb+822tous+ the prompt would be \verb+822tous.mta+.
+
+Within a level, the user can use UNIX regular expressions (\man regex
+(3)) to specify the entity or entities he or she is interested in.
+This allows easy group control.
+For example to disable all the X.400 protocol channels, the user would
+type the command ``disable x400''.
+For each channel whose name matched the regular expression ``x400'',
+the line console would then ask the user to confirm that he or she
+wants to disable that channel.
+
+Note that when moving down a level in the hierarchy, the user must
+specify an expression that matches a unique entity at the current
+level.
+
+\subsection	{LINEconsole Commands}
+
+This section provides a brief overview of the commands the line
+console provides.
+
+\begin{description}
+\item[\verb+set+] This command is used to set one of the line
+console's variables, e.g., \verb+set pager=off+ or \verb+set user=foo+.
+Currently the variables you can set are \verb+pager+, \verb+tailorfile+,
+\verb+authorised+ and \verb+user+.
+
+If no arguments are given with the set command, the current
+settings of the variables are printed.
+
+\item[\verb+status+] This command prints out the overall status of the
+QMGR currentlt connected to.
+
+\item[\verb+connect+] This command connects to a specified QMGR.
+The line console will prompt for the name of the QMGR and, if
+attempting to connect in authorised mode 
+(``authorised=yes''), a password to connect with.
+
+\item[\verb+disconnect+] This command disconnects the line console
+from the QMGR.
+
+\item[\verb+quit+] This command quits from the line console.
+
+\item[\verb+list+] This command lists all the entities on the current
+level with badness greater than zero~\footnote{badness is calculated and tailored as with the
+MTAconsole}. 
+
+If the command is given with the argument ``all,''
+entities with zero badness are also displayed.
+
+\item[\verb+info+] This command displays information relating to all
+entities which match the given regular expression.
+
+\item[\verb+refresh+] This command updates the line console's database
+form the QMGR.
+
+\item[\verb+down+] This command moves the line console to the level
+below the current level in the hierarchy. Note that to do this a
+regular expression which matches a unique entity from the current
+level must be specified.
+
+\item[\verb+up+] This command moves the line console to the level above
+the current level in the hierarchy.
+
+\item[\verb+next+] This command selects the next entity in the current
+list and displays the information relating to that entity.
+If no entity is currently selected, the first entity on the list is
+selected.
+\item[\verb+previous+] This command selects the previous entity in the
+current list and displays information relating to it.
+If no entity is currently selected, the last entity is selected.
+\item[\verb+current+] This command allows the user to select a given
+entity. The regular expression given must select only one entity.
+\end{description}
+
+The remaining commands are only available if the user connects to the
+QMGR in authorised mode.
+
+\begin{description}
+\item[\verb+enable+] Enables processing for entities which match the given expression.
+\item[\verb+disable+] Disables processing for entities which match the given expression.
+\item[\verb+delay+] Delays matching entities for a specified amount of time.
+\item[\verb+clear+] Clears any delay on matching entities.
+\item[\verb+belowclear+] Clears and enables any entities below the
+matching entities.
+\item[\verb+aboveclear+] Clears and enables any entities above the
+matching entities.
+\item[\verb+quecontrol+] Performs an overall control on the QMGR.
+The valid controls are \verb+abort+, \verb+terminate+, \verb+restart+,
+\verb+rereadQueue+, \verb+disableSubmission+, \verb+enableSubmission+,
+\verb+disableAll+, \verb+enableAll+, \verb+increasemaxchans+, and \verb+decreasemaxchans+.
+\end{description}
+
+Note that there is a simple redirection facility in the line console.
+This facility allows a user to redirect the output from the commands
+\verb+list+, \verb+info+ and \verb+status+ into a file.
+This can be either as an append operation or as an overwrite
+operation.
+To invoke this facility follow the usual command with a 
+redirect symbol and a file name,
+e.g.:
+\begin{quote}\small\begin{verbatim}
+status > /tmp/foo
+info 822 >> /tmp/foo
+list >> /tmp/foo
+\end{verbatim}\end{quote}
+The \verb+>+ symbol represents the overwrite operation, and the
+\verb+>>+ symbol represents the append operation.
+
+\section{Lconsole}
+The \pgm{lconsole} command is an alternative line based console. Both
+versions of the line console will probably not be distributed in
+future. This version may well be the default version if its
+functionality is enhanced.
+
+The \pgm{lconsole} provides basic access to the qmgr. It allows all
+the operations that may be achieved with the X based console, but does
+not have such good facilities for displaying the data. It has a number
+of commands that map onto the qmgr protocol. It may be run in
+authorised or unauthorised mode.
+
+There are a few command line flags:
+\begin{describe}
+\item[\verb|-Q name|:] Contact the given QMGR.
+\item[\verb|-u user|:] Use the given name to authenticate. A password
+will be prompted for if not given.
+\item[\verb|-p passwd|:] Connect with the given password. Use with
+care!
+\item[\verb|-b|:] Run in batch mode, little prompting is given in this
+mode. 
+\end{describe}
+
+Additonal arguments on the command line, are taken as commands to
+execute.  This allows the the possibility of shell scripts top access
+the queue status.
+
+All comamnds may be abbreviated to any unique string. The
+\pgm{lconsole} has the following commands:
+\begin{describe}
+\item[\verb|channel|:] This command lists out all the channels with
+their number of messages and reports by default. Normal channels are
+printed as \verb|channel:msgs+reports|. Active channels have the
+\verb|:| replaced by a \verb|*|. Channels that are disabled have the
+\verb|:| replaced by \verb|!|. It an argument is given, then this is
+taken as a regular expression to match a channel. Any channel matched
+has its full details printed.
+
+\item[\verb|clear|:] This command clears a delay. The second argument
+is one of the following:
+\begin{describe}
+\item[\verb|channel|:] The next argument is a channel from which
+to remove the delay.
+\item[\verb|mta|:] The next two arguments are a channel and an mta
+from which the delay is removed.
+\item[\verb|message|:] The next argument is a queue ID, followed by a
+list of recipients numbers. For each recipient of the message, the
+delay is removed.
+\end{describe}
+
+\item[\verb|close|:] Close the connection to the QMGR.
+
+\item[\verb|decrease|:] Decrease the number of runnable channels.
+
+\item[\verb|delay|:] Set a specified delay for a given channel. 
+The second argument is one of:
+\begin{describe}
+\item[\verb|channel|:] The next argument is a channel followed by a
+delay given in the same syntax as the \verb|MTAconsole|.
+\item[\verb|mta|:] The next two arguments are a channel and an mta
+follwed again by a delay specification.
+\item[\verb|message|:] The next argument is a queue ID, followed by a
+a delay time and then a list of recipients numbers. For each recipient
+of the message, the delay is set.
+\end{describe}
+
+\item[\verb|disable|:] This command disables a channel, mta or
+message. The syntax is identical to the \verb|clear| command.
+Additionally though, two other keys are recognised. \verb|disable all|
+will disable all channels. \verb|disable submission| will disable
+submission requests.
+
+\item[\verb|enable|:] This command is identical in syntax to
+\verb|disable|, but with oppostire effect.
+
+\item[\verb|help|:] With no arguments, this lists out a list of valid
+commands. With an argument, a one line summary of the specified
+command is given. An argument of \verb|?| gives a one line summary of
+all commands.
+
+\item[\verb|increase|:] Increase the number of runnable channels.
+
+\item[\verb|msg|:] Give details about a messages queued on a
+channel/mta pair. The first argument is the channel (which may be a
+regular expression), the second an MTA. An optional third argument
+will print out full details on message queue id's matching that regular
+expression.
+
+\item[\verb|mta|:] Display information about mtas associated with a
+given channel. An optional second argument is a regular expression
+which allows more detailed information about matching mta names.
+
+\item[\verb|open|:] Make a connection to a QMGR. The optional second
+argument is the user to bind as. A password will be prompted for if a
+user is given.
+
+\item[\verb|quit|:] Close any outstanding connections, and exit the
+process.
+
+\item[\verb|rereadqueue|:] Forces the QMGR to initiate a re-read of
+the queue on disk. 
+
+\item[\verb|restart|:] Restarts the QMGR.
+
+\item[\verb|show|:] This allows messages matching certain criteria to
+be displayed. The expression is of type key=value. The key may be any
+unique abbreviation of the following:
+
+\[\begin{tabular}{| l | p{.6\textwidth}}
+\hline
+	\multicolumn{1}{|c|}{\bf Key}& 
+		\multicolumn{1}{|c|}{\bf Value}\\
+\hline
+	\tt channel &		The channel the message is queued on.\\
+	\tt contenttype &	The content type of the message. \\
+	\tt earlierthan &	Messages older than this time.\\
+	\tt eits &		A list of encoded information types.\\
+	\tt maxsize &		The size of the message.\\
+	\tt morerecentthan &	Messages younger than this date. \\
+	\tt mpduidentifier &	The MPDU id of the message.\\
+	\tt mta &		The next hop MTA.\\
+	\tt originator &	The originator of the message.\\
+	\tt priority &		The priority of the message.\\
+	\tt queueid &		The queueid of the message.\\
+	\tt recipient &		The recipient of the message.\\
+	\tt uacontentid &	The UA content ID field.\\
+\hline
+\end{tabular}\]
+
+\item[\verb|shutdown|:] Shuts down the QMGR. If an argument of
+\verb|abort| is given then the QMGR is aborted and shuts down
+immediately.
+
+\item[\verb|source|:] Read in a file containing a list of commands and
+execute them.
+
+\item[\verb|status|:] Show the current status of the QMGR.
+
+\end{describe}
+
+Some of the commands will not be allowed if the user has not bound in
+authorised mode. 
+
+\section {Checkup Procedures}
+
+Additional procedures exist for querying the queue directly about the
+status of the system. However, their prime importance is as development 
+tools; the consoles should be the main source of information for the system
+administrator.
+
+\subsection     {ckchan}
+
+The \pgm{ckchan} tool prints out information on the state of 
+currently active channels and is invoked as follows:
+
+\begin{quote}\small\begin{verbatim}
+ckchan [-v] [-s] <channelname> ...
+\end{verbatim}\end{quote}
+\pgm{ckchan} prints out information on the specified channels.
+If no channels are specified, \pgm{ckchan} prints out information on
+all the channels currently active.
+
+The presence of the \verb+-v+ flag on the command line instructs
+\pgm{ckchan} to output a verbose form of information.
+
+If given a \verb|-s| flag, the program only shows a summary of the
+information.
+
+Warning: on even a moderately-sized queue, this process runs fairly
+slowly.
+
+\subsection	{ckconfig}\label{sect:ckconfig}
+
+The \pgm{ckconfig} tool performs various checks on the 
+configuration of PP including confirmation that:
+\begin{itemize}
+\item	All the required directories are in place and have appropriate
+permissions.
+
+\item	All the channels and filters described in the
+\file{tailor} file reference programs in the appropriate directory
+(\file{chndfldir}). 
+
+\item	All the tables described in the \file{tailor} file reference
+files in the appropriate directory (\file{tbldir}).
+\end{itemize}
+
+By default \pgm{ckconfig} will prompt for
+correction of any configuration errors it identifies.
+
+\pgm{ckconfig}'s behaviour can be altered by the following command
+line flags:
+\begin{description}
+\item[\verb+-f+:] ({\em force}) \pgm{ckconfig} will attempt
+to automatically correct configuration errors.
+\item[\verb+-v+:] ({\em verbose}) \pgm{ckconfig} will
+display correct configuration information as well as displaying 
+configuration errors.
+\item[\verb+-n+:] ({\em no execution}) \pgm{ckconfig} will perform all
+its checks and report back the results.
+No automatic correction will take place and the user will not be prompted
+for corrections.
+
+\end{description}
+
+It is worth running this program at intervals and after every change
+you make to PP.
+
+\subsection{Checking of Addresses}
+
+It is sometimes useful to check out addresses  with and without the
+whole system being invoked. To this end two utilities are provided.
+
+\subsubsection{Ckadr}
+
+PP provides a tool, \pgm{ckadr}, to check whether an address is
+acceptable to the mail system.
+Note that this tool does not do any of the PP authorization checks,
+so an address may be acceptable to \pgm{ckadr}, but PP may still
+refuse it due to authorisation criteria.
+
+If the address is acceptable, \pgm{ckadr} will display how the
+address was parsed and how PP will deliver to this address.
+For example:
+\begin{quote}\small\begin{verbatim}
+pac
+Address parsing succeeded
+pac -> (rfc822) p.cowen@cs.nott.ac.uk
+    -> (x400) 
+  /I=p/S=cowen/OU=CS/O=NOTT/PRMD=UK.AC/ADMD=GOLD 400/C=GB/
+Delivered to sheriff.cs.nott.ac.uk by 822-local
+\end{verbatim}\end{quote}  
+
+If the address is not acceptable, \pgm{ckadr} will display how far
+it got in the parse of the address and why it failed to find the
+address acceptable.
+For example:
+\begin{quote}\small\begin{verbatim}
+/S=foo/OU=CS/O=NOTT/PRMD=HOL/ADMD=GOLD 400/C=GB/
+Address parsing failed
+Reason : Unknown PRMD HOL
+Parsing gave this:
+/S=foo/OU=CS/O=NOTT/PRMD=HOL/ADMD=GOLD 400/C=GB/ ->
+  (rfc822) foo@CS.NOTT.HOL.gold-400.gb
+/S=foo/OU=CS/O=NOTT/PRMD=HOL/ADMD=GOLD 400/C=GB/ ->
+  (x400) /S=foo/OU=CS/O=NOTT/PRMD=HOL/ADMD=GOLD 400/C=GB/
+\end{verbatim}\end{quote}
+
+If \pgm{ckadr} is invoked with command line arguments (other than its
+own command line flags), it will
+attempt to parse these arguments as addresses.
+Note that if any of the addresses have whitespace in them, they should
+be quoted to avoid being split up into separate arguments.
+
+If \pgm{ckadr} is invoked with no command line arguments, it will
+read from the standard input until the end of that input.
+Each line of input is parsed as though it were an address.
+
+The behaviour of \pgm{ckadr} can be modified with the following
+switches:
+\begin{describe}
+\item[\verb|-i inboundChan|] Sets all addressing characteristics based
+on the inbound channel specified.
+\item[\verb|-r|:] Treat all addresses as 822 format addresses.
+This is the default behaviour.
+\item[\verb|-x|:] Treat all addresses as X.400 format addresses.
+
+Note in most cases, \pgm{ckadr} will correctly parse an X.400 address
+even if you say it is an 822 address and vice versa.
+However there are some cases where this is not so, therefore be
+careful when using \pgm{ckadr} and different formats of addresses.
+
+\item[\verb|-n|:] Check the address without expanding aliases.
+\item[\verb|-p|:] Check the address and allow parsing of percent
+symbols in the route.
+\item[\verb|-a|:] Normalise all domains.
+\item[\verb|-l|:] Normalise domains with the USA ordering
+(\verb|l|ittlendian) preferred.
+\item[\verb|-b|:] Normalise domains with the UK ordering
+(\verb|b|igendian) preferred.
+\item[\verb|-0|:] recognise USA domain ordering \pgm{only}.
+\item[\verb|-1|:] prefer USA domain ordering.
+\item[\verb|-2|:] recognise UK domain ordering \pgm{only}.
+\item[\verb|-3|:] prefer UK domain ordering.
+
+The above values relate to the numerical values used
+internally to specify which domain ordering to use.
+By default, \pgm{ckadr} will recogise USA domain ordering ONLY.
+
+\end{describe}
+
+\subsubsection{Probes}
+PP provides a tool, \pgm{probe}, which checks whether or not a 
+message would be acceptable either locally or to a remote mail system.
+
+A message probe attempts to transit the message transfer system
+network to its destination. On arrival at its destination or at a
+place where it can no longer be delivered (either because of errors or
+because a gateway through which the network beyond does not support
+probes is reached) a delivery report will always be returned.  No
+message is ever delivered to a recipient as a result of a message
+probe.
+
+The returned delivery report informs of the future successful or
+unsuccessful delivery of a message, having the same parameters as
+those specified within the previously generated message probe.
+
+Within PP, the delivery report can be generated at either the remote
+end or locally.  The exact location of the generation will depend on
+how the channels are specified within the PP \file{tailor} file.
+
+If an outbound channel supports message probes, then it should have 
+\begin{quote}\small\begin{verbatim}
+probe=y
+\end{verbatim}\end{quote}
+specified as one of its parameters in the 
+\file{tailor} file. If this parameter is not specified than the 
+default
+\begin{quote}\small\begin{verbatim}
+probe=n
+\end{verbatim}\end{quote}
+is taken. If \verb|probe=y| is set against any 
+outbound channel, then the delivery reports are generated remotely
+for any message probes outbound through that channel.
+It is assumed that the remote sites, reached 
+via that outbound channel, will reply to the message probes.
+If, however, the parameter is set to \verb|probe=n|, then the 
+delivery reports will be generated locally, and this fact is 
+recorded within the delivery report.
+
+Note that the information within a delivery report could sometimes
+prove erroneous.  For example, a remote recipient name (e.g James.Hacker)
+in an X.400 address needs clarifying, but the outbound channel
+associated with that recipient is set to \verb|probe=n|.  If the X.400
+address is parsed correctly, then a successful delivery report is
+generated locally, regardless of whether or not the name of the
+recipient (e.g James.Hacker) is a valid one at the remote end.  Thus
+it is necessary that the probe parameters are set correctly in the
+\file{tailor} file for \pgm{probe} to work correctly.
+
+Note also, that only the X.400 channels support message probes, 
+so any probing done of a non-X.400 site would have the delivery report 
+generated by a gateway. Thus an X.400 remote user probing a recipient at 
+a non-X.400 site, reachable via the local PP mail system, would have 
+a PP generated delivery report. Once again the information 
+within the delivery report could prove erroneous, if the remote 
+recipient's address is parsed correctly but the recipient name 
+is invalid.
+
+{\em Therefore for message probes to work absolutely correctly, 
+probing must be carried out between X.400 sites only.}
+
+The \pgm{probe} message generation program can be called in 2 ways: 
+
+\begin{itemize}
+\item With command line arguments. It will attempt to 
+parse the specified arguments before generating a message probe.
+
+\item Without command arguments. It will prompt on 
+standard output and read on standard input until all the information 
+has been received, before generating a message probe.
+\end{itemize}
+
+With the following options: 
+
+\begin{itemize}
+\item[\verb|-t|:] Interprets the remaining arguments up to the next switch as
+``To:'' Recipients.
+\item[\verb|-s|:] Specifies the size (in bytes) of the future message.
+\item[\verb|-e|:] Specifies one or more body part types within 
+the future message. The list of types should be separated 
+by a ``,''. 
+\item[\verb|-u|:] Specifies a user agent identifier. This should be a 
+maximum of 16 characters.
+\item[\verb|-i|:] Requests implicit conversion.
+\item[\verb|-a|:] Allows alternate recipients.
+\end{itemize} 
+
+\section {Dealing with Errors}
+
+To identify reasons for failure, it is necessary first to figure out
+which program is failing. This is not always easy as there are many
+programs involved in PP and at any one time, several of them may be
+interacting. 
+
+For a message submission that fails, it is rarely the inbound channel
+that is the problem, though obviously this can be the case sometimes.
+Most likely is that there is a problem in \pgm{submit}, so examining
+the \pgm{submit} log is likely to be a good starting point. It is
+also rare (but not unknown) that the problem is a bug in \pgm{submit}. The
+most likely causes initially are that you have one of the following
+wrong:
+\begin{itemize}
+\item	The \file{tailor} file has things specified incorrectly. Most of the
+common problems here are missing formatters, badly specified channels,
+and missing directories. The \pgm{ckconfig} will help solve some of these.
+
+\item	Another very likely cause is that the tables are wrong. This
+can be checked to a degree by use of the \pgm{ckadr} program. This
+allows addresses to be entered and the tables interrogated to determine
+the actions for that address. If you alter the tables, do not forget to
+run \pgm{dbmbuild} or else change the relevant table to linear mode.
+
+\item	Worth checking, although less likely, is whether \pgm{submit} is installed
+properly with the correct setuid bit on (it should be mode 4755 or similar).
+\end{itemize}
+
+On outgoing channels, it is more likely either an error in one of the
+channels, a queue file that is incorrect, or an inconsistency between
+the QMGR and the queue on disc.
+
+If the QMGR is running but not delivering anything, check to 
+ensure the following:
+\begin{itemize}
+\item	That the channels in question are enabled (check this via the MTA
+\pgm{console} program).
+\item	That the \pgm{pptsapd} is running.
+\item	That the channel programs exist in the right place, with the
+right modes (\pgm{ckconfig} will check most of these).
+\end{itemize}
+Remember, if you add channels or tables to the \file{tailor} file,
+then you will need to restart both the QMGR and the
+\pgm{pptsapd} programs.
+
+
+If you wish to monitor the progress of the PP system through the logs
+in a dynamic way, it may be worth using the \pgm{ntail} program
+supplied in the \file{tools} directory. This program is much like
+running the UNIX \man tail (1) command with the \verb|-f| flag on
+several files at once.
+
+\section {Managing Tables}
+
+As described in Section~\ref{sect:tables}, there are a number of tables
+that PP requires. For a site of any size, the generation of these
+tables is likely to be substantially automated.  Manual generation will
+probably only be used by very small sites.
+Local tables, such as \file{aliases}, \file{users}, \file{local channel},
+\file {list channel} or \file{authorisation} files
+will come from local sources.  The system manager
+will be able to generate these easily.  In the longer term, support for
+local information  by use of the OSI Directory is to be expected.
+
+For now, the tables needed for X.400 routing (the \file{or} table and X.400
+channel tables) must be manually generated.  This is an indication of the
+immaturity of this technology.   
+
+\subsubsection {RFC 1148 Mapping Tables}
+
+RFC 1148 mappings should be global.  Therefore, it is desirable to use
+standard tables as far as possible.  Two approaches are possible:
+
+\begin {enumerate}
+\item UCL (and later the UK Gateway service at ULCC) will maintain and make
+available RFC~1148 tables in PP format.  FTAM will probably be the preferred
+mode of access.
+
+\item There are scripts to take the RARE WG1 format tables and
+generate PP format tables from these.  The ambiguous and dubious
+mappings are avoided by the simple expedient of ignoring all mappings
+which relate to a single domain component.
+\end {enumerate}
+
+The first method is preferred, until the RARE tables are updated at a
+realistic interval (preferably on a continuous basis, which can be pulled
+each day).
+
+\subsubsection {Domain and Channel Tables}
+
+There are some support tools to help generate 
+the \file{channel} and
+\file{domain} tables, for domain-based information.
+Note that the \file{channel} table is used for both X.400 and domain bindings.
+
+For \file{domain} and \file{channel} tables, it is important to understand the use
+of these when defining mechanisms to build them.
+The steps that
+are taken for resolving a domain address are as follows:
+\begin{enumerate}
+\item	Look up the domain of the address in the \file{domain} table.
+Note:
+\begin {itemize}
+\item Domains are in US order.
+\item There is a qualification on whether a given domain matches a
+specific entry. This qualification is based on the number of
+subdomains permitted for that entry.
+\end {itemize}
+
+\item	Look up the domain name derived from the domain table in
+channel table. The RHS of 
+the channel table gives a list of host/MTA pairs which may be used.
+If the MTA is null, the originally specified MTA will be used.
+\end{enumerate}
+
+
+Two basic strategies for generating these tables are described.
+
+\begin {describe}
+\item[Internet:] This assumes that SMTP is used, in the context of domain
+nameservers.  The tables are used to identify a part of the domain tree
+which will be passed to the SMTP channel.  Use of DNS is confined to this
+channel.
+
+\item[NRS:] Here, UK NRS tables are used to point valid NRS domains at JNT
+Mail channels.   
+\end {describe}
+
+Simple sites will be able to use one of these strategies directly.  More
+complex sites will need to add additional information.
+
+\subsubsection{Generation of the domain table}\label{tablebuild:domain}
+
+When building a domain table, it is useful to start by building a variant
+which only has entries for fully qualified domain names and the
+partial domain names that are known.
+The \pgm{abbrev} tool can be used to create the required
+entries for abbreviated forms of domain names.  
+
+The domain table is compiled from one or more sources:
+
+\begin{describe}
+\item[Local Name:]
+Your own domain name, and alternates are needed.  For example:
+
+\begin{quote}\small\begin{verbatim}
+cambridge.ac.uk:mta
+cam.ac.uk:norm+mta=cambridge.ac.uk
+\end{verbatim}\end{quote}
+
+
+\item[NRS data:]	
+The NRS data can be converted directly into the PP domain format by
+use of the \pgm{c-nrs} program\footnote{ To obtain a copy of this,
+contact Piete Brooks at Cambridge Computer Laboratory (pb@cl.cam.ac.uk)}.
+The file \file{pp.dmn} created by this program should then be
+concatenated with the other generated domain data before being
+processed by the \pgm{abbrev} tool.
+
+\item[Internet:]
+A list of top level domains which you wish to be passed to the SMTP/DNS
+channels should be given.  For example:
+
+\begin{quote}\small\begin{verbatim}
+*.edu:mta=edu
+*.gov:mta=gov
+*.com:mta
+*.mil:mta
+\end{verbatim}\end{quote}
+
+Note that to match with partial entries prefixed by \verb+*.+, unless
+altered by the \verb+min+ key, there must be at least one subdomain.
+Thus preventing \verb+edu+,
+\verb+gov+, \verb+com+ and \verb+mil+ being recognised as valid
+domains by themselves.
+
+\item[Other known domains:]	
+Other known domains (e.g., those associated with local UUCP links)
+should be added in.  For example:
+
+\begin{quote}\small\begin{verbatim}
+iconet.uucp:mta
+inset.uucp:mta
+\end{verbatim}\end{quote}
+
+\end{describe}
+
+Once all the data has been collected, including all your local hosts
+and domains, it should be passed through the \pgm{abbrev} program.
+This arranges for all reasonable abbreviations of domains to be added.
+An example input might be the following:
+
+\begin{quote}\small\begin{verbatim}
+cs.nott.ac.uk:mta
+cs.ucl.ac.uk:mta
+stc.co.uk:mta
+widget.uucp:mta
+\end{verbatim}\end{quote}
+
+The syntax of the \pgm{abbrev} command is \verb|abbrev domainname...| and
+it reads from the standard input and writes to the standard output.
+One domain name should be the fully formed local domain.  Other arguments
+can be used to generate abbreviations for other domains.   
+When given the above as input and the command
+
+\begin{quote}\small\begin{verbatim}
+abbrev cs.nott.ac.uk uucp
+\end{verbatim}\end{quote}
+
+the output produced is 
+
+\begin{quote}\small\begin{verbatim}
+cs.nott.ac.uk:mta
+cs.nott.ac:norm+mta=cs.nott.ac.uk
+cs.nott:norm+mta=cs.nott.ac.uk
+cs:norm+mta=cs.nott.ac.uk
+cs.ucl.ac.uk:mta
+cs.ucl.ac:norm+mta=cs.ucl.ac.uk
+cs.ucl:norm+mta=cs.ucl.ac.uk
+stc.co.uk:mta
+stc.co:norm+mta=stc.co.uk
+widget.uucp:mta
+widget:norm+mta=widget.uucp
+\end{verbatim}\end{quote}
+
+\subsubsection	{Generation of the Channel Table}\label{tablebuild:channel}
+
+The channel table is also generated in two stages.  The input is as follows.
+
+\begin{describe}
+\item [Local domain:]
+This is not needed. 
+
+\item[NRS data:]	The file \file{pp.chan} generated by the \pgm{c-nrs}
+program is used directly.
+
+\item[Internet:]
+The list of valid domains is given, with the channel indicated. 
+For example:
+
+\begin{quote}\small\begin{verbatim}
+edu:(smtp)
+gov:(smtp)
+com:(smtp)
+mil:(smtp)
+\end{verbatim}\end{quote}
+
+\item [Private links:]
+These should be added manually. For example:
+\begin{quote}\small\begin{verbatim}
+widget.uucp:widget.uucp(uucp)
+\end{verbatim}\end{quote}
+Note that the key ``widget.uucp'' must be the same on each side of the table.
+
+\item [Application relays:]
+Known domains, reached indirectly, can be added.
+For example:
+
+\begin{quote}\small\begin{verbatim}
+foobar.uucp:widget.uucp()
+\end{verbatim}\end{quote}
+
+This says that foobar.uucp is reached indirectly through widget.uucp.
+\end{describe}
+
+
+In the second stage, the program \pgm{tjoin} is run to collate and
+reformat these input data into their final form.  This stage is
+essential if the input contains application or top-level relays, and
+performs the following functions:
+
+\begin {itemize}
+\item ``Unrolling'' application relays, so that the installed tables specify
+the correct first hop.
+
+\item Where an MTA can be reached by multiple channels, sorting these into
+the preferred order.  A direct connection will always be preferred to an
+application relay.
+\end {itemize}
+
+\pgm{Tjoin} input allows the following syntaxes:
+\begin{describe}
+\item[mta:mta(channel):]	Specifies to contact \verb|mta|, call
+\verb|mta| using channel \verb|channel|. Both \verb|mta| parameters
+should be the same
+\item[mta:mta1():]	To contact \verb|mta|, call \verb|mta1| using
+the channel associated with \verb|mta1| which should be specified
+elsewhere in the \file{channel} table.
+This is the application relay format.
+\item[mta:(channel):]	To contact \verb|mta| call \verb|mta| using
+channel \verb|channel|. This form is appropriate for domain nameservers.
+
+\end{describe}
+
+An example of the functions that \pgm{tjoin} does is shown here.
+The input of
+\begin{quote}\small\begin{verbatim}
+stc.co.uk:(smtp)
+uucp:uucphost.stl.stc.co.uk()
+ac.uk:psshost.stl.stc.co.uk()
+win.icl.stc.co.uk:erbert.uucp()
+erbert.uucp:erbert.uucp(uucp)
+psshost.stl.stc.co.uk:psshost.stl.stc.co.uk(smtp)
+uucphost.stl.stc.co.uk:uucphost.stl.stc.co.uk(smtp)
+\end{verbatim}\end{quote}
+
+would give as final output the table:
+
+\begin{quote}\small\begin{verbatim}
+ac.uk:psshost.stl.stc.co.uk(smtp)
+erbert.uucp:erbert.uucp(uucp)
+psshost.stl.stc.co.uk:psshost.stl.stc.co.uk(smtp)
+stc.co.uk:(smtp)
+uucp:uucphost.stl.stc.co.uk(smtp)
+uucphost.stl.stc.co.uk:uucphost.stl.stc.co.uk(smtp)
+win.icl.stc.co.uk:erbert.uucp(uucp)
+\end{verbatim}\end{quote}
+
+\section {Adding New Users and MTAs}
+
+To add new users to the tables is best done in an automated way,
+generating the list from some master table perhaps or a system
+database.
+
+To add a user, for example ``J.Soap'' with login id ``joe'' using
+the local channel, the following is required:
+\begin{enumerate}
+\item	Add an entry to the \file{alias} table to map ``joe'' into
+``J.Soap.'' 
+\begin{quote}\small\begin{verbatim}
+joe:synonym J.Soap
+\end{verbatim}\end{quote}
+This step is not required if you do not want to refer to
+Joe other than by the UNIX login id.
+
+\item	Add an entry to the \file{users} table to specify which
+channel to deliver Joe's mail by.
+\begin{quote}\small\begin{verbatim}
+J.Soap:822-local
+\end{verbatim}\end{quote}
+If you run a number of MTAs locally, then add the machine name after
+the channel.
+
+\item	Add an entry to the local channel table to give the delivery details.
+\begin{quote}\small\begin{verbatim}
+J.Soap:joe
+\end{verbatim}\end{quote}
+Optionally add the home directory and the mailbox if required.
+
+\item	To make the changes have immediate effect, run \pgm{dbmbuild}.
+It is not necessary to restart any of the daemon programs.
+\end{enumerate}
+
+\section {Adding Filters, Shapers + EITs}\index{tailoring, filters}
+
+\subsection{Adding A New Encoded Information Type}
+
+If you wish to add a new encoded information type, then some editing
+of the \file{tailor} file is necessary.
+
+Suppose we wish to add a new body type ``binary'' which we want to be
+able to submit and have converted to \verb|ia5| before transmission.
+
+\begin{enumerate}
+\item	Add a new body type to the list of body types in the
+\file{tailor} file.
+\begin{quote}\small\begin{verbatim}
+bodypart    binary
+\end{verbatim}\end{quote}
+
+\item	Now specify which outbound channels can handle such a body
+part by adding this type to the \verb|bptout| list
+associated with the channel. If no outbound channel will be delivering
+this type then this step is unecessary. This is the case for \verb|binary|.
+
+\item	To allow \pgm{submit} to work out how to convert from
+\verb|binary| to \verb|ia5| it is necessary to add a new reformatting
+channel, such as the following:
+\begin{quote}\small\begin{verbatim}
+chan bin2ia5   prog=fcontrol, type=shaper, bptin=binary,
+               bptout=ia5, outinfo="uuencode binary",
+               show="Binary -> Text"
+\end{verbatim}\end{quote}
+This specifies that to convert input bodypart type \verb|binary|, to output
+body type \verb|ia5| the channel \pgm{fcontrol} should run the process
+\verb|uuencode program| with standard input from the \verb|binary| body part
+and standard output into the \verb|ia5| body part.
+
+In practise, it might be better not to call \pgm{uuencode} directly,
+but wrap it up in a shell script; we could then print out some
+preliminary remarks instructing the recipient how to unwrap the
+binary part.
+
+\end{enumerate}
+Now, when \pgm{submit} receives a message which has flagged that it
+contains a body part of \verb|binary|, it will be able to convert that
+part into \verb|ia5|, which most output channels can deal with.
+
+\subsection{Adding a New Content Type}
+Adding a new content type for PP to relay is similar in style to
+adding a new encoded information type. The steps that need to be taken
+are dependent on whether conversion is involved or not.
+
+If no conversion is involved, then to add a new content type such as
+\linebreak
+\verb|p22-encrypted|, for instance, would simply consist of registering
+that content type with an outbound channel. This is done by adding a
+new channel with the 
+\linebreak
+\verb|content-out| part set to
+\verb|p22-encrypted|. In this case, \pgm{submit} will pass the message
+straight through, unaltered, providing the recipient is reachable via
+that channel.
+
+If conversion is required, then two things are necessary. The first is
+to add a new unflattening channel which is capable of splitting the
+message into component parts. Secondly, the component parts must be
+able to be reformatted into whatever is required on the outbound channel.
+
+For example, suppose we have a new message content called
+``whizbang''. This consists of a ``whizbang'' specific header and a
+standard \verb|ia5| body part. To allow the type of mail to be input,
+the following would be required.
+\begin{itemize}
+\item	An exploder channel that can split up ``whizbang'' format mail
+into its components.
+\begin{quote}\small\begin{verbatim}
+chan WBexplode    prog=WBexplode,type=shaper,
+                  content-in=whizbang,
+\end{verbatim}\end{quote}
+This channel is defined to split up the message into two
+components, a file \verb|hdr.wb| and a body part \verb|1.ia5|.
+
+\item	The new encoded information type \verb|hdr.wb| needs to be
+registered in the tailor file
+\begin{quote}\small\begin{verbatim}
+headertype wb
+\end{verbatim}\end{quote}
+
+\item	The \verb|ia5| body part is okay as it stands, but to relay the
+message to X.400 or RFC-822 the header will need converting, therefore
+a filter to convert \verb|hdr.wb| into either \verb|hdr.822| or
+\verb|hdr.p2| will be necessary. Only one need be written, because if
+\pgm{submit} has a \verb|hdr.822| it can convert it to a \verb|hdr.p2|
+using the \pgm{822top2} channel. Such a channel definition might look
+like this:
+\begin{quote}\small\begin{verbatim}
+chan wbhdr-2-822 prog=wbto822,type=shaper,hdrin=wb,
+                 hdrout=822,
+                 show="WhizBang to 822 Header converter"
+\end{verbatim}\end{quote}
+\end{itemize}
+
+\section {The Day--to--Day Running of PP}
+
+\subsection  {How to Start Up the PP System}
+
+Each time the UNIX machine is started up, the \file{rc.local} script
+in your UNIX system is executed.  An entry for PP should be placed in
+\file{rc.local}.  This entry should refer to a script which starts up
+various programs related to the running of PP.  Typically this script
+is similar to \pgm {pp.start} (see appendix~\ref{app:pp.start}) which
+starts up:
+\begin{itemize}
+\item QMGR: The queue manager which runs as the PP userID.
+\item \pgm{pptsapd}: The PP TSAP Daemon which also runs as the PP userID.
+\item \pgm{smtpsrvr} (optional): The SMTP listener which runs as the
+superuser. This is only necessary if:
+	\begin{enumerate}
+	\item	You are using the SMTP protocol.  	
+	\item	You are not running SMTP from \pgm{inetd} (see
+		Section~\ref{sect:smtp} on page~\pageref{sect:smtp}
+		for details of this). 
+	\end{enumerate}
+\item \pgm{tsapd} (optional): is necessary if you are expecting
+incoming X.400 messages. This is assumed to be part of the general
+ISODE configuration; see
+\linebreak
+\man isode-gen (8) for details.
+\end{itemize}
+
+Normally, these programs will run without interruption unless something
+serious happens, such as the machine going down.  But if necessary you
+can always stop them by using the UNIX \pgm{kill} command.
+You can restart them by running the script manually or by invoking
+the programs separately, then letting them run in the background. 
+
+\subsection {What to Run Each Night}
+
+In addition to running \pgm{pp.start} whenever the machine starts up,
+there are other things you should run regularly, ideally each night.
+
+For example, if you build the PP tables from other sources, such as
+the NRS database, local system databases or other external sources,
+then running \pgm{dbmbuild} each night is a useful thing to do.
+
+All the nightly routines can be run from a shell script,
+conventionally named something along the lines of \file{pp.night} (see
+appendix~\ref{app:pp.nightly} for an example).
+
+The sequence of operations should be :
+\begin{itemize}
+        \item   Archive the day's logs and remove outdated logs (see
+		Section~\ref{sect:logs} on 
+ 		\linebreak page~\pageref{sect:logs}).
+	\item	Collect statistics.
+        \item   Import new table source data files if necessary.
+        \item   Build new tables.
+        \item   \pgm{dbmbuild}.
+\end{itemize}
+
+\subsection {Saving Logs}\label{sect:logs}
+
+Saving logs depends very much on the individual policies for each
+site. For many cases the logs can just be set to truncate themselves
+when a suitable size is reached. Alternatively, if you are more
+concerned about keeping the information you should backup the logs
+each night.  Two important exceptions to these general rules above are
+the \file{oper} log and the \file{stat} log.
+
+The \file{oper} log should under normal conditions be empty, or at
+least very small. For this reason it is worth checking this overnight
+and perhaps mailing it to the postmaster if it contains anything.
+
+The \file{stat} log can be processed to show statistics. There is a
+program in the \file{tools} directory call \pgm{statp}. This program
+processes the \file{stat} log file into a more structured format that
+is suitable for processing with \man awk (1). A sample awk script is
+supplied which shows the sort of output that can be produced from
+this.
+
+\section {Examining the PP Queue}
+
+Occasionally there may be problems encountered by PP that cannot be
+resolved by normal means, and it will be necessary to look at the
+queue directory to find out what is going wrong. This section is a
+brief guide to this.
+
+The PP Queue is stored under one directory, the \file{quedir} directory.
+An item in the queue is contained within a subdirectory of \file{quedir}
+with a unique name.
+This subdirectory may contain the following:
+\begin{describe}
+\item[\verb|\file{addr}|:] a text encoded file containing information
+corresponding approximately to P1 functionality.
+\item[\verb|\file{base}|:] a directory which
+contains the message as it arrived.
+\item[\verb|\file{filter.number}:|] other directories
+which contain transformed versions of the message content.
+\item[\verb|\file{report.number}:|] files containing text
+encoded delivery reports associated with the message.
+\end{describe}
+Of these components only the \file{addr} file must be present.
+
+Each message content is a (possibly degenerate) directory tree.  This
+hierarchy represents the structure of a message, with each body part being
+represented by a single file.  Subdirectories represent forwarded IP
+messages.  This structure is to allow for straightforward transformation of
+messages.  When a message is converted, the body parts not affected are
+linked, rather than being copied.
+
+An example queue file is shown in Figure~\ref{examp:qfile}.
+
+\tagrind[hbtp]{qfile}{Example of Address File}{examp:qfile}
+
+\subsection {Delivery Reports}
+
+The basic operation of a channel is discussed in Section \ref{chan-op}
+on page \pageref{chan-op}.  Delivery Reports are text encoded, using a
+format similar to that used for text delivery.  Reports are stored as
+files in the message directory, with name \verb+report.<n>+, where n
+is the PP number for the lowest recipient to which the DR refers.
+Where a DR refers to multiple recipients, all except the lowest are
+marked to done in the queue, and the first is marked to dliv.
+
+An example text-encoded delivery report is shown in
+Figure~\ref{examp:dr}.
+
+\tagrind[hbtp]{dreport}{Example Delivery Report Format}{examp:dr}
+
+\subsection {Receipt Notifications}
+
+These are handled by the UA, and are thus beyond the scope of PP.
+Mappings to RFC~822 are done according to RFC~1148.

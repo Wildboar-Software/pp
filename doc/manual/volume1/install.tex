@@ -1,0 +1,537 @@
+\chapter {Installing PP}
+
+This is a description of things to do when installing PP. The basic
+information is described in \man pp-gen(8), but this section gives the
+full details. It is recommended that you read this section before
+compiling or installing the software.
+
+\section {Compile Time Configuration}
+
+Most of the definitions that have to be set before compiling PP are
+given in \file{Make.defs} in the top level of the source tree, and
+\file{config.h} in the \verb+h/+ directory.
+
+\subsection {Make.defs}\label{Make.defs}
+
+A number of \pgm{make} variables can be set. These variables come
+in two classes. The first are variables that are truly site
+specific. These are listed in Table~\ref{tab:makedefs1}. The second
+class are variables that you can probably leave as the defaults.
+These are listed in Table~\ref{tab:makedefs2}.  For each entry a
+reasonable default is given.
+
+\tagtable[hbpt]{makedefs1}{Make Variables That Should Be Set}{tab:makedefs1}
+
+\tagtable[hbpt]{makedefs2}{Make Variables That Can Be Defaulted}{tab:makedefs2}
+
+A number of these variables are important, so care must be taken when
+configuring these variables. A description of each of these variables
+is now given, however Tables
+\ref{tab:makedefs1}~and~\ref{tab:makedefs2} give a good overview of
+the variables.
+
+\begin{describe}
+\item[\verb|CMDDIR|:]\index{CMDDIR} This is the directory into which
+most of the PP core commands are placed. This is usually the directory
+that contains subdirectories for channel and formatting programs.
+
+\item[\verb|CHANDIR|:]\index{CHANDIR} This directory is normally a
+subdirectory of \verb|CMDDIR|. It contains all the channel programs
+that PP knows about.
+
+\item[\verb|FORMDIR|:]\index{FORMDIR} This directory contains the
+formatting programs that are run by \pgm{filtercontrol}. These can be
+either binary executables or shell scripts.
+
+\item[\verb|TOOLDIR|:]\index{TOOLDIR} This directory is where a number
+of miscellaneous tools are placed. These are useful programs that aid
+in the day-to-day running of PP but are not usually used directly by the PP
+system.
+
+\item[\verb|LOGDIR|:]\index{LOGDIR} This directory is where the
+logging files are written to by default. These logs are used for a
+variety of purposes, including debugging and statistics gathering. You
+should allow for a reasonable amount of space.
+
+\item[\verb|TAILOR|:]\index{TAILOR} This specifies the location of
+the PP tailor file. It is important you get this right. Almost
+every PP variable can be changed in the PP tailor file, but
+obviously the location of the PP tailor cannot. If you get this wrong,
+you will need to relink all the PP binaries against an updated
+\pgm{libpp.a}.
+
+\item[\verb|QUEDIR|:]\index{QUEDIR} This is the directory under which
+the PP queue is maintained. As all messages sent are queued here, you
+should allow enough room to handle all the mail you are likely to
+receive. A busy site with just a day or two's network outage can
+gather several megabytes of mail.
+
+\item[\verb|TBLDIR|:]\index{TBLDIR} This is the directory in which all
+the PP routing tables and similar configuration files are kept.
+
+\item[\verb|LIBSYS|:]\index{LIBSYS} This variable contains all the
+external libraries that you may require when building most of the PP
+binaries. It should contain at least the \verb|ISODE| librarys
+{\verb|-lisode|} and \verb|-ldsap| and possibly other libraries such
+as the \man dbm (3) library and any machine specific libraries you may
+need.
+
+\item[\verb|LIBRESOLV|:]\index{LIBRESOLV} This variable contains the
+library for the bind domain name server (or equivalent). It is only
+required if you are making use of the DNS (see Section~\ref{config.h}).
+Leave it empty otherwise.
+
+\item[\verb|USRBINDIR|:]\index{USRBINDIR} This is a directory where
+binaries that are used by users are placed. This includes a simple
+mail interface, and some delivery time processors.
+
+\item[\verb|OPTIONALCHANS|:]\index{OPTIONALCHANS}
+PP requires a certain core set of channels to operate at all, plus a
+number which are used in all normal configurations. However, there are
+a number of protocol and experimental channels which can be included
+if required. This variable specifies
+which of the optional channels and protocols you wish to support.
+Currently this consists of a list made from the following:
+\begin{describe}
+\item[\verb|822-local|:]	Basic RFC~822 delivery.
+\item[\verb|lists|:]	Support for distribution lists.
+\item[\verb|grey|:]	Support for JNT mail protocol (Grey book).
+\item[\verb|shell|:]	Support for delivery to programs.
+\item[\verb|slocal|:]	Support for structured local delivery (experimental).
+\item[\verb|smtp|:]	Support for the SMTP protocol.
+\item[\verb|uucp|:]	Support for the UUCP protocols (primitive).
+\item[\verb|x40084|:]	Support for the X.400 P1(1984) protocol.
+\item[\verb|x40088|:]	Support for the X.400 P1(1988) protocol.
+\item[\verb|fax|:]	Experimental fax delivery.
+\item[\verb|decnet|:]	Contributed \decnet/ MAIL11 channel.
+\end{describe}
+
+\item[\verb|OPTIONALFILTERS|:]\index{OPTIONALFILTERS}
+PP has a number of filters that can be used. Some are built by default;
+others are only useful if you plan to support the given style of
+content. Leave this empty initially if you are unsure; the defaults
+are usually sufficient.
+
+\item[\verb|FAXDIRVERS|:]\index{FAXDRIVERS}
+The PP fax channel can driver a number of FAX modems. This variable
+should be configured if you are using the fax channel to specify the
+particular driver(s) to use.
+
+\item[\verb|FAXPAGESIZE|:]\index{FAXPAGESIZE}
+This macro alters the size of page the fax reformatter filters
+produce.
+If not defined the filters will produce US size pages, 216mm by 273mm.
+If equal to \verb+-DA4+ they will produce A4 size pages, 210mm by
+297mm.
+
+\item[\verb|MANDIR|:]\index{MANDIR} This is the directory under which
+manual pages are placed. The installation process understands about
+most layouts of manual pages, so this is usually a base directory.
+
+\item[\verb|MANOPTS|:]\index{MANOPTS} This variable configures the
+style of manual pages to be installed. It can take the following
+values:
+\[\begin{tabular}{|l | l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Option} & 
+		\multicolumn{1}{|c|}{\bf Format}\\
+\hline
+	\tt -bsd42 & man$<$N$>$/file \\
+	\tt -bsd44 & cat$<$N$>$/file.O \\
+	\tt -ros & man$<$N$>$/file -- using /etc/install\\
+	\tt -sys5 & $<$a\verb+|+p\verb+|+u$>$\_man/man$<$N$>$/file\\
+	\tt -local & manl/file.l\\
+	\tt -l & man$<$N$>$/file.$<$N$>$l\\
+	\tt -hpux & HP manual style\\
+\hline
+\end{tabular}\]
+
+\item[\verb|NIFTPSRC|/\verb|NIFTPINTERFACE|:] These two variables
+control the PP interfacing with the unix-NIFTP code. These variables
+are ignored unless grey book mail is being installed. The variables
+should be set to the source directory of the unix-NIFTP package, and
+the particular interface the grey book channel will use. Suitable
+interface settings include:
+\begin{itemize}
+\item sun (this is the only version currently in use.)
+\item inet.
+\item ubc.
+\item dexpand.
+\item x25b.
+\item yorkbox.
+\end{itemize}
+
+
+\item[\verb|CC|:]\index{CC} The\pgm{C} compiler to use. The PP system has been
+compiled with a number of \pgm{C} compilers. 
+
+{\bf Warning: } If you wish to use the \pgm{gcc} compiler on
+\verb|sparc|-based system, you must compile files making use of
+\pgm{dbm}-style routines with \pgm{cc}.  (The compiler will normally warn about
+these files.) See \verb|OLDCC| below.
+
+\item[\verb|OLDCC|:]\index{OLDCC} The \pgm{C} compiler to use on dbm-related
+files. This is to work around a problem with \pgm{gcc}; it should usually
+be set to \pgm{cc}.
+
+\item[\verb|CCOPTIONS|:]\index{CCOPTIONS} This contains global \pgm{C}
+compiler options. If your include files for \verb|ISODE| are in a non
+standard place, a ``\verb|-I|'' flag or two may be necessary here.
+
+\item[\verb|LIBCCOPTIONS|:]\index{LIBCCOPTIONS} This contains global \pgm{C}
+compiler options to use when compiling files to place in libraries. In
+normal use this will be the same as \verb|CCOPTIONS|.
+
+\item[\verb|LDOPTIONS|:]\index{LDOPTIONS} This variable contains
+global loader flags. It is normally empty or just contains the
+``\verb|-s|'' flag.
+
+\item[\verb|PEPY|/\verb|POSY|/\verb|ROSY|/\verb|PEPSY|:]
+\index{ROSY} \index{POSY} \index{PEPY}\index{PEPSY}
+These variables are the
+\pgm{pepy}, \pgm{posy}, \pgm{rosy} and \pgm{pepsy} programs. Normally
+they just contain those names, but may be full pathnames if they are
+not in the standard search path.
+
+\item[\verb|X11|:]\index{X11} If you have X11 then set this variable
+to \pgm{true}. Leave it empty and no X-based programs will be compiled.
+
+\item[\verb|LIBX|:]\index{LIBX} The X11 libraries. This contains a
+list of the X libraries necessary to compile the few X-based programs
+in the distribution. This distribution is aligned to the X11R4
+release; it will {\em not} run under earlier versions of X.
+
+\item[\verb|APPDEFAULTS|:]\index{APPDEFAULTS} The application default
+directory. This contains the directory in which to install the
+application defaults for the various X-based programs.
+
+\item[\verb|LIBPHOTO|:]\index{LIBPHOTO} The \verb|ISODE| photo
+library. This is required for the \pgm{xalert} program. Alternatively
+you can set \verb|-DNOPHOTOS|\index{NOPHOTOS} in the \file{config.h}
+file to compile this without photograph support.
+
+\item[\verb|LINT|:]\index{LINT} The \man lint (1) command. This is not
+normally used unless you are doing development work.
+
+\item[\verb|LINTFLAGS|:]\index{LINTFLAGS} A list of global lint flags.
+This variable is also not normally used unless development work is
+being done.
+
+\item[\verb|PGMPROT|:]\index{PGMPROT} This is the default mode to
+install programs as. Some programs need special modes, but these are
+handled separately.
+
+\item[\verb|PPUSER|:]\index{PPUSER} This is the username that most PP
+programs are installed under. It is usually \verb|pp|, but need not
+be.
+
+\item[\verb|ROOTUSER|:]\index{ROOTUSER} The super user.
+
+\item[\verb|CHOWN|:]\index{CHOWN} The \man chown (8) program. This may
+need to be a full pathname.
+
+\item[\verb|CHMOD|:]\index{CHMOD} The \man chmod (1) program. This is
+normally ok as just \verb|chmod|.
+
+\item[\verb|BACKUP|:]\index{BACKUP} When PP installs a program, it
+normally takes a copy of the existing program for safety. If you wish
+this behaviour then you should set this variable to \man cp (1). If
+not, setting it to something harmless like ``\verb|:|'' or \man
+echo (1) which will disable this action.
+
+\item[\verb|INSTALL|:]\index{INSTALL} The command used to install a
+new binary. This is normally either \man cp (1) or \man install (1).
+\end{describe}
+
+\subsection {h/config.h}\label{config.h}
+
+The only other tailoring that should be done before compiling is
+setting of \verb+#define+s in the file \file{h/config.h}. These affect the
+more global options and there are very few of these.
+
+\begin{describe}
+\item[\verb+DBM+/\verb+NDBM+:]\index{DBM}\index{NDBM}
+One of these values must be defined.
+It is {\em strongly} advised that you use \man ndbm (3) if you have it
+at all; the \man dbm (3) routines can create havoc if you are using
+another package that uses dbm too.  If you are certain you don't have
+\man ndbm (3) then use \man dbm (3) and add \verb+-ldbm+ to your
+\verb+LIBSYS+ make variable.
+
+\item[\verb+PP\_DEBUG+:] This variable should be set to one of the following:
+\[\begin{tabular}{|l | l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Level} & \multicolumn{1}{|c|}{\bf Meaning}\\
+\hline
+	\tt PP\_DEBUG\_ALL&	Include all debugging code\\
+	\tt PP\_DEBUG\_SOME&	Include basic debugging code\\
+	\tt PP\_DEBUG\_NONE&	Don't include any debugging code\\
+\hline
+\end{tabular}\]
+
+\item[\verb+NAMESERVER+:]\index{NAMESERVER} If you wish to make use of
+the BIND nameserver for the SMTP channels, you should define this.
+
+\item[\verb+HAS\_FSYNC+:]\index{HAS\_FSYNC}
+This variable should be defined if your
+system has the \man fsync (2) system call. This is defined for you if
+the system is BSD based.
+
+\item[\verb+UKORDER+:]\index{UKORDER} 
+This variable should be defined if you want user tools to use UK
+RFC-822 domain ordering by default.
+
+\item[\verb|VAT|:]\index{VAT}
+This variable includes some minor extra features.
+\end{describe}
+
+\section {Overview of Channels}
+
+This is a brief overview of the channels distributed with PP.
+The binaries of these channels are installed in the \file{CHANDIR}
+directory.
+
+\subsection {Mandatory Channels}
+
+The channels under this section must be installed with all
+configurations of PP.
+They are mostly ``housekeeping'' channels used by the \pgm{qmgr}.
+
+\begin{description}
+\item[qmgrload:]
+The \pgm{qmgr} maintains its own model of the queue, separate to the
+master model stored under the \file{quedir} directory.  The
+\pgm{qmgrload} channel is used to initialise the \pgm{qmgr}'s model
+when the \pgm{qmgr} starts up.  When running, the \pgm{qmgr}
+periodically uses \pgm{qmgrload} to check the consistency between its
+model and reality.
+
+\item[msg-clean:]
+After all work has been done on a message and that message is no
+longer of interest to PP, the \pgm{qmgr} removes the message from the
+\file{quedir} directory via the \pgm{msg-clean} channel.
+
+\item[trash:]
+From time to time, the \pgm{qmgr} invokes the \pgm{trash} channel.
+This channel hunts around the \file{quedir} directory for files and
+directories that are no longer of interest to PP and removes them.
+
+\item[timeout:]
+When a message has been in the queue for too long, the \pgm{qmgr} uses
+the \pgm{timeout} channel to send a message back to its originator,
+telling him or her that PP timed out the original message.
+
+\item[dr2rfc:]
+The \pgm{dr2rfc} channel is used to construct delivery receipt
+notifications or error messages for channels that cannot handle these
+types of messages directly. It converts delivery reports into standard
+RFC~822 messages which can then be sent back to the sender.
+
+\item[warning:] The \pgm{warning} channel is used to send warning reports
+which informat senders of delay in delivering messages.
+
+\item[splitter:] The \pgm{splitter} channel is used by \pgm{submit} when
+processing for a message has to be done on a per--recipient basis.
+The \pgm{splitter} channel splits a multi--recipient message into
+single recipient messages via resubmission.
+\end{description}
+
+\subsection {Optional Channels}
+
+The channels under this section are optional.  To see how they are
+combined to produce various configurations see
+Section~\ref{sect:example_configs}.
+
+\begin{description}
+\item[822-local:]
+The \pgm{822-local} channel is used to deliver messages to local users
+in RFC~822 format.  It can deliver by a number of methods. For more
+details see Section~\ref{sect:local} on page~\pageref{sect:local} and
+also {\em The PP Manual: Volume~3 -- Users Guide}.
+
+
+\item[slocal:]
+The \pgm{slocal} channel (structured local channel) should be used if local
+users are to receive structured messages, that is, if the MTA is to
+deliver messages made up of different parts, such as multi-media
+messages, which cannot be appended to a single file but which must be
+delivered as a directory of files.  The \file{users} table will
+indicate, for each user, whether \pgm{slocal} is an optional channel.
+
+\[\fbox{
+\begin{tabular}{l p{0.7\textwidth}}
+\bf NOTE: & This channel is still experimental and not designed for an
+operational configuration.
+\end{tabular}
+}\]
+
+\item[X400-84:]
+
+Inbound and outbound channels for handing X.400 P1(84) messages are
+available. The channels will run over any media that ISODE can support
+transport connections on.
+
+\item[X400-88:]
+
+Inbound and outbound channels for handing X.400 P1(88) messages are
+available. The channels will run over any media that ISODE can support
+transport connections on. This software should be considered as ``{\em
+beta test}'' software in the current release.
+
+\item[SMTP:]
+
+An \pgm{smtp} channel is available for use over TCP/IP. It may be used
+over networks such as a local Ethernet or WAN such as the DARPA
+Internet.
+
+\item[JNT Mail:]
+The JNT mail channel is used over X.25 networks, particularly in the U.K.
+The unix-niftp package is used to provide the blue book file transfer
+part of this.
+
+\item[UUCP:]
+A channel that will interface with the UUCP protocols.
+
+{\bf Note:} This channel has not been tested extensively by the
+developers. Others have reported that it is satisfactory, however.
+
+\item[\decnet/ MAIL11:]
+A channel that implements the \decnet/ protocol. This is contributed
+software.
+
+\item[p2explode:]
+The \pgm{p2explode} channel is a restructuring channel that is used to
+explode a general p2 message into its separate component bodyparts.
+Note the same binary can explode p2(84) and p22(88).  It is used
+on an incoming X.400 message when the MTA needs to manipulate the
+separate components of that message.
+
+\item[p2flatten:]
+The \pgm{p2flatten} channel is a restructuring channel that is used to
+combine all the separate components of a message into one p2 file.  It
+is the exact inverse of \pgm{p2explode}.
+
+\item[P2toRFC:]
+The \pgm{P2toRFC} channel is a reformating channel that is used to
+convert an X.400 style header encoded in \verb+p2(84)+ or
+\verb+p2(88)+ to an RFC~822-style header.  This conversion is
+performed according to RFC~1148\cite{RFC1148} .
+
+\item[RFCtoP2:]
+The \pgm{RFCtoP2} channel is a reformating channel that is used to
+convert an RFC~822 style header to an X.400 style header encoded in
+\verb+p2(84)+ or \verb+p2(88)+.
+This conversion is done as described in RFC~1148.
+
+\item[rfc934:]
+The \pgm{rfc934} channel flattens an RFC~822-style message which may
+contain forwarded messages, into a flat RFC~822 message.  The
+flattening is done as described in RFC~934\cite{RFC934}. 
+
+\item[list:]
+The \pgm{list} channel expands a distribution list into its component
+members. The original message is then sent to each of these members.
+The channel uses the associated \file{list} table as described in
+Section~\ref{sect:list} on page~\pageref{sect:list}. 
+
+\item[dirlist:]
+The \pgm{dirlist} channel expands a distribution list into component
+members. It takes the list of members from the X.500 directory.
+
+\item[shell:]
+The \pgm{shell} channel runs a specific process for the originator of
+the message. This allows delivery of a message to a special process
+rather than to a user.  The mapping from the address the message is
+sent to and the process to run is described by the \file{shell} table,
+see Section~\ref{sect:shell} on page~\pageref{sect:shell}.
+
+\item[splitter:]
+The \pgm{splitter} chanel is used in some instances to split a message
+into separate messages with one recipient each. This allows some
+specialist reformatting to be done. See details of the FAX driver for
+an example.
+
+\item[fcontrol:]
+The \pgm{fcontrol} channel is used to run various filters on the
+bodyparts of the message.
+These filters can only affect the contents of the bodyparts and cannot
+affect the overall structure of the message.
+The filters are usually installed in the \file{FORMDIR} directory.
+\end{description}
+
+Here is a brief description of the filters distributed with PP:
+\begin{describe}
+\item[\verb+rfc822norm+:] The filter is used for conversion between various
+styles of RFC~822 headers
+.
+\item[\verb+p2norm+:] The filter is used to normalise X-400 addresses
+in P2 headers. It can also be used to downgrade X-400 (88) P2
+headers into X-400 (84) P2 headers. This downgrading is done according
+to the INTERNET draft ``X.400 1988 to 1984 downgrading'' by S.E.
+Hardcastle-Kille.
+
+\item[\verb+removebp+:] The filter is a simple shell script used to
+replace bodyparts that the MTA cannot support. It removes the
+indicated part and replaces it with a simple text message reflecting
+this fact.
+\end{describe}
+
+\section {Example Configurations}\label{sect:example_configs}
+
+This section gives some details about the example configurations
+included in the distribution. These configurations should be looked on
+as a sample first step to allow a working system to be installed
+easily. This should then be evolved to meet local requirements.
+To use one of these configurations, do the following.
+\begin{enumerate}
+\item Change to the \file{examples} directory.
+\item Select one of the configurations shown below, and change into
+that directory.
+\item Read the \file{README} file, and carry out the instructions
+given in there.
+\end{enumerate}
+
+This should give you a {\em very basic} working system.
+
+\subsubsection{Local SMTP}
+This configuration assumes a simple host doing local deliveries and
+passing all other messages to another host. It requires the \pgm{smtp}
+channel, the \pgm{822-local} channel and optionally the \pgm{list}
+channel.
+
+\subsubsection {SMTP mail}
+This configuration assumes a simple host doing SMTP relaying and local
+delivery only. It is similar to the above, but can handle Internet
+connectivity by use of the domain nameserver.
+
+\subsubsection {Janet mail}
+This host is assumed to be on the Janet network and has local SMTP
+capability. It is a skeleton only, as for proper operation, NRS data is
+necessary to identify the necessary domain and routes.
+
+\section {Configuration of User Agents}
+
+PP is a message transfer agent, and does not contain a sophisticated
+X.400 user agent. It is hoped that the interface documented in
+Volume~2 of these manuals
+will be useful in the development of new user agents or the
+interfacing of existing UAs. The latter should be straightforward
+for most RFC~822-based interfaces.
+
+MH\cite{MH6.5} can be used directly
+with PP if compiled with the SMTP
+transfer interface.
+
+PP provides a \pgm{/bin/mail} like interface. This should be installed
+in the normal installation. It provides a simple way for submission of
+RFC~822 messages, and allows a few flags to be set. Also provided is a
+\man sendmail(8) emulation program that can be used to intercept those
+programs that insist on calling sendmail directly (e.g., \man
+cron(8)).
+
+\section {Checking the Configuration of Your System}
+
+Following installation, it is {\em strongly} recommended to use \man
+ckconfig (8) to ensure that the PP directory structure is correct and
+all the channel programs are correctly in place.
+\pgm{ckconfig} is described in Section~\ref{sect:ckconfig}.

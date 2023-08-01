@@ -1,0 +1,40 @@
+# Make.defs exclusively for characer set conversions
+#
+############################################################
+#
+# @(#) $Header$
+#
+# $Log$
+#
+############################################################
+#
+# Definitions
+#
+############################################################
+
+
+#
+# This file is used by both Lib/charset & Format/charset
+#
+
+
+#
+# The directory holding the generated character set tables.
+#
+CSDIR			= $(FORMDIR)/charset_tables
+
+
+#
+# generated character set files for charset_conf.c
+#
+FILE_CHARSETS		= CHARSETS
+FILE_CHARDEFS		= CHARDEFS
+FILE_CHARMAP		= CHARMAP.10646
+FILE_CHARMNEM		= CHARMNEM
+
+
+#
+# character set files for the table database.
+#
+MASTER_CHARSETS		= master/$(FILE_CHARSETS) master/CHARSETS_PP
+MASTER_CHARDEFS		= master/ISO_10646 master/CONTROL master/OTHER

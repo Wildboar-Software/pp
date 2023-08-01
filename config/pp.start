@@ -1,0 +1,8 @@
+#! /bin/sh
+
+#
+# Start up PP - assume we are PP.
+#
+cd /usr/pp/cmds
+pptsapd > /dev/null 2>&1
+qmgr > /dev/null 2>&1

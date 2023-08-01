@@ -1,0 +1,22 @@
+chan iso6937toia5
+        prog=fcontrol,
+        show="iso6937 -> ia5 conversion filter",
+        bptin=iso6937, bptout=ia5,
+        type=shaper, conv=loss, cost=99,
+        outinfo="asn -is iso_6937-2-add -os ccitt_x.408_ia5irv"
+
+chan ia5toiso6937
+        prog=fcontrol,
+        show="ia5 -> iso6937 conversion filter",
+        bptin=ia5, bptout=iso6937,
+        type=shaper, conv=loss, cost=99,
+        outinfo="asn -is ccitt_x.408_ia5irv -os iso_6937-2-add 
+             -ia ia5 -oa motis-86-6937"
+
+chan iso6937toteletex   
+        prog=fcontrol,
+        show="iso6937 -> teletex conversion filter",
+        bptin=iso6937, bptout=ttx,
+        type=shaper, conv=loss, cost=99,
+        outinfo="asn -is iso_6937-2-add -os t.61-8bit 
+              -ia motis-86-6937 -oa teletex"

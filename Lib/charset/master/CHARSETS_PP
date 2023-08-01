@@ -1,0 +1,22 @@
+charset CCITT_T.50.irv:1988
+alias ccitt_x.408_ia5irv
+NU SH SX EX ET EQ AK BL BS HT LF VT FF CR SO SI
+DL D1 D2 D3 D4 NK SY EB CN EM SB EC FS GS RS US
+SP ! " Nb Cu % & ' ( ) * + , - . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ?
+At A B C D E F G H I J K L M N O P Q R S T U V W X Y Z <( // )> '> _ 
+'! a b c d e f g h i j k l m n o p q r s t u v w x y z (! !! !) '- DT
+
+comment: /* replace with Cu. */
+duplicate 36  Ct
+duplicate 36  Pd 
+duplicate 36  DO
+duplicate 36  Ye
+
+comment: /* replace with < and > */
+duplicate 60 <<
+duplicate 62 >>
+
+comment: /* replace with FS */
+duplicate 28 S2
+duplicate 28 S3
+duplicate 28 CI

@@ -1,0 +1,56 @@
+% run this through LaTeX
+
+% SEK - this is a PP document, designed to be easy to convert to 
+% an ISODE Manual Section if we want to
+
+\input lcustom
+
+\documentstyle[11pt,sfwmac,tgrind,twoside,a4]{report}
+% \documentstyle[11pt,draftnote,sfwmac,tgrind,twoside]{report}
+
+% \font\gross=t-rom at 2.5in
+% SEK - must try to sort a portable way of doing this
+
+\pagenumbering{roman}
+
+\begin{document}
+
+
+% \title{{\gross PP} \\ \vskip 2em
+\title{{\Huge \bf The PP Manual} \\ \vskip 4em
+	}
+\author{Steve Kille \\
+Department of Computer Science \\
+University College London \\ \and
+Julian Onions \\
+X-Tel Services Ltd.}
+
+\date{\vskip-1.25em
+	\ifdraft \versiondate/\\ \tt Draft Version \versiontag/\else \today\fi}
+
+\maketitle
+\newpage
+
+\thispagestyle{empty}
+\setcounter{page}{0}
+\mbox{}
+\newpage
+
+\tableofcontents
+
+% \listoftables
+
+% \listoffigures
+
+\newpage
+\ifodd\value{page} \else
+    \mbox{}
+    \newpage
+\fi
+\pagenumbering{arabic}
+
+\include{real}
+
+% \input volume0.ind
+
+\end{document}

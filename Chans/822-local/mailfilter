@@ -1,0 +1,25 @@
+#
+# This is a comment
+#
+print $(to);
+if ($(to) == /jpo/ ) {
+	pipe "rcvstore +to";
+        ignore pipe "rcvalert 'to folder $(subject)'";
+	delivered = TEMPFAIL;
+        exit ;
+}
+else if ($(to) == /jpo/ && $(from) == /pp-workers/) {
+        pipe "rcvalert +pp";
+        ignore pipe "rcvalert 'PP folder'";
+        exit(OK);
+}
+else if ($(sender) == /mmdf/) 
+        pipe "rcvstore +mmdf2";
+else {
+        pipe "rcvstore +inbox";
+	pipe "rcvalert 'foo'";
+}
+if ( ! delivered)  {
+        pipe "rcvstore +inbox";
+	ignore pipe "rcvalert 'inbox folder'";
+}

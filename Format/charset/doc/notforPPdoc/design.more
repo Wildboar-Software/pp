@@ -1,0 +1,13 @@
+Q:	Why is Escape character 29 chosen in conv.c 
+
+A:	The escape character is not equal to ESC - that would be very 
+	dangerous! ESC (=27) introduces in many cases a control sequence
+	which may mean many strange things on different types of terminal 
+	equipment. Think of the escape char as 'compose character'.
+	The escape character can be any character, the code is designed 
+	for that. 29 was chosen, because no foul up occurs with the ordinary 
+	printable characters, as this escape character has to be typed twice
+	to get a real one. 29 also has the property of being invisible in
+	pagers like more and pg. 29 seldom has any real meaning on terminal
+	equipment. 29 is also the default escape char in telnet, maybe
+	for the same reasons as stated above.

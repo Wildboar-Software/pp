@@ -1,0 +1,23 @@
+%
+% "a4" document style option.
+% John Pavel, December 1986
+%
+% Redefines the \textheight and \topmargin for A4 paper, as opposed to US paper.
+%
+% Adjusting \textheight will adjust position of the bottom of the page.
+% Must preserve "(\textheight - \topskip) divides \baselineskip".
+% \topskip always appears to be 10pt.
+% So only add/subtract multiples of \baselineskip if you want shorter pages.
+%
+% \textwidth is not altered because A4 is narrower than US paper.
+%
+%
+\topmargin 0 pt     %    Nominal distance from top of paper to top of page
+\ifcase \@ptsize
+    % mods for 10 pt (\baselineskip=12pt)
+    \textheight 646 pt  % Height of text (including footnotes and figures)
+\or % mods for 11 pt (\baselineskip=13.6pt)
+    \textheight 649.2 pt    % Height of text (including footnotes and figures)
+\or % mods for 12 pt  (\baselineskip=15pt)
+    \textheight 655 pt    % Height of text (including footnotes and figures)
+\fi

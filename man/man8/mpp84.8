@@ -1,0 +1,56 @@
+.TH MPP84 8
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man8/RCS/mpp84.8,v 6.0 1991/12/18 20:44:03 jpo Rel $
+.\"
+.\" $Log: mpp84.8,v $
+.\" Revision 6.0  1991/12/18  20:44:03  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+mpp84 \- message pretty printer
+.SH
+.in +.5i
+.ti -.5i
+mpp84 \%[-ps] \%[-pl] \%[-p1] \%[-p2] \%[-sfd] \%[-nounpack] \%[-p2hdr] \%[-p1hdr]
+.in -.5i
+.SH DESCRIPTION
+.I Mpp84
+is a diagnostic tool for examining X.400 (1984) message structures. It
+handles various types of structures either in raw asn.1 or in the
+presentation list abstraction of ISODE.
+.I Mpp84
+responds to the following flags:
+.TP
+\-ps
+indicates that the input is from a presentation stream abstraction
+(e.g raw ASN.1)
+.TP
+\-pl
+indicates that the input is from a presentation list abstraction.
+.TP
+\-p1
+Interpret the data as a P1 envelope with P2 encapsualted within.
+.TP
+\-p2
+Interpret the data as a P2 header and body parts.
+.TP
+\-sfd
+Interpret the data as a simple formatted document type.
+.TP
+\-nounpack
+Any structures packed into OCTET STRINGs (such as p2 body or return
+of contents) will not be examined.
+.TP
+\-p2hdr
+Interpret the data as a p2 header (the p2.hdr queue format).
+.TP
+\-p1hdr
+Interpret the data as a p1 header (pp hex dump format).
+.SH FILES
+none
+.SH "SEE ALSO"
+mpp88(8)
+.br
+\fIThe PP Manual: Volume 1 \- Installation and Operation\fP
+

@@ -1,0 +1,12 @@
+############################################################
+#
+# List channel table
+#
+#
+# An example list, foo-list is shown here.
+#
+# <listname> ":" <administrator> "," "file=" <filename> "," <description>
+#
+############################################################
+
+foo-list:pp,file=foo-list,An example list

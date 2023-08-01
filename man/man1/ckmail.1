@@ -1,0 +1,36 @@
+.TH CHECKMAIL 1
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man1/RCS/ckmail.1,v 6.0 1991/12/18 20:43:41 jpo Rel $
+.\"
+.\" $Log: ckmail.1,v $
+.\" Revision 6.0  1991/12/18  20:43:41  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+checkmail \- message status checkup tool
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+checkmail
+\%[-a] \%[-h mtaname]
+.in -.5i
+.SH DESCRIPTION
+The
+.I checkmail
+program is used to query local and remote mtas about the status of
+messages related to the user.
+.PP
+\fIcheckmail\fP responds to the following flags:
+.TP
+\-a
+This flag prompts \fIcheckmail\fP to enquire about messages to and
+from the user. By default, \fIcheckmail\fP only enquires about
+messages from the user.
+.TP
+\-h mtaname
+This flags prompts \fIcheckmail\fP to connect to the named mta.
+By default, \fIcheckmail\fP attempts to connect to an mta running on
+the local machine.
+.SH "SEE ALSO"
+\fIThe PP Manual: Volume 3 \- Users Guide\fP

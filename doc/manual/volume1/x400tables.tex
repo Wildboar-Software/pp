@@ -1,0 +1,88 @@
+\chapter{Obtaining X.400 Tables}\label{app:tables}
+
+The following tables are necessary for correct X.400 operation. These
+tables should be obtained from UCL. The tables are:
+\begin{describe}
+\item[\verb|or|:] The O/R Table.
+\item[\verb|rfc2or|:] The RFC~822 to O/R mapping table
+\item[\verb|or2rfc|:] The O/R to RFC~822 mapping table.
+\item[\verb|rfc1148gate|:] The RFC~1148 known gateways file.
+\end{describe}
+
+These tables can be fetched in a number of ways.
+
+\begin{describe}
+\item[FTP:] If you have access to Internet FTP then use anonymous FTP
+to cs.ucl.ac.uk [128.16.5.31] to retrieve the files from the directory
+\file{pp-tables/}. For example:
+
+\begin{quote}\small\begin{verbatim}
+% ftp cs.ucl.ac.uk
+Connected to bells.cs.ucl.ac.uk.
+220 bells.cs.ucl.ac.uk FTP server (SunOS 4.0) ready.
+Name (cs.ucl.ac.uk:pp): anonymous
+331 Guest login ok, send ident as password.
+Password:
+230 Guest login ok, access restrictions apply.
+ftp> get pp-tables/or or
+...
+ftp> get pp-tables/or2rfc or2rfc
+...
+ftp> close
+%
+\end{verbatim}\end{quote}
+
+\item[FTAM:] If you have access to FTAM on Janet, PSS or the Internet,
+you may obtain the tables from UCL using one of the following:
+\begin{itemize}
+\item Janet DTE 00000511160013 with TSEL 259 (ascii-encoded)
+\item PSS DTE 23421920030013 with TSEL 259 (ascii-encoded)
+\item Internet address cs.ucl.ac.uk ([128.16.5.31]) port 102 with TSEL
+259 (ascii-encoded)
+\end{itemize}
+Use the ``anon'' user-identity and retrieve the files in the
+\file{pp-tables/} directory. For example:
+\begin{quote}\small\begin{verbatim}
+% ftam ucl
+user (ucl:pp): anon
+ucl... connected
+ANONymous user permitted, access restrictions apply
+ucl> get pp-tables/or /tmp/or
+ftam: unstructured text file transfer
+ftam: 5792 bytes received in 5.88 seconds (0.96 Kbytes/s)
+...
+ucl> close
+%
+\end{verbatim}\end{quote}
+
+\item[NIFTP:] If you run NIFTP over the public X.25 or over Janet, and
+are registered in the NRS at salford, you can use NIFTP with username
+``guest'' and your name as password, to access UK.AC.UCL.CS to
+retrieve the files found under \verb|<pp-tables>|. For example:
+\begin{quote}\small\begin{verbatim}
+% cpf '<pp-tables>or'@uk.ac.ucl.cs or
+% 
+\end{verbatim}\end{quote}
+
+\item[MAIL:] The files may be obtained by mail by sending a suitable
+query to the address \verb|info-server@cs.ucl.ac.uk|. This query
+should consist of a message body with the lines:
+\begin{quote}\small\begin{verbatim}
+Request: pp-tables
+Topic: or
+Topic: rfc2or
+Topic: or2rfc
+Topic: rfc1148gate
+\end{verbatim}\end{quote}
+E.g.:
+\begin{quote}\small\begin{verbatim}
+% mail info-sver@cs.ucl.ac.uk <<EOF
+Request: pp-tables
+Topic: or
+Topic: rfc2or
+Topic: or2rfc
+Topic: rfc1148gate
+EOF
+%
+\end{verbatim}\end{quote}
+\end{describe}

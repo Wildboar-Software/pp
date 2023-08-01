@@ -1,0 +1,30 @@
+############################################################
+#
+#	Default Configuration values for Documentation
+#
+############################################################
+#
+#
+############################################################
+#
+# @(#) $Header: /cs/research/pp/hubris/pp-beta/doc/manual/RCS/Make.defs,v 5.0 90/09/20 16:36:08 pp Exp Locker: pp $
+#
+# $Log:	Make.defs,v $
+# Revision 5.0  90/09/20  16:36:08  pp
+# rcsforce : 5.0 public release
+# 
+#
+############################################################
+
+
+
+LATEX		= latex
+TGRIND		= tgrind
+GRINDEFS	= grindefs
+WEAVE		= weave
+DVI2PS		= dvi2ps
+DVIIMP		= dviimp
+DVISP		= dvisp
+DFLAGS		= 
+
+# TEXEDIT=/usr/ucl/jove +%d %s

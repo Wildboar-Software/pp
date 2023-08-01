@@ -1,0 +1,2 @@
+#! /bin/sh
+xsmtpd `pwd`/xsmtpsrvr smtp

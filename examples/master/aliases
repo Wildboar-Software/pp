@@ -1,0 +1,23 @@
+############################################################
+#
+# Alias table.
+#
+# This table has all the alias and renaming stuff in it.
+#
+# See volume 1 for full details. Simple aliases are put in as
+# <name> ":" "alias" <newname>
+# 
+############################################################
+#
+# Should always be an alias for postmaster
+postmaster:alias pp
+#
+# Example of user mapping...
+#
+# jb is  replaced by J.Bloggs in headers and addresses
+# This affects the user table and the ch.local table, essentially,
+# jb no longer exists after this, all references are to J.Bloggs
+#
+jb:synonym J.Bloggs
+#
+#

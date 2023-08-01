@@ -1,0 +1,75 @@
+.TH RCVTRIP 1
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man1/RCS/rcvtrip.1,v 6.0 1991/12/18 20:43:41 jpo Rel $
+.\"
+.\" $Log: rcvtrip.1,v $
+.\" Revision 6.0  1991/12/18  20:43:41  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+rcvtrip \- answerphone for mail
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+rcvtrip \%[\-dF] \%[\-e\ exit] \%[\-f\ from] \%[\-l\ file] 
+\%[\-n\ file] \%[-s\ sigfile] \%[\-t\ text] \%[\-u\ user]
+.in -.5i
+.SH DESCRIPTION
+.I Rcvtrip
+is a process that is normally run from the user \fB.mailfilter\fP
+file. It answers incoming mail with a user defined message usually
+informing the sender that the recipient is on vacation or similar.
+.PP
+It normally checks to see if the message specifies the user in the To:
+or Cc: lines and will not reply otherwise. It also checks and updates
+a database file to see if this user has been replied to already. It
+will normally only reply to a given user once.
+.PP
+It has several options to modify it's behaviour.
+.TP
+\-d
+run in debug mode.
+.TP
+\-F
+Always reply to the message, even if the message is not sent directly
+to the user.
+\-e\ value
+set the exit code depending on this value. If the value is 0, the exit
+code is always bad. If the value is 1, the exit code is always good.
+An value of 2 will give an exit value of 1, 2, 3, 4 or 99 if the
+message was sent; not sent because duplicate; not sent because not
+sent to user; parse error; other; respectively.
+.TP
+\-f\ from
+Set the free form text of the from address to this value (default is
+MESSAGE AGENT).
+.TP
+\-l\ file
+Set the database file to this file name.
+.TP
+\-n\ file
+Use this file as the text of the message to send back after standard
+preamble. 
+.TP
+\-s\ file
+Use this file to determine the users signature, which is appended to
+the preamble.
+.TP
+\-t\ text
+Modify the preamble with this line. There may be several of these
+arguments in which case they are concatenated.
+.TP
+\-u\ user
+Pretend to be this user when answering.
+.SH FILES
+.nf
+.ta \w'.signature\0\0'u
+\&.signature	default signature file
+tripnote	default trip note file
+triplog		database of incoming messages
+\&.mailfilter	the mailfilter processing file
+.fi
+.SH "SEE ALSO"
+\fIPP Manual \- Volume 3: User Manual\fP
+.SH "BUGS"

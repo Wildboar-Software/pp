@@ -1,0 +1,42 @@
+.TH ABBREV 8
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man8/RCS/abbrev.8,v 6.0 1991/12/18 20:44:03 jpo Rel $
+.\"
+.\" $Log: abbrev.8,v $
+.\" Revision 6.0  1991/12/18  20:44:03  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+abbrev \- Abbreviates host\/domain names
+.SH SYNOPSIS
+abbrev local-domain1 [local-domain2 ...] < input-file
+.SH DESCRIPTION
+.I Abbrev
+is a program that is used to construct the
+.I domain
+table residing in the PP table directory (tbldfldir).
+This is a useful tool as it allows a user an alternative
+way of specifying an RFC822 address.
+If
+.I abbrev
+is used, an abbreviated forms of domains may be specified
+which will then get properly expanded by the PP mail system.
+For example an address "Jim.Hacker@cs" could be expanded
+to "Jim.Hacker@cs.ucl.ac.uk", depending on
+.I abbrev's
+parameters.
+.PP
+.I Abbrev
+takes a number of command line arguments, which should be local domains.
+It takes as input a typical domain table format.
+.PP
+For each entry specified in the input-file,
+.I abbrev
+recursively shortens the key until the domain specified on the command
+line and the given entry share no common parts. Each entry is
+abbreviated with respect to each command line option.
+.PP
+Blank lines and comments are passed though unchanged.
+.SH "SEE ALSO"
+\fIThe PP Manual: Volume 1 \- Installation and Operation\fP

@@ -1,0 +1,30 @@
+.TH FLOCK 1
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man1/RCS/flock.1,v 6.0 1991/12/18 20:43:41 jpo Rel $
+.\"
+.\" $Log: flock.1,v $
+.\" Revision 6.0  1991/12/18  20:43:41  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+flock \- run a process with a file locked
+.SH SYNOPSIS
+.in +.5i
+.ti -.5i
+flock \%file \%[command..]
+.in -.5i
+.SH DESCRIPTION
+.I Flock
+is a small utility that takes a file and a command to run. It firstly
+locks the file using the current PP locking method, and then runs the
+command as a subprocess. When the subprocess exits, \fIflock\fP exits
+with the same value.
+.PP
+It has no options.
+.SH FILES
+None
+.SH "SEE ALSO"
+\fIPP Manual \- Volume 3: User Manual\fP
+.SH "BUGS"
+None \- Hah!

@@ -1,0 +1,57 @@
+.TH TJOIN 8
+.\" @(#) $Header: /xtel/pp/pp-beta/man/man8/RCS/tjoin.8,v 6.0 1991/12/18 20:44:03 jpo Rel $
+.\"
+.\" $Log: tjoin.8,v $
+.\" Revision 6.0  1991/12/18  20:44:03  jpo
+.\" Release 6.0
+.\"
+.\"
+.\"
+.SH NAME
+tjoin \- Unrolls the Application Relays.
+.SH SYNOPSIS
+tjoin \%[-d] local-domain-name channel-names... < input-file
+.SH DESCRIPTION
+.I Tjoin
+is a lexical program that is used to construct the
+.I channel
+table residing in the PP table directory.  
+.PP
+.I Tjoin
+performs a number of transformations on the data.
+.PP
+It firstly fills in all
+missing channels. If mail to one host must first be sent to another
+host, 
+.I tjoin
+will expand this to the correct form and fill in the appropriate
+channel.
+.PP
+Secondly, it removes references to the local domain name specified in
+the first parameter.
+.PP
+Thirdly, it sorts the hosts with multiple channels into the preferred
+order given on the command line. The order is the same order as the
+channel-names parameters.
+.PP
+Tjoin responds to several flags.
+.TP
+\-d
+Prefer direct routes to hosts over the ordering given on the command
+line. E.g. if there are two channels to a host, and one is direct and
+the other goes via an intermediary always prrefer the first one. This
+should be the nromal setting.
+.TP
+\-c
+Produce a more complex output, this may save a little space, but is
+probably not worth while and is untested.
+.TP
+\-r
+put route entries in the output. This option should not be used other
+than for debuging
+.PP
+The normal procedure is to run with the \-d flag enabled.
+.SH FILES
+channel in the tbldfldir.
+.SH "SEE ALSO"
+\fIThe PP Manual: Volume 1 \- Installation and Operation\fP

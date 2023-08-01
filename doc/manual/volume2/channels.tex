@@ -1,0 +1,732 @@
+% -*- LaTeX -*-
+\chapter {Channels}
+
+\section {Overview}
+
+This chapter describes the interface which provides the message
+delivery aspects of the message transfer abstract service and MTA
+abstract service.  The major component of this is a set of routines
+for accessing the PP queue.  As these routines are usually used in the
+context of a channel process, their usage is illustrated in various
+types of channel.  There are also additional functions to facilitate
+reformatting/conversion.
+
+The following types of channel are supported:
+
+\begin{itemize}
+\item Protocol outbound channel (MTA AS delivery).
+
+\item Local delivery channel (MT AS delivery).
+
+\item Local pickup channel (MT AS delivery).
+
+\item Remote TWA channel (MTA AS delivery).
+
+\item Reformatters.
+\end{itemize}
+
+\section {The Queue Interface}
+
+\subsection {Major Structures}
+
+The major structures in use for reading the queue are the following:-
+\begin{itemize}
+\item The parameter structure described in Figure~\ref{prm:struct} on
+page~\pageref{prm:struct}.
+
+\item The queue structure described in Figure~\ref{q:struct} on
+page~\pageref{q:struct}.
+
+\item The address structure described in Figure~\ref{adr:struct} on
+page~\pageref{adr:struct}.
+
+\end{itemize}
+
+There is also a separate set of routines and structures for
+interacting with the queue manager. This interface makes use of the
+structures defined in
+Figure~\ref{struct:qmgrif}.\index{type\_Qmgr\_DeliveryStatus}
+\index{type\_Qmgr\_Channel}\index{type\_Qmgr\_ProcMsg}\index{type\_Qmgr\_QID}
+\index{type\_Qmgr\_RecipientId}
+\tagrind[hbtp]{qmgrif}{Channel / Queue Manager Interface Structures}
+{struct:qmgrif}
+
+These structures are derived from the queue manager ROS specification
+given in Appendix~F of Volume~1.
+
+\subsection {Basic Access}
+
+The basic access provided to the queue is through a set of library
+calls.  There are several classes of routines which can be divided up
+into queue manager interaction, address file processing routines and
+message body routines. Most of the operations described here are only
+useful for outbound channels.
+
+\subsubsection{Queue Manager Interaction}
+
+The queue manager interaction is normally handled by a single
+procedure, 
+\linebreak
+\verb|channel_control|, which manages the session with the
+QMGR and calls the appropriate routines on receipt of ROS operations.
+
+\begin{quote}\index{channel\_control}\begin{verbatim}
+int channel_control (argc, argv, initfnx, 
+                     procfnx, endfnx)
+int    argc;
+char   **argv;
+IFP    initfnx;
+struct type_Qmgr_DeliveryStatus   *(*procfnx)();
+IFP    endfnx;
+\end{verbatim}\end{quote}
+
+The arguments are as follows:
+\begin{describe}
+\item[\verb|argc|/\verb|argv|:]	The argument count and vector, normally
+copied from the \verb|main| procedure. These are used to recapture the
+state of the association as outbound channels are normally run under
+the \man pptsapd (8) daemon.
+
+\item[\verb|initfnx|:]	An initialisation function. This is called to
+initialise the channel and inform it of its name.
+
+\item[\verb|procfnx|:]	A function called for each QMGR process
+message operation.
+
+\item[\verb|endfnx|:] A function called when the session with the QMGR
+is terminated. The constant \verb|NULLIFP| may be used if this function
+is not required.
+\end{describe}
+The \verb|channel_control| function invokes its own error handlers
+and does not normally return.
+
+
+The two functions \verb|initfnx| and \verb|procfnx| shown above are the key to the channels
+operation. The initialisation function should be defined in the
+following way:
+\begin{quote}\begin{verbatim}
+int   initfnx (arg)
+struct type_Qmgr_Channel *arg;
+\end{verbatim}\end{quote}
+
+The function should then decide whether the given channel argument is
+sensible for this channel and return one of the constants \verb|OK| or
+\verb|NOTOK|. This function is normally only called once by the QMGR,
+but in cases where the same program can run as a number of channels it
+may be called subsequently to reinitialise the channel to a different
+mode of operation.
+
+The process function is the one that does the real work of the
+channel. It should be defined like this:
+\begin{quote}\begin{verbatim}
+struct type_Qmgr_DeliveryStatus *processmessage (arg)
+struct type_Qmgr_ProcMsg *arg;
+\end{verbatim}\end{quote}
+The function should then attempt to process the given message for the
+given recipients. This usually involves first reading the address
+control file given as part of the structure passed.
+
+When the processing of the message has finished, the function should
+return a pointer to a list of recipient numbers together with a status
+field. This structure is the \verb|type_Qmgr_DeliveryStatus|
+structure. This specifies for each recipient whether the operation was
+a success or failure. The status values are:
+\begin{describe}
+\item[\verb|int\_Qmgr\_status\_success|:]\index{status\_success}
+The operation was successful, the next processing stage can be
+considered.
+
+\item[\verb|int\_Qmgr\_status\_negativeDR|:]\index{status\_negativeDR}
+The message has failed, and a delivery report {\em must} be written.
+
+\item[\verb|int\_Qmgr\_status\_positiveDR|:]
+\index{status\_positiveDR}
+The message has succeeded, and a confirmation is required. This {\em
+must} be written out.
+
+\item[\verb|int\_Qmgr\_status\_successSharedDR|:]
+\index{status\_successSharedDR}
+The message has suceeded and a delivery report is to be sent. However,
+the delivery report will be sent as the result of processing another
+recipient.
+
+\item[\verb|int\_Qmgr\_status\_failureSharedDR|:]
+\index{status\_failureSharedDR}
+The message has failed, and a delivery report should be sent for
+this recipient, but this will be sent as the result of another
+recipients actions.
+
+\item[\verb|int\_Qmgr\_status\_messageFailure|:]
+\index{status\_messageFailure}
+The message has temporarily failed; other messages on the same channel
+may succeed and this message may succeed later at a second attempt.
+
+\item[\verb|int\_Qmgr\_status\_mtaFailure|:]
+\index{status\_mtaFailure}
+The remote MTA is not responding: the attempt should be retried at a
+later time. Further messages on this channel to this MTA should not be
+considered at this attempt.
+
+\item[\verb|int\_Qmgr\_status\_mtaAndMessageFailure|:]
+\index{status\_mtaAndMessageFailure}
+This is an indication that there was a failure whilst transferring  the
+message to the MTA. This channel should be attempted again in the near
+future.
+\end{describe}
+
+To aid in setting these values, a set of support routines is provided
+in the library. These routines all update the global variable
+\verb|deliverystate| which is suitable as a return value for the
+process function. Note, however, that the value of
+\verb|int_Qmgr_status_permanentFailure| is ``sticky''; this value may
+be set, but once set cannot be overwritten by these routines. This is
+because normally when an address is marked with this status, a
+delivery report is written out and the message is updated accordingly
+(see Section~\ref{set:dr} for routines to write out delivery reports).
+To  set the status  then to something else would confuse the queue
+manager. The routines are as follows:
+
+\begin{quote}\index{delivery\_init}\begin{verbatim}
+struct type_Qmgr_DeliveryStatus *delivery_init (users)
+struct type_Qmgr_UserList *users;
+\end{verbatim}\end{quote}
+
+This routine initialises the structure. It does by allocating an
+element for each of the users passed in the argument. The single
+parameter is the list of users passed over by the QMGR.
+
+\begin{quote}\index{delivery\_set}\begin{verbatim}
+struct type_Qmgr_DeliveryStatus 
+       *delivery_setstate (rno, val, reason)
+int  rno, val;
+char *reason;
+\end{verbatim}\end{quote}
+
+This routine sets the value of the given recipient number to the
+indicated value in the global structure (with the above proviso). It
+also includes a string indicating the reason for failure, if failure
+occurred. This string is passed back to the QMGR for display by
+the MTAconsole. It should be set to the constant \verb|NULLCP|
+if the recipient was handled successfully or no diagnostic reason is available.
+
+\begin{quote}\index{delivery\_setall}\begin{verbatim}
+struct type_Qmgr_DeliveryStatus 
+       *delivery_setallstate (val, reason)
+int  val;
+char *reason;
+\end{verbatim}\end{quote}
+
+This routine sets all users' status to the given value. This is useful
+when a connection cannot be established, for instance, and all recipients
+must be put in the same state (again, the above proviso about delivery
+reports holds). The reason field is the same as above.
+
+Occasionally it may occur that a permanent failure is received but it
+is not possible to write a delivery report (e.g., a full disk). In this
+case the address file should not be updated and the DR status should
+be set to message failure (the next retry should also give a DR and
+then hopefully a report can be written). To aid in resetting these
+variables the following procedure is useful.
+
+\begin{quote}\index{delivery\_resetDRs}\begin{verbatim}
+struct type_Qmgr_DeliveryStatus
+       *delivery_resetDRs (val)
+int     val;
+\end{verbatim}\end{quote}
+
+The argument is the state to set the DR values to (nearly always
+\linebreak
+\verb|int_Qmgr_Status_messageFailure|).
+
+
+The termination function, if used, should be defined as follows.
+\begin{quote}\begin{verbatim}
+int endfuction ()
+\end{verbatim}\end{quote}
+
+This routine is used to close down anything required before exiting
+the program. The calling routine will execute this function before sending
+the final disconnect to the QMGR and exiting.
+
+
+\subsubsection{Address File Routines}
+
+The address file reading is usually the first operation a channel does
+on receiving the instruction to process a message. This is usually
+achieved by first building up the name of the message file to be read
+in from the queue id, and then invoking the procedure \verb|rd_msg|.
+\begin{quote}\index{rd\_msg}\begin{verbatim}
+int rd_msg (msg, prm, qp, ad_sndr, ad_recip, ad_count)
+char  *msg;
+struct prm *prm;
+Q_struct *qp;
+ADDR  **ad_sndr,
+      **ad_recip;
+int   *ad_count;
+\end{verbatim}\end{quote}
+The parameters are:
+\begin{describe}
+\item[\verb|msg|:] The address control file.
+
+\item[\verb|prm|:] The message parameters.
+
+\item[\verb|qp|:] The message queue structure.
+
+\item[\verb|ad\_sndr|:] the originator of the message.
+
+\item[\verb|ad\_recip|:] The list of recipients of the message.
+
+\item[\verb|ad\_count|:] A count of the number of recipient addresses.
+\end{describe}
+
+The routine returns a status to indicate success or failure. As part
+of its operation it locks the address file to prevent simultaneous
+access by other channels.
+
+When the message has been processed, the lock {\em must} be released
+by calling the function \verb|rd_end|.
+\begin{quote}\index{rd\_end}\begin{verbatim}
+int rd_end ();
+\end{verbatim}\end{quote}
+
+If the messages status changes in some manner, the address file must
+be updated. This is achieved by one of the following functions.
+\begin{quote}\index{wr\_ad\_status}\index{wr\_ad\_rcntno}\begin{verbatim}
+int wr_ad_status (ap, type}
+ADDR *ap;
+int type;
+
+int wr_ad_rcntno (ap, rcnt)
+ADDR *ap;
+int  rcnt;
+\end{verbatim}\end{quote}
+
+The \verb|wr_ad_status| routine is used to update the status of the address.
+This can take one of the following values.
+\[\begin{tabular}{|l|l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value}&
+		\multicolumn{1}{|c|}{\bf Meaning}\\
+\hline
+	\tt AD\_STAT\_PEND&	The address is pending\\
+	\tt AD\_STAT\_DONE&	The address has been finished with\\
+\hline
+\end{tabular}\]
+
+
+The \verb|wr_ad_rcntno| is used to update the reformatter count variable.
+
+\subsubsection{Message files}
+
+There are a number of routines to allow a channel to iterate through
+the set of message files to deliver. First in this set is a function
+to allow location of the relevant directory. This function maps a
+given queue id as given by the QMGR into a directory basename with the
+message files in relating to a given address. It is
+used as follows:
+\begin{quote}\index{qid2dir}\begin{verbatim}
+int qid2dir (qid, ap, exists, cpp)
+char   *qid;
+ADDR   *ap;
+int    exists;
+char   **cpp;
+\end{verbatim}\end{quote}
+The arguments to this are
+\begin{describe}
+\item[\verb|qid|:]	A character string containing the queue identifier.
+
+\item[\verb|ap|:]	The address that is being processed.
+
+\item[\verb|exists|:]	A flag, this should be \verb|TRUE| if the directory
+should exist, and \verb|FALSE| if it doesn't matter.
+
+\item[\verb|cpp|:]	A character pointer that is assigned the
+resulting directory name.
+\end{describe}
+
+The function will return \verb|OK| on successful completion and
+\verb|NOTOK| on failure.
+
+The next operation is typically to visit each of the message files in
+turn. This is handled by the following routines.
+
+\begin{quote}\index{msg\_rinit}\begin{verbatim}
+int msg_rinit (dir)
+char *dir;
+\end{verbatim}\end{quote}
+
+The argument here is:
+\begin{describe}
+\item[\verb|dir|:]	The directory base of the message (usually
+obtained from a call to \verb|qid2dir|).
+\end{describe}
+
+This function returns the usual \verb|OK|/\verb|NOTOK| status.
+
+Following this, the function \verb|msg_rfile| is called repeatedly
+until it returns \verb|RP_DONE| to obtain each of the files composing
+the message.
+\begin{quote}\index{msg\_rfile}\begin{verbatim}
+int msg_rfile (buf)
+char *buf;
+\end{verbatim}\end{quote}
+The argument is:
+\begin{describe}
+\item[\verb|buf|:] A pointer to a character buffer (of size
+\verb|FILNSIZE|) which is filled in with the file name if the call succeeds..
+\end{describe}
+
+Finally, when all files have been processed, or if the operation is to
+be aborted, the function \verb|msg_rend| is called:
+\begin{quote}\index{msg\_rend}\begin{verbatim}
+int msg_rend ()
+\end{verbatim}\end{quote}
+
+\subsection {Delivery Notifications}\label{set:dr}
+
+Delivery reports should be written out by a channel when it is clear
+that the message cannot be delivered or if the message has been
+delivered and confirmation is requested. The routine
+\verb|set_1dr| is then used to set the appropriate status in the
+address structure:
+
+\begin{quote}\index{set\_1dr}\begin{verbatim}
+int  set_1dr (qp, ad_no, msg, reason, diag, str)
+Q_struct *qp;
+int      ad_no;
+char 	 *msg;
+int      reason;
+int      diag;
+char     *str;
+\end{verbatim}\end{quote}
+
+The arguments to this function are as follows:
+\begin{describe}
+\item[\verb|qp|:]	A pointer to a queue structure representing
+the message. The queue structure should have the address components
+filled in (this is normally the case).
+
+\item[\verb|ad\_no|:]	The address number that this report is for.
+
+\item[\verb|msg|:] The queue name of the message being processed.
+
+\item[\verb|reason|:]	A reason code for the message failure. This
+should be chosen from one of those in Table~\ref{tab:reason} on
+page~\pageref{tab:reason}.
+
+\item[\verb|diag|:] A diagnostic code for the message failure.
+This is supplementary information to the reason code. It should be one
+of those values given in the file \file{dr.h}. There are a large
+number of these available.
+
+\item[\verb|str|:]	A character string which records the reason
+for the failure. This should be something that describes the failure.
+This field should always be filled in with something appropriate.
+
+\end{describe}
+
+\tagtable{reason}{Reason Codes}{tab:reason}
+
+When calling this function the routine should return to the QMGR one
+of the following variables:
+\[\begin{tabular}{|l | p{0.6\textwidth}|}
+\hline
+	\multicolumn{1}{|c|}{\bf Qmgr code} &
+		\multicolumn{1}{|c|}{\bf When Applicable} \\
+\hline
+	\tt positiveDR &	For the first recipeint with a
+				positive delivery report  \\
+	\tt successSharedDR&	For subsequent recipients with
+				positive delivery reports\\
+	\tt negativeDR &	For the first recipient with a
+				negative delivery report \\
+	\tt failureSharedDR&	For subsequent recipients with
+				negative delivery reports \\
+\hline
+\end{tabular}\]
+
+Once the recipients have been marked with \verb|set_1dr|, the last
+step necessary is to write out the actual delivery report by calling
+\verb|wr_q2dr|. This is defined as follows:
+
+\begin{quote}\index{wr\_q2dr}\begin{verbatim}
+int wr_q2dr (qp, msgid)
+Q_struct *qp;
+char *msgid;
+\end{verbatim}\end{quote}
+
+The arguments to this function are:
+\begin{describe}
+\item[\verb|qp|:]	A pointer to the queue structure representing
+the message with the address components filled in.
+
+\item[\verb|msgid|:] The queue id for this message.
+\end{describe}
+
+This function will then write out the reports and update the queue
+entries with their new status.
+
+\subsection{Successful Delivery}
+
+A successful delivery is recorded in the stat log. This is done
+by the routine \verb|wr_q2dr| if a positive delivery report is
+required. Alterntively, if no report is required, the delivery is
+noted with the function \verb|wr_stat| which is called as follows.
+
+\begin{quote}\index{wr\_stat}\begin{verbatim}
+int wr_stat (ap, qp, msg, size)
+ADDR *ap;
+Q_struct *qp;
+char *msg;
+int size;
+\end{verbatim}\end{quote}
+The parameters to this are:
+\begin{itemize}
+\item[\verb|ap|:] The address that has been successfully delivered.
+\item[\verb|qp|:] The queue structure for this message.
+\item[\verb|msg|:] The queue name for this message.
+\item[\verb|size|:] The size in bytes of the message delivered. This
+may be different from the size in the queue file.
+\end{itemize}
+
+When a message has been delivered successfully, it is necessary to
+check several things. These are:
+\begin{enumerate}
+\item	If a positive delivery report was requested, one should be
+composed with \verb|set_1dr| and \verb|wr_q2dr|.
+\item	Otherwise, the status should be updated to \verb|AD_DONE|
+with a call to 
+\linebreak
+\verb|wr_ad_status|.
+\item	The QMGR return status should be updated to either
+\linebreak
+\verb|int_Qmgr_Status_success| or \verb|int_Qmgr_Status_positiveDR|.
+\item	If \verb|wr_q2dr| is not necessary (there was no request for
+positive delivery reports). A call should be made to \verb|wr_stat| to
+indicate in the statistics that successful delivery has been achieved.
+\end{enumerate}
+
+\subsection {Verification and Trust}
+
+Channels are trusted processes, and as such should respect this trust.
+As far as possible they should check that the data they are being
+given is reasonable. This includes the following:
+\begin{itemize}
+\item	That the channel name and type is reasonable for this channel.
+
+\item	That the address requested to be processed exists and is ready
+to be processed (e.g., it has passed through all reformatters).
+
+\item	That the type of address is correct for this type of channel
+(e.g., RFC~822 for smtp or X.400 for X.400 channels).
+
+\item	That the message is not locked by another channel.
+
+\item 	That the channel is the same as the channel given in the
+address structure.
+\end{itemize}
+
+For common outbound channels and filters these checks are encapsulated
+in the functions, \verb|chan_acheck|\index{chan\_acheck},
+\verb|lchan_acheck|\index{lchan\_acheck} and
+\verb|chan_dcheck|\index{chan\_dcheck}.
+
+These calls are similar in function; one checks the address is okay
+to process for filters and outbound channels; the second is for local
+channels; and the last is for channels that can handle delivery reports.
+They are called in the following way:
+
+\begin{quote}\small\begin{verbatim}
+int chan_acheck (ap, mychan, first, mta)
+ADDR *ap;
+CHAN *mychan;
+int first,
+char **mta;
+\end{verbatim}\end{quote}
+
+The arguments are as follows:
+\begin{describe}
+\item[\verb|ap|:] The address to be checked.
+\item[\verb|mychan|:] The channel that is doing this checking.
+\item[\verb|first|:] If this is the first address to be checked. This
+is used to determine if the mta parameter can be changed.
+\item[\verb|mta|:] The MTA this should connect to. If the constant
+\verb|NULLVP| is used, the mta parameter will not be filled in or
+checked. If the mta is the address of a pointer with \verb|NULL|
+contents then it will be updated if required. If the mta is a pointer
+to a string, then it is checked that the mta does not change unless
+the \verb|first| flag is set. This ensures for channels that batch
+messages to the same host, that all addresses in this message are
+destined for the same MTA.
+\end{describe}
+It returns either the constant \verb|OK| or \verb|NOTOK|. If
+\verb|NOTOK| then the \verb|deliverystate| is updated in a suitable way.
+If \verb|OK| then the address should be processed, and the
+\verb|deliverystate| updated accordingly.
+
+The function \verb|lchan_acheck| is almost equivalent, except in place
+of the \verb|mta| parameter is a user.
+
+\begin{quote}\small\begin{verbatim}
+int lchan_acheck (ap, mychan, first, user)
+ADDR *ap;
+CHAN *mychan;
+int first,
+char **user;
+\end{verbatim}\end{quote}
+
+The last function is similar but suitable for channels that can handle
+delivery reports (such as X.400).
+
+\begin{quote}\small\begin{verbatim}
+int dchan_acheck (ap, asp, mychan, first, mta)
+ADDR *ap, *asp;
+CHAN *thechan;
+int first;
+char **mta;
+\end{verbatim}\end{quote}
+
+The only difference for this call is that an address structure
+referencing the originator must be passed in as the second parameter.
+
+\section {Example Usage}
+
+\subsection {Outbound Channels}
+
+Presented here is a skeleton of an outbound channel. This structure is
+not required, but is a common way of achieving the results.
+
+\tagrindfile{outbound}{Example Outbound Channel}{example:outbound}
+
+\subsection{Address Parsing}
+
+Occasionally it is necessary for a channel to parse or manipulate an
+address. Most channels can get away without needing this however.
+Some of the basic parsing routines are given here.
+
+The basic interface to parsing is \verb|ad_parse|. This takes an
+address and attempts to parse it according to the given type and
+domain ordering. It is called as:
+
+\begin{quote}\index{ad\_parse}\begin{verbatim}
+int ad_parse (ap, rp, order)
+ADDR	*ap;
+RP_Buf *rp;
+int order;
+\end{verbatim}\end{quote}
+
+The parameters are:
+\begin{describe}
+\item[\verb|ap|:] The address structure with the address to be parsed
+in the \verb|ad_value| structure member. The address type should be
+set in \verb|ad_type|.
+\item[\verb|rp|:] A reply structure which is updated with the results
+of the parsing.
+\item[\verb|order|:] The expected order of the domains. This is one of
+the following:
+\[\begin{tabular}{|l|l|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value}&
+		\multicolumn{1}{|c|}{\bf Meaning}\\
+\hline
+	\tt CH\_USA\_ONLY&	US order domain only\\
+	\tt CH\_USA\_PREF&	US order prefered \\
+	\tt CH\_UK\_ONLY&	UK order domains only\\
+	\tt CH\_UK\_PREF&	UK order prefered \\
+\hline
+\end{tabular}\]
+This is usually input from the channel structure.
+\end{describe}
+
+This routine returns an \verb|RP| code which can be checked with
+\verb|rp_isgood| to see if the address was parsed. If it fails, a
+suitable error will be written in the \verb|RP_Buf| structure.
+
+When delivering to local addresses it is often necessary to reduce a
+global address down to a user of the system. The routine
+\verb|ad_getlocal| can be of use here. This routine takes an address
+and returns just the local part of it if any, else \verb|NULLCP|. It
+is called as follows:
+
+\begin{quote}\index{ad\_getlocal}\begin{verbatim}
+char *ad_getlocal (addr, type, resp)
+char *addr;
+int type;
+int resp;
+\end{verbatim}\end{quote}
+
+The arguments are:
+\begin{describe}
+\item[\verb|addr|:] A string-encoded form of the address; either an
+RFC~822 address or an RFC~1148 encoded X.400 address.
+
+\item[\verb|type|:] The type of address, either \verb|AD_X400_type| or
+\verb|AD_822_type|.
+
+\item[\verb|resp|:] If the address is a recipient, this value should
+be \verb|1|, else \verb|0|.
+\end{describe}
+
+\subsection {Local Pickup}
+
+This style of channel has not yet been written.
+
+\subsection {TWA Channel}
+
+%Show how this can be used as ``pull only'', and as full TWA in conjunction
+%with submission.   Need to have both QMGR and server initiated approach.
+This style of channel has not yet been written.
+
+\subsection {Delivery Reports}
+
+A typical interface to the delivery report functions is shown in 
+Figure~\ref{examp:dr}.
+
+\tagrindfile{delv-rep}{Example Delivery Report Generation}{examp:dr}
+
+\section {Formatters and Converters}
+
+
+Formatters and converters can run in two ways. Generally the simple
+filters work on single files, the complex filters work on several
+files at once. The majority of filters should be of the simple kind.
+
+\subsection{Simple Converters}
+
+The simple converters are programs that read from the standard input,
+do some formatting, and write the result to the standard output.
+This type of formatter is invoked by the filtercontrol program,
+\verb|fcontrol|\index{fcontrol}.
+
+These simple filters should return a suitable exit status to confirm
+that the conversion completed successfully. They follow the standard
+\unix/ tradition of returning \verb|0| on success and anything else on
+failure. 
+
+These filters may be anything from simple shell/awk/sed scripts to
+more complex {\em C} programs.
+
+\subsection{Complex Filters}
+
+More complex formatters are necessary if the formatting needs to
+convert more than one file. This is the case for formatters that change
+the directory structure, or combine several files into one. These
+formatters require more work, but are similar to the channel programs
+in their operation. The QMGR interface is in fact identical.
+The only real difference is in the \verb|qid2dir|\index{qid2dir}
+routine used to locate the directory. The starting directory is found
+using the normal \verb|qid2dir| routine. The destination directory is
+found using the same routine, but first incrementing the formatter
+count in the address structure, and then calling the routine with the
+flag set to \verb|FALSE|. The formatter should however place its
+output in a temporary directory which will then be renamed to the
+destination directory if the transformation is successful. This allows
+for failure at any point in the reformatting.
+
+%Usually can just do filters --- describe
+
+%Notes on model for restructuring
+
+% \subsection{Example}
+
+% to be written.

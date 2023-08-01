@@ -1,0 +1,1616 @@
+\chapter {PP Tables}\label{sect:tables}
+
+This chapter describes the purpose and syntax of the various tables
+used by PP.
+There are five basic tables used by PP, the \file{aliases} table, the
+\file{users} table, the \file{domain} table, the \file{channel}
+table and the \file{or} table.  How these are combined and used to
+deliver and route messages is described below.
+
+There are also a set of tables containing authorisation information
+and a family of tables that provide mappings between X.400 O/R names
+and RFC~822 domain names.  Specific channels may also have their own
+tables containing the information they require.
+
+\section{Basic Operation of the Tables}
+
+When a message arrives, \pgm{submit} uses the \file{domain},
+\file{or}, \file{users}, \file{aliases} and \file{channel} tables to
+identify delivery routes for the addresses in the message.
+The \file{or2rfc}, \file{rfc2or} and \file{rfc1148gate} tables are
+used to convert between X.400 style addresses and RFC-822 style 
+addresses and vice versa.
+
+The parsing of an address proceeds as follows:
+
+\begin{itemize}
+
+\item	An address arrives in one particular form -- either an X.400
+style address or an RFC-822 style address.
+
+\item	The address is normalised via the appropriate table -- the
+\file{or} table for X.400 style addresses, the \file{domain} table for
+RFC-822 style addresses.
+
+\item	There are three possible outcomes of the normalisation
+process.
+
+\begin{enumerate}
+\item	The address is unrecognised
+\item	The address is recognised as a remote address.
+\item	The address is recognised as a local address.
+\end{enumerate}
+
+\item 	If the address is recognised as a remote address, routing
+information to the remote site is accessed via the \file{channel}
+table.
+
+\item	If the address is recognised as local, the local address is
+first looked up in the \file{aliases} table. 
+
+If an entry is found in
+this table, the parsing process recurses with the value found in the
+\file{aliases} table. 
+
+If no entry is found in the \file{aliases} table, routing information
+for the local address is accessed via the \file{users} table.
+
+\item	Having done the normalisation of the address and accessed the
+routing information for that address, the address is converted into
+the other style of address (i.e. X.400 style addresses are converted to
+RFC-822 style and vice versa) This conversion is done according to
+RFC-1148 and use the \file{or2rfc}, \file{rfc2or}, and
+\file{rfc1148gate} tables.
+
+Note both styles of addresses are kept by PP. Also this conversion
+between styles is always possible.
+
+\item	At this stage PP has parsed one style of address. If this
+parsing has resulting in routing information for that address, the
+address is valid. However the address
+still has to pass the authorisation stage before \pgm{submit} accepts it.
+
+If the parsing does not result in routing information, the address
+is not valid in that form. PP then switches to the other style of
+address and attempts to parse that form.
+
+There is a failure point. This occurs when PP decides all avenues and
+styles of addresses have been followed.
+\end{itemize}
+
+The tool \pgm{ckadr} can be used to check the action of parsing on
+various address.
+
+\section	{The General Syntax of Table Entries.}
+
+In general, entries in the tables are in the form:
+\begin{quote}\small\begin{verbatim}
+<key> ":" <value>
+\end{verbatim}\end{quote}
+The only special character is \verb|:| which if it appears on the LHS
+must be preceded by a backslash ``$\backslash$'' to escape it. All other
+characters are copied verbatim. However, some tables undergo further
+processing and may need other escape sequences.
+
+The purposes and details of the various tables now follow.
+
+\section {The Aliases Table}\index{tables, alias}
+
+The \file{aliases} table governs the handling of aliases for
+user names. It is used for several reasons. These include:
+\begin{itemize}
+\item	Mapping non-users to usernames. (e.g., ``postmaster'' to some 
+``user'').
+\item	Redirecting users who have moved (e.g., ``fred'' to ``fred@foo.edu'').
+\item	Rewriting users addresses (e.g., ``jpo'' to ``j.onions'').
+\item	Mapping aliases. (e.g., ``list-request'' to ``j.onions'').
+\end{itemize}
+Entries in this table are constructed as follows:
+
+\begin{quote}\begin{verbatim}
+<key> ":" <type>  <value> <qualifier>
+\end{verbatim}\end{quote}
+
+The \verb+type+
+describes the user name or address.  This may be one of:
+
+\begin{describe}
+\item[\verb+synonym+:]
+a new address, this name replaces the original
+value.
+\item[\verb+alias+:]
+a new address is given, but in some cases this name does {\em not}
+replace the original value. Aliases are not expanded for originators
+of messages whereas synonyms are. 
+Aliases are also not expanded in the normalisation of addresses in
+message headers.
+Aliases, when expanded, add a redirect history element to the appropriate
+recipient of the message.
+Note this happens in the envelope but need not happen in the header.
+\end{describe}
+
+The \verb|<value>| is an address. It can be local or remote.
+
+The \verb|<qualifier>| gives the interpretation of the value. By
+default this is assumed to be a local user. However, full addresses can
+be specified with the appropriate qualifier. These are:
+
+\begin{describe} 
+\item[\verb+822+:]
+a remote RFC~822 user address is specified.
+\item[\verb+x400+:]
+a remote X400 user address is specified.
+
+\item[\verb|external|:] If this qualifier is present the name will not
+be lookup up again in the \file{aliases} file. This can be used for
+complex mappings.
+This qualifier is explained by example in Section~\ref{sect:multihub}
+\end{describe}
+
+The format is best illustrated by a sample extract of the table as
+shown in Figure~\ref{example:alias}.
+
+\tagrind[hbtp]{alias}{Example of Alias Table}{example:alias}
+
+The table includes an entry for a local alias \verb+mailgroup-request+.
+The value \verb+Irene.Hassell+ is used as a key for a further search
+in the \file{aliases} table,
+but will not replace the alias in the message header; 
+if no match is
+found, and since the entry is of type \verb|alias| with no qualifiers,
+the address is 
+assumed to be a local one and is used for accessing the \file{user}
+table. Also, if a local submission arrives from
+\verb|mailgroup-request| then checking and authorisation will be done
+on the basis of \verb|mailgroup-request| rather than
+\verb|Irene.Hassell|.
+
+The next entries indicate that \verb+a.dacruz+ and \verb+alina+ are
+both synonyms for \verb+Alina.DaCruz+.  Here, the user's address will
+be converted to Alina.DaCruz, and this value will be used in future
+table searches.
+
+An entry is given for a remote RFC~822 user, \verb|jpo|. The value of
+\linebreak
+\verb|jpo@xtel.co.uk| is parsed as an RFC~822
+address.
+
+Then follows an entry for a remote X400 user, \verb|pc|. The value
+\begin{quote}\small\begin{verbatim}
+"/I=P/S=Cowen/O=XTel/PRMD=X-Tel Services/ADMD= /c=gb/"
+\end{verbatim}\end{quote}
+would be parsed as X.400 address.  The quotes
+({\tt "}) are needed as the entry contains a space which is a
+field separator.
+
+Finally, the entry \verb|f.bloggs| is an external synonym. The address
+\verb|f.bloggs| will be replaced by \verb|f.bloggs@admin.foo.bar|
+for the originating address and further lookups of the \file{aliases}
+table will be disabled.
+It will not be replaced in recipient addresses to which delivery is being
+attempted.
+It may or may not be replaced for addresses in message headers
+depending on the tailoring.
+This is explained in greater detail in
+Section~\ref{sect:multihub}.
+
+\section{The Users Table}\index{table, users}
+
+The \file{users} table determines the local delivery channel for a
+particular local user.  It is formatted in the form:
+
+\begin{quote}\begin{verbatim}
+<username> ":" <channel> [ <mta> ] 
+               ["," <channel> [ <mta> ] ...]
+\end{verbatim}\end{quote}
+
+\begin{describe}
+\item[\verb+Channel+:] specifies the name of a local delivery channel
+on \verb+mta+.
+
+\item[\verb+Mta+:] is the local machine on which the mailbox resides. 
+If no MTA is indicated, the channel may be used for delivery by any
+MTA using these tables. If an MTA is present and is not the local
+machine (\verb|loc_dom_mta|) then the message will be sent to that MTA
+by an appropriate channel and the channel parameter is effectively
+ignored - the normal routing tables will be used to reach that host.
+This should only be used for internal shuffling between several MTAs
+that are responsible for one domain.
+
+\end{describe}
+
+A user can have several channels for local delivery.
+For example, in Figure~\ref{example:users} \verb+John.Taylor+ can have
+his mail delivered either by the \pgm{822-local} channel or by the
+\pgm{slocal} channel. 
+Which of these two channels is actually used for delivery depends on
+the format of the message being delivered.
+This allows a user to have, for instance, X.400 format mail delivered
+by one channel, and RFC~822 mail by another channel.
+
+\tagrind[hbtp]{users}{Example of Users Table}{example:users}
+
+Figure~\ref{example:users} illustrates how the various local users
+will receive mail 
+and on which machines their mailboxes reside.
+An entry for a distribution list is also shown, and the entry for
+\verb+info-server+ shows the \pgm{shell} channel rather than a local
+delivery channel.
+
+\section {The Domain Table}\index{table, domain}\label{table:domain}
+
+The \file{domain} table is used by \pgm{submit} 
+\begin{itemize}
+\item to derive a fully-qualified
+domain from any aliases or short-form names;
+\item and to obtain a pointer to
+the routing information for that domain.
+\end{itemize}
+See
+Section~\ref{tablebuild:domain} on page~\pageref{tablebuild:domain} for a
+description of how to go about constructing this table. 
+
+Entries in the domain table are encoded in the form:
+
+\begin{quote}\small\begin{verbatim}
+<LHS> ":" <qualified-entry> {"|" <qualified-entry>}
+<qualified-entry> ::= <key> ["=" <value>] {[<key>["="<value>]]}
+\end{verbatim}\end{quote}
+
+\subsection*{Left Hand Side (LHS) Constructions}
+
+\verb+LHS+ has two possible constructions:
+\begin{describe}
+
+\item[\verb+dmn+]
+This construct is used for exact matches. No subdomains are allowed in
+this entry. This effectively sets \verb+min=0+ and \verb+max=0+ and
+cannot be altered.
+
+\item[\verb+*.dmn+]
+This construct is used to specify partial domain matches.
+Unless altered by the \verb+min+ and \verb+max+ keys described later,
+constructs of this form will match domains with at least one
+subdomain (i.e., \verb+min=1+ and \verb+max=*+).
+
+Note that an entry of \verb+*+ with no domain components specified at
+all, represents the \verb+default domain+.  If the \verb+default
+domain+ is present in the \file{domain} table, then any top level
+domains which are not matched in the table, are matched by this
+\verb+default domain+ entry.
+
+\end{describe}
+
+\subsection*{Qualified Entries}
+
+Each qualified entry may have several \verb+key=value+ components.
+The keys have two uses: to provide the information associated with the
+entry; and secondly to aid in matching the LHS.
+The possible types of \verb+key+ and what their values represent are
+as follows:
+\begin{describe}
+
+\item[\protect{\verb|max=<number>|}:]
+This specifies the maximum number of subdomains for the entry.
+A value of \verb+*+ indicates that the maximum number of subdomains
+should not be used when testing for a match.
+Effectively setting the maximum number of subdomains to infinity
+This is the default value for \verb+max+ on non-exact match entries.
+
+\item[\protect{\verb|min=<number>|}:]
+This specifies the minimum number of subdomains for the entry.
+As with the \verb+max+ value above, a value of \verb+*+ indicates that
+the minimum restriction should not be used when testing for a match.
+Effectively \verb|min=0|. The default value for \verb+min+ is \verb+1+.
+
+\item[\protect{\verb+norm=<dmn-name>+}:]
+This identifies the fully-qualified domain name.
+If \verb+<dmn-name>+ isn't specified, the fully-qualified domain name
+is taken as \verb+LHS+ (without the \verb+*.+ wildcard prefix if present).
+
+\item[\protect{\verb+mta=<chan-ref>+}:]
+This provides a pointer to where the routing information for this
+domain is stored the \file{channel} table.
+If \verb+<chan-ref>+ isn't specified, the pointer is taken as
+\verb+LHS+ (without the \verb+*.+ wildcard prefix).
+
+\item[\protect{\verb|norm+mta=<dmn-name>|}:]
+This key is a combination of the \verb+mta+ and
+\verb+norm+ keys described above (i.e. \verb|norm+mta=<dmn-name>| is
+the same as \verb|norm=<dmn-name> mta=<dmn-name>|).
+
+\item[\protect{\verb|mta+norm=<dmn-name>|}:]
+This key is identical to the \verb|norm+mta| key described above.
+
+\item[\protect{\verb+synonym=<dmn-name>+}:]
+This identifies a synonym. The \verb|LHS| key is replaced by
+\verb+<dmn-name>+ and parsing continues by looking for the new
+\verb|LHS| in the domain table.
+
+If the \verb+<dmn-name>+ is prefixed with the wildcard symbol
+\verb+*.+, the new \verb|LHS| is constructed from \verb+<dmn-name>+
+and the subdomains that a wildcard represents in the original
+\verb+LHS+. For example a domain of \verb|foo.bar.zz| matching an
+entry of \verb|*.zz:synonym=yy| would result in a table lookup of
+\verb|foo.bar.yy|. 
+Note that this is only applicable to partial \verb+LHS+ entries.
+
+\item[\protect{\verb+local=<subtbl-name>+}:]
+This indicates that \verb|LHS| is local. Any host that needs to be
+recognised as local should have this keyword - this includes
+{\verb|loc_dom_site|}. With no {\verb|<subtbl-name>|}, this indicates
+that \verb|LHS| is a local reference whose information is contained in
+the default tables \file{aliases} and \file{users}. With a
+\verb|<subtbl-name>| specified, this indicates separate local alias
+and user tables.  This feature is used when one MTA is supporting
+multiple local organisations, each with its own user and alias tables.
+This is described more fully in Section~\ref{sect:multihub}.
+
+\item[\verb+valid+:]
+This is shorthand for the entry \verb+norm=LHS+
+e.g \verb+*.fr:valid+ is the
+same as \verb+*.fr:norm=fr+.
+It implies that the domain is known but not routable directly. This
+may be used to indicate the domain is valid and may be used for
+RFC~1148 mappings. It may also be used to stop use of the default
+route. If a top level domain has an entry in the \file{domain} table,
+it will not be routed via the default route.
+\end{describe}
+
+
+\subsection*{Domain table lookup}
+
+The right hand side of a \file{domain} table entry is a sequence of
+qualified entries.
+The qualification is based upon the number of subdomains below the key
+being looked up (i.e. the number of domain components the wildcard
+prefix \verb+*.+ represents).
+
+For example, take the domain ``1.2.3.xtel.co.uk''.
+When attempting to look this domain up in the table, several different
+keys may be used in the following order:
+\begin{itemize}
+\item ``1.2.3.xtel.co.uk'' the exact match,
+\item ``*.1.2.3.xtel.co.uk'' where the number of subdomains is zero,
+\item ``*.2.3.xtel.co.uk'' where the number of subdomains is one (i.e.
+\verb|*| represents ``1'')
+\item ``*.3.xtel.co.uk'' where the number of subdomains is two (\verb|*|
+represents ``1.2'') 
+\item and so on.
+\end{itemize}
+
+PP will take the qualified entries in turn and choose the first one
+whose restrictions on the number of subdomain components is met by the
+number of subdomain components actually present.
+The restrictions for an entry are set by the \verb+min+ and \verb+max+ keys.
+
+Note that all occurances of domain references in the
+\file{domain} table must be specified in US order (littleendian).
+If the appropriate flag is set, the routines accessing the
+\file{domain} table will ``do the right thing'' for UK ordering.
+
+\subsection*{Domain lookup results}
+
+As mentioned above, the \file{domain} table is used to provide two
+items:
+\begin{enumerate}
+\item	The fully-qualified domain name.
+
+If a match is found in the table then this is always provided.
+If it is not explicitly provided by the \verb+norm+ key or a
+combination containing that key, then it is implicitly provided as the
+left hand side of the entry matched (i.e. the key used to index the
+\file{domain} table)
+For example with the entry
+\begin{quote}\begin{verbatim}
+xtel.co.uk:local
+\end{verbatim}\end{quote}
+The fully-qualified name is \verb+xtel.co.uk+.
+If the left hand side is a partial domain construct, the prefix
+\verb+*.+ is omitted from the fully-qualified name.
+
+If any subdomains exist they are prepended to the fully-qualified name
+to reconstruct the full domain.
+For example with the entry
+\begin{quote}\begin{verbatim}
+*.gb:norm=uk
+\end{verbatim}\end{quote}
+and the address \verb+xtel.co.gb+, the fully-qualified name produced
+from the table would be \verb+uk+.
+After the re-addition of the subdomains, this would become
+\verb+xtel.co.uk+.
+
+\item	The pointer to the routing information.
+
+The pointer into the \file{channel} table may be omitted.
+In which case the fully-qualified domain name has been derived but no
+routing information associated with it.
+This is useful when you wish to normalise the domain in message
+headers but you do not wish to deliver mail to that domain.
+It is also of use when the route to that domain is specifically an
+x400 route and as such the pointer to the routing information is
+specified in the \file{or} table described in
+Section~\ref{sect:ortables}.
+
+\end{enumerate}
+
+\subsection*{Examples}
+
+Figure~\ref{example:domain} contains several examples entries.
+
+\tagrind[hbtp]{domain}{Example of Domain Table}{example:domain}
+
+The entries in this figure imply the following actions:
+\begin{itemize}
+
+\item The \verb|*.edu| entry will match all domain names with the most
+significant component of \verb|edu| and at least one subdomain. Thus,
+the hosts \verb|ucbarpa.berkeley.edu|, \verb|prep.ai.mit.edu| and
+\verb|foo.edu| would all be matched by this entry. However an address
+of \verb|user@edu| would not be matched.
+
+The fully-qualified domain name is constructed with the \verb+edu+
+component as the most significant component.
+
+The key \verb+nameserver+ will be used in the lookup of the channel table to
+find routing information for this domain.
+
+\item The \verb|cs.nott.ac.uk| entry will only match the exact name
+\verb|cs.nott.ac.uk|. It will not match \verb|crg.cs.nott.ac.uk| or
+\verb|admin.cs.nott.ac.uk|.
+
+The fully-qualified domain name is \verb+cs.nott.ac.uk+.
+
+The key \verb+cs.nott.ac.uk+ will be used to
+access the routing information in the \file{channel} table.
+
+\item The \verb+computer-science.nott.ac.uk+ entry will only match the
+exact name \verb+computer-science.nott.ac.uk+.  The fully-qualified
+domain name is \verb+cs.nott.ac.uk+.  This string is also used to
+access the routing information in the
+\file{channel} table.
+
+\item The \verb+*.fr+ entry will match all domains with the most
+significant component of \verb|fr| and at least one subdomain.
+So it will match \verb+sorbonne.fr+ or \verb+nice.fr+ but it will not
+match \verb+fr+ by itself.
+
+The fully-qualified domain name is constructed with the \verb+fr+
+component as the most significant component.
+
+No pointer to the routing information is specified.
+So when parsing addresses of the form \verb+nice.fr+, PP will match this
+entry which indicates the correct domain ordering.
+However with no routing information for this form of the address, PP
+will convert the address to X.400 as described in RFC 1148 and then
+attempt to find routing information from the X.400 equivalent of the
+\file{domain} table -- the \file{or} table.
+
+There is a similar mechanism in the \file{or} table.
+Using these two mechanisms in tandem, you can keep pointers to X.400 routing
+information in the \file{or} table and pointers to RFC-822 routing
+information in the \file{domain} table.
+
+As a side effect, because the top level domain \verb|fr| has been matched,
+the default route will not be considered as a possibility.
+
+\item The \verb+*.co.uk+ entry has two qualified entries.
+
+The first entry will only match the exact domain \verb+co.uk+ and
+nothing else.
+
+The second entry will match all other domains with \verb+co.uk+ as the
+two most significant components i.e \verb+xtel.co.uk+,
+\verb+bnr.co.uk+ etc.
+
+The fully qualified domain name in both cases is constructed with the
+\verb+co.uk+ as the two most significant components.
+In the first case, there are no subdomain components to add so the
+domain name is \verb+co.uk+.
+
+The pointer to the routing information differs for the two cases.
+In the first case it is \verb+co.uk+.
+In the second it is \verb+server.co.uk+.
+This enables you to route differently depending on the number of
+subdomain components.
+
+\item The \verb+*+ entry is an example use of the \verb+default
+domain+.
+It will match with anything that does not match any other rule.
+The fully qualified domain name will be the same as on input.
+The pointer to the routing information will be \verb+nameserver+.
+
+In the extreme case where you wish every domain to be routed via
+domain name server technology, this can be the only entry in the
+domain table.
+
+\[\begin{tabular}{l p{0.7\textwidth}}
+Note: & The default route should be used with care. It is tempting to
+use this as a catch all. This makes routing less efficient as every
+domain that uses this will be sent to one host, effectively passing
+the buck. It also means that users making small typo's in the top
+level domain may have their mail routed a large distance before the
+mistake is found. \\
+ & \\
+Note: & It is usually sensible to put the relevant entries for the
+local domains in the \file{domain} table, especially
+{\verb|loc_dom_site|} and {\verb|loc_dom_mta|}. If not local addresses
+will not be recognised as such. \\
+\end{tabular}\]
+
+\end{itemize}
+
+\section{The O/R Address Table}\index{tables, X.400 O/R}\label{sect:ortables}
+
+The \file{or} table provides routing and normalisation for X.400
+address in the same way the \file{domain} table does for RFC~822 addresses.
+Lines are encoded in the form: 
+
+\begin{quote}\small\begin{verbatim}
+<key> ":" <type> <value> ...
+\end{verbatim}\end{quote}
+
+In the \verb|<key>| field, the characters ``:'' and ``.'' must be
+preceded by a ``$\backslash$'' character.
+
+The \verb|<type>| and \verb|<value>| fields on the RHS are separated
+by white space, and so any space 
+characters in those fields must similarly be preceded by either
+``$\backslash$'' or else the value should be encapsulated in double quotes.
+
+The \file{or}\index{or} table is used to evaluate O/R addresses.  The
+\verb+<key>+ is encoded as dmn-orname as specified in RFC~1148
+i.e. a sequence of \verb+<component>$<value>+ pairs separated by full
+stops.
+
+The algorithm for O/R address analysis should be considered as
+a ``tree-walking'' algorithm.
+The O/R address components are sorted, and
+components are looked up: first level 1; then level 2 + level 1 and so
+on.  So repeated lookups are carried out, using this table.
+The first failed lookup breaks the loop with the last ``routable''
+match (\verb|mta| or \verb|local| matches) being chosen as the result
+of the analysis.
+If there is no ``routable'' match, the analysis has failed and the O/R
+address is invalid.
+
+There is a wildcard facility that may be used when
+constructing the LHS, \verb+<key>+.
+To use the wildcard facility, set the \verb+<value>+ to the wildcard
+symbol \verb+*+.
+For example, consider the case where you wish to route all unknown
+\verb+ADMD+s under one country to one mta.
+This can be achieved by the following entry.
+\begin{quote}\small\begin{verbatim}
+ADMD$*.C$GB:mta admd.gb
+\end{verbatim}\end{quote}
+Given the address \verb+/S=pac/O=XTel/PRMD=X-Tel Services/ADMD=
+/C=GB/+, the lookup of the O/R table will proceed as this
+\begin{itemize}
+\item	lookup \verb+C$GB+, assume it succeeds
+\item	lookup \verb+ADMD$ .C$GB+, this fails
+\item	lookup \verb+ADMD$*.C$GB+, this matches the example entry
+\item	continue looking up \verb+PRMD$X-Tel Services$ADMD$*.C$GB+
+and so on till lookup fails. When the lookup fails, the last
+successful mta or local entry is used for the appropriate routing.
+\end{itemize}
+
+There are four possible instances of the \verb|<type>| field, similar
+in functionality and appearance to their counterparts in the
+\file{domain} table.
+\begin{describe}
+
+\item[\verb+valid+:]
+This means that this part of the tree is OK. As lookup stops as soon
+as an entry is not found, it is necessary to mark entries which have
+no routing information as valid to allow lower entries to be found.
+
+\item [\verb+mta <mtaname>+:]
+This identifies the MTA \verb|<mtaname>| as being associated with this
+vertex of the tree.  This \verb|<mtaname>| is a key into the PP \file{channel}
+table.  The search should \verb|not| stop at this point, as further tree
+searching may determine a more optimal mta.
+
+\item [\verb+synonym <dmn-orname>+:]
+This identifies a synonym, and indicates that all O/R components matched
+so far should be replaced with those identified on the RHS, and the
+search should now resume from the root.
+The characters ``$\backslash$'' and ``.''  in the \verb|<component>|
+and/or \verb|<value>| parts of the dmn-orname construction must always
+be preceded by a ``$\backslash$''.
+
+For historical reasons, this encoding has a second equivalent form:
+\verb+alias <dmn-orname>+.
+
+\item [\protect{\verb+local [<subdom-name>]+}:]
+This identifies a local O/R Address.  The remainder of the O/R address
+should be used to determine a local mailbox.  If the
+\verb|subdom-name| is empty the normal \file{alias} and \file{user} tables are
+consulted. If the \verb|subdom-name| is present, then as with the
+similar feature in the \file{domain} table, this feature is used when one MTA
+is supporting multiple local organisations, each with their own user
+and alias tables.  This is described in Section~\ref{sect:multihub}.
+
+\end{describe}
+
+Figure~\ref{example:or} gives an example which shows the validity of
+some Country, ADMD, and PRMD values, and indicates which MTAs will
+deal with which PRMDs.  The MTA value given here is internal to the PP
+lookup system, providing a key with which to reference the
+channel table.
+
+\tagrind[hbtp]{or}{Example of Or Table}{example:or}
+
+\section {The Channel Table}\index{channel}\index{tables, channel}
+
+\pgm{Submit} uses the \file{channel} table to discover the
+possible channels, and in some cases relaying MTAs, that may be used
+to send a message on towards a remote host.
+This remote host is the one identified by the \verb|mta| entries in
+either the \file{or} table or the \file{domain} table.
+
+See Section~\ref{tablebuild:channel} on
+page~\pageref{tablebuild:channel} for a method of building this table.
+The format of an entry has the form:
+
+\begin{quote}\begin{verbatim}
+<key> ":" [ <mtaname> ] "("<channel>")" 
+          ["," [ <mtaname> ] "("<channel>")" ...] 
+\end{verbatim}\end{quote}
+
+\begin{describe}
+\item[\verb+key+:] is the index
+name derived from the mta entry in the \file{domain} or \file{or}
+tables -- the remote host.
+
+\item[\verb+mtaname+/\verb+channel+:] the \verb+mtaname+ derived from
+this lookup will be used as a key in the appropriate outbound
+\verb+channel+'s table -- the relaying MTA.  If there is no
+\verb|mtaname| present, then 
+the remote host is reached directly through that channel. This sort of
+action is appropriate if the channel uses external information (such
+as the DNS) to look up the domain.
+\end{describe}
+
+Figure~\ref{example:channel} illustrates an extract of this table.
+
+There may be a number of possible channels for a given remote host.
+Everything else being equal, the order of channels in the table is the
+preferred method of delivery.
+The authorisation process will select one of the possible channels and
+this is the one used.
+
+\tagrind[hbtp]{chantbl}{Example of Channel Table}{example:channel}
+
+
+\section{Supporting Multiple Organizations on One MTA} \label{sect:multihub}
+
+PP contains several features that enable a site to behave as multiple
+mail hubs and/or as a central mail gateway between the external world
+and the internal subdomains.  The features in question are:
+\begin{itemize}
+\item the \verb+local+ key in the \file{domain} and/or \file{or}
+tables,
+\item the \verb+external+ qualifier in the \file{alias} tables,
+\item and the \verb+-internal+ and \verb+-external+ flags to the
+header normalisation filters, \pgm{p2norm} and \pgm{rfc822norm}.
+\end{itemize}
+
+To explain how these features may be used, this section introduces
+three possible configurations. Each one slightly more complex than its
+predecessor.  These examples consider the situation of two domains,
+the main site name, \verb+xtel.co.uk+, and a subdomain under that
+site, \verb+admin.xtel.co.uk+.
+
+\begin{enumerate}
+
+\item {\tt PP acting as two different, independent mail hubs.}
+
+This is the situation where one PP system is acting as two distinct
+domains. 
+
+The main domain \verb+xtel.co.uk+ has the information relating to its
+local users in the tables named
+\file{users} and \file{aliases},
+and the subdomain \verb+admin.xtel.co.uk+ has the information relating
+to its local users in the tables \file{admin-users} and
+\file{admin-aliases}.
+There is no intersection between the \verb+xtel.co.uk+ name space and
+the \verb+admin.xtel.co.uk+ name space so these tables can be
+independently maintained.
+
+PP has to be informed that \verb+admin.xtel.co.uk+ is a local domain.
+This is done via the relevant entry  in the \file{domain} table and/or
+the \file{or} table.
+e.g.
+\begin{quote}\small\begin{verbatim}
+admin.xtel.co.uk:local=admin
+OU$admin.O$XTel.PRMD$X-Tel Services.ADMD$ .C$GB:local admin
+\end{verbatim}\end{quote}
+
+\item {\tt PP acting as one name space divided over two
+adminstration domains.}
+
+This is the situation where PP is acting as one complete name space
+composed of two separate adminstration domains, i.e. all users have
+mail addresses of the form \verb+user@xtel.co.uk+.
+
+As above the information about local users is divided into two
+separate sets of tables, \file{users} and \file{aliases}, and
+\file{admin-users} and \file{admin-aliases}.
+As above PP is informed that \verb+admin.xtel.co.uk+ is a local
+domain.
+But as these two domains are to be combined into one name space --
+\verb+xtel.co.uk+, there has to be an intersection between the two
+sets of tables and in particular between the \file{aliases} tables.
+
+The intersection only applies to addresses in the
+\verb+admin.xtel.co.uk+ adminstration domain.
+The delivery information for these users is stored in the
+\file{admin-users} table.
+On delivery, PP has to be able to access this table.
+Therefore it has to map from the address \verb+user@xtel.co.uk+ to
+\verb+user@admin.xtel.co.uk+.
+This is done via an entry in the \file{aliases} table of the form:
+\begin{quote}\small\begin{verbatim}
+user:alias user@admin.xtel.co.uk 822
+\end{verbatim}\end{quote}
+The entry is an \verb+alias+ because the mapping is only required when
+delivering a message to \verb+user+.
+So for messages sent by \verb+user@xtel.co.uk+, the sender remains
+\verb+user@xtel.co.uk+ and not \verb+user@admin.xtel.co.uk+.
+The same is true for all occurances of \verb+user@xtel.co.uk+ in
+any headers they will be left as is.
+This also holds for x400 addresses and headers.
+
+To ensure that the name space is maintained, one has also to ensure
+that the address \verb+user@admin.xtel.co.uk+ is mapped to
+\verb+user@xtel.co.uk+ for senders and in headers.
+This is so, because the user agents on the subdomain may stamp mail
+with their subdomain's name i.e. \verb+admin.xtel.co.uk+
+To acheive this mapping, there should be an entry in the
+\file{admin-aliases} table of the form:
+\begin{quote}\small\begin{verbatim}
+user:synonym user@xtel.co.uk 822 external
+\end{verbatim}\end{quote}
+The \verb+external+ qualifier prevents this \verb+synonym+ being
+unwound if the responsibility for the address we are parsing is set
+(i.e we are trying to delivery to that address, it is for internal
+consumption).  Unless the flags described below are used, the
+\verb+synonym+ is always unwound for addresses in headers.
+
+WARNING: with the two entries in the two different \file{aliases}
+tables, there is a possiblility of circular aliases.
+The use of the \verb+external+ qualifier should stop most circles, but
+it is adviseable to use the \verb+ckadr+ tool to check some example
+addresses before going on-line with such a configuration.
+
+\item {\tt PP acting as a gateway between the external world and the
+internal domains.}
+
+The previous configuration suffices for a gateway between the outside
+world and the internal domains.  However it may swamp the gateway
+machine with internal messages.  All users are represented in headers
+as \verb+user@xtel.co.uk+ irrespective of which subdomain they are
+under.  So any replies to messages will be directed to
+\verb+user@xtel.co.uk+ which is the gateway.  It would be better if
+internal recipients of the message saw the internal addresses.  Hence
+could bypass the gateway and send directly to the relevant domain.
+
+This is an issue which doesn't have any relevance for the parsing of
+envelope addresses.  It only effects the headers presented to the user
+(both x400 headers and RFC 822 headers).  As such, one has to set up
+the PP tailor file and routing information so that messages going to
+internal recipients have their headers reformatted differently than
+messages going to external recipients.
+
+To obtain the different reformatting, one should tailor the
+\verb+-internal+ and/or the \verb+-external+ flags for the
+\pgm{p2norm} and \pgm{rfc822norm} filters.
+By default, the header normalisation filters unwind all
+\verb+synonym+'s including those marked with the \verb+external+
+qualifier.  The presence of the \verb+-internal+ flag stops the
+filters unwinding the \verb+synonym+'s marked \verb+external+.  Thus
+leaving \verb+user@admin.xtel.co.uk+ in headers.
+
+\end{enumerate}
+
+\section{RFC 1148 Mapping Tables}
+
+These mappings are used to convert between X.400 addressing
+and RFC~822 addressing. The mappings involved are not algorithmic,
+making necessary the use of such tables.
+RFC~1148 describes in detail their function.
+See Appendix~\ref{app:tables} for how to obtains copies of the
+globally maintained tables in PP format.
+
+\subsection{The O/R to RFC~822 Table} 
+
+The table \file{or2rfc}, exemplified in Figure~\ref{example:or2rfc},
+is for mapping OR names into RFC~822 addresses.  The \verb+<key>+ is
+encoded as domain-syntax (see RFC~987 and RFC~1026) and
+\verb+value+ as dmn-orname.  The longest possible match is sought.
+
+\tagrind[hbtp]{or2rfc}{Example of or2rfc Table}{example:or2rfc}
+
+\subsection{The RFC~822 to O/R table}
+Performing exactly the reverse operation is
+\file{rfc2or}\index{rfc2or}, which has the \verb+<key>+ encoded as
+dmn-orname and the \verb+<value>+ as domain-syntax. An example of the
+format is given in Figure~\ref{example:rfc2or}.
+
+\tagrind[hbtp]{rfc2or}{Example of rfc2or Table}{example:rfc2or}
+
+\subsection{The Known RFC~1148 Gateway Table}
+
+The \file{rfc1148gate} table has the same syntax as the \file{rfc2or}
+table.  Its entries represent gateways between X.400 and RFC~822 (via
+RFC~1148). This table is used in the cases where RFC~822 messages are
+relayed across an X.400 link. In such cases mapping to X.400 addresses
+may not always make sense as there will effectively be routing
+information encapsulated in the address. Normally this would cause the
+message to fail. However, if it is known that the destination is an
+RFC~1148 gateway, then the mapping can proceed in the expectation that
+the other end can unwrap the message.
+
+An example RFC~1148 gateway file is shown in
+Figure~\ref{examp:rfc1148g}.
+
+\tagrind[hbpt]{rfc1148g}{Example of RFC~1148 Gateway Table}{examp:rfc1148g}
+
+\section{PP Authorisation}\label{sect:auth}
+
+Authorisation is applied after address parsing, normalisation and
+validation, to 
+establish whether the message is permitted to be transferred on a per
+recipient basis.  Address lookup may establish several possible
+outbound channels for each recipient; authorisation selects one of
+these after applying tests based on entries in the three authorisation
+tables \file{auth.channel}, \file{auth.mta}, and \file{auth.user}.
+
+Access policy for channel pairs ( inbound + outbound ) determines how
+the rights for the four entities: sender, recipient, sending MTA, and
+destination MTA, are to be interpreted.  ( ``Rights'' means one of the
+four values in/out/both/none and a fifth value ``unset'' to indicate
+that no table entry is present.)
+
+The intention is that one of these four may be shown to be authorising
+the message (i.e., willing to pay for it).
+
+It should be noted that authorisation is not applied to delivery report
+messages. 
+
+\subsection{Access Policy}
+The access policy is one of the following:
+\begin{describe}
+\item[\verb|none|:]
+Message may not be transferred.
+
+\item[\verb|free|:]
+No constraints on the four entities.
+
+\item[\verb|block| ( i.e., ``blockable'' ):]
+- at least one of the four entities must enable the
+message by specifying ``in'' or ``both'' for the inbound channel and ``out''
+or ``both'' for the outbound channel.  If none of the four enable it,
+the message may not be transferred. Therefore the
+default is to not let messages through.
+If a message fails in this mode, it effectively means that the message was
+not authorised.
+
+\item[\verb|negative|:]
+Any one of the four entities may stop transfer by disabling the
+message. This implies the default state is to let everything through,
+and special cases are stopped by explicit configuration.
+If a message fails in this mode, it effectively means that the message
+was prohibited.
+
+\end{describe}
+
+When determining rights for a proposed transfer  the following
+algorithm is followed:
+\begin{itemize}
+\item	Determine the inbound and outbound channels and look up
+this pair in the \file{auth.channel}\index{auth.channel} file.
+
+If there is no entry in this file, take the default from the tailoring
+variable as the access policy for the channel.
+
+\item	If the access policy is free or none, then the message is
+allowed through or rejected respectively.
+
+\item	If the access policy is negative, check the MTA and user
+tables, \file{auth.mta}, and \file{auth.user} to see if this route is
+explicitly disabled.
+
+\item	If the access policy is block, check the user and MTA tables
+to see if the route is explicitly enabled.
+\end{itemize}
+
+\subsection{Table Formats}
+There are three tables associated with authorisation, plus the tailor
+variables.
+
+\subsubsection{Channel Authorisation}
+The first of these tables is the \file{auth.channel} table.
+This contains the overall policies for channel to channel relaying.
+As the key, the table has the syntax: 
+
+\begin{quote}\small\begin{verbatim}
+<inchannel> "->" <outchannel>
+\end{verbatim}\end{quote}
+
+If no value is found for the above, then as a fallback the values
+\begin{quote}\small\begin{verbatim}
+<inchannel> "->" "*"
+"*" "->" <outchannel>
+"*" "->" "*"
+\end{verbatim}\end{quote}
+are checked in that order.
+
+The values that the table can have are as follows:
+
+\begin{describe}
+\item[\verb|<policy>|:] Any of the above mentioned policies
+(\verb|free|, \verb|block| etc.).
+
+\item[\verb|warnsender=<file>|:]	
+Send a warning message to the sender if the authorisation fails, with
+text taken from the given file (relative to the \file{wrndfldir}).
+
+\item[\verb|warnrecipient=<file>|:]	Send a warning message to the
+recipient with text taken from the given file if the authorisation fails..
+
+\item[\verb|sizelimit=<digits>|:]	Enforce the given size
+limit on messages. No messages larger than this size will be relayed.
+This is obeyed regardless of the overall policy of the channel. (I.e.,
+A channel may be marked as free with a sizelimit, and the sizelimit
+will still be enforced.)
+
+\item[\verb|test|:] This setting modifies the checking procedure to
+always allow  the message through. However, all the checking is carried
+out and the result is logged. This is useful to test out the results
+of a setting for a while before fully applying them. If either
+\verb|warnsender| or \verb|warnrecipient| is set, the warning message
+will be sent if the message would have normally failed the
+authorisation checks.
+\end{describe}
+
+If warning messages are to be sent, the contents of the message are
+subject to macro expansion. The macros of the form \verb|$(key)| are
+replaced with given values, as shown in Table~\ref{tab:warnexp}.
+
+\tagtable{warnexp}{Warning Message Macro Expansions}{tab:warnexp}
+
+
+An example of the \file{auth.channel} table format might look like the
+following: 
+\begin{quote}\small\begin{verbatim}
+822-local->pss:free
+822-local->local:block
+822-local->slocal:free
+822-local->smtp:free, warnsender=smtpwarnsender, test
+822-local->janet:block, sizelimit=4000
+x400in84->x400out84:none
+x400in84->local:free,sizelimit=10000
+822-local->x400out84:block,warnsender=restricted, test
+smtp->smtp:block, test
+\end{verbatim}\end{quote}
+
+\subsubsection{MTA authorisation}
+
+The next table is the MTA policy table in file \file{auth.mta}. This
+governs the policy for a given MTA if the channel policy is not \verb|free|
+or \verb|none|. The keys used in this table are the source MTA and
+the destination MTA. Each of these are looked up separately to
+determine policies.
+
+The allowed values for this field are any of the following in a 
+comma-separated list:
+\begin{describe}
+\item[\verb|<channel>=<direction>|:]
+This specifies for given channels what directions are allowed for this
+MTA. The possible directions are:
+	\begin{describe}
+	\item[\verb|in|:] Allow inbound traffic for this channel.
+	\item[\verb|out|:]	Allow outbound traffic for this channel.
+	\item[\verb|both|:]	Allow both inbound and outbound
+		traffic for this channel.
+
+	\item[\verb|none|:]	Allow no access for this channel.
+	\end{describe}
+
+\item[\verb|default=<direction>|:]
+This specifies the default directions that traffic can flow in the
+absence of a particular channel being specified.
+
+\item[\verb|requires=<pattern>|:]
+This MTA requires that the sender/recipient address being authorised
+matches the given pattern. This is a standard regular expression as
+specified in \man regex (3).
+
+\item[\verb|excludes=<pattern>|:]
+The MTA requires that the user being authorised does not match the
+given pattern.
+
+\item[\verb|bodypart-excludes=<bodyparts>|:]
+This specifies a list of bodyparts that the MTA will not accept.
+These bodyparts are taken from the list of standard bodyparts as
+described in Section~\ref{tai:bodypart} on page~\pageref{tai:bodypart}.
+
+\item[\verb|sizelimit=<digits>|:]
+The MTA will not relay messages larger than the given sizelimit.
+\end{describe}
+
+An example of this table might look like the following:
+\begin{quote}\small\begin{verbatim}
+vs2.cs.ucl.ac.uk:default=both, smtp=out, x400out84=out,
+        822-local=in, excludes="A.DaCruz.*"
+localhost:default=in, x400in84=out, smtp=both,
+        822-local=none, sizelimit=654321
+\end{verbatim}\end{quote}
+(Lines are folded for readability.)
+
+\subsubsection{User Authorisation}
+
+The user table is where both the recipient and originator are
+looked up to determine access rights. The key is either the full
+normalized name of the user, or if local, just the local part of the
+name.  The values may contain any of the following:
+\begin{describe}
+\item[\verb|<channel>=<direction>|:]
+This specifies, much as for the MTA, what directions are allowed for
+this user.
+
+\item[\verb|default=<direction>|:]
+This gives the default directions allowed for this user.
+
+\item[\verb|bodypart-excludes=<bodyparts>|:]
+A list of bodyparts that are not allowed to be sent to the user.
+
+\item[\verb|sizelimit=<digits>|:]
+Disallow messages larger than this sizelimit.
+
+\end{describe}
+
+An example of the user authorisation table is:
+\begin{quote}\small\begin{verbatim}
+j.taylor@cs.ucl.ac.uk:default=both
+/I=J/S=Taylor/OU=cs/O=ucl/PRMD=uk.ac/ADMD=gold 400/C=gb/:\
+  bodypart-excludes=g3fax|dmd, sizelimit=100000, 822-local=both
+a.dacruz@cs.ucl.ac.uk:default=both
+s.kille@cs.ucl.ac.uk:default=both
+p.cowen@computer-science.nottingham.ac.uk:default=both, \
+       822-local=in, x400out84=none
+j.onions@computer-science.nottingham.ac.uk:default=both
+\end{verbatim}\end{quote}
+
+\section{Authentication}\label{sect:authen}
+
+Components of PP must do appropriate checking that they are being
+invoked correctly.  Note that authentication is complementary to
+authorisation.  It is also a prerequisite.
+
+\subsection {Submit Authentication}
+
+\pgm{Submit} needs to verify the source of an inbound message.  For messages from
+an inbound channel (protocol server) accessing the MTA Abstract Service, this
+means verification of the UID of the channel (typically to be ``root'' or
+``pp'').  For the MTS Abstract Service, the identity of the P1 originator must
+be verified.  These two verifications use the same mechanism.  There are two
+cases:
+
+\begin {enumerate}
+\item Submission from a local process using pipes.  In this case, the UID of
+the invoking process is available, and can be the basis for authentication.
+
+\item For remote submission, the UID is not available, and so a password
+based mechanism is used.   This may also be used locally.
+\end {enumerate}
+
+A password and the corresponding name are carried in the initial protocol
+handshake.  This may be overridden for later messages.
+
+Each (inbound) channel has an ``auth-table'' variable, which
+identifies a table which is used in the manner described below.  The
+authentication table has three columns.  These have the following meaning:
+
+\begin {enumerate}
+\item String-encoded address, in the preferred format of the channel:
+\begin {itemize}
+\item X.400 O/R Address.
+\item RFC~822 address.
+\end {itemize}
+
+\item List of valid UIDs.
+
+\item Password (as in /etc/passwd).
+\end {enumerate}
+
+Example files:
+
+\begin{quote}\small\begin {verbatim}
+#
+# Start of dummy 822 file
+#
+S.Kille@cs.ucl.ac.uk:steve|aiohpefcn
+
+#
+# Dummy X.400 file
+#
+/i=s/s=kille/ou=cs/o=ucl/prmd=uk.ac/admd= /c=gb/:steve,pp
+/i=j/s=onions/o=nott/prmd=uk.ac/admd=gold 400/c=gb/:jonions
+\end{verbatim}\end{quote}
+
+
+\subsection{QMGR Authentication}
+
+Management tools like the \pgm{MTAconsole} can connect to the
+\pgm{qmgr} in two distinct 
+modes. These are
+\begin{describe}
+\item[\verb|no authentication|:] In this mode, no authentication is
+done for the user.
+
+\item[\verb|weak authentication|:] In this mode a name and password
+are passed across in the bind, so there is some limited authentication
+of the initiator.
+\end{describe}
+
+When an incoming call is received by the qmgr, authentication
+information is checked in the \file{auth.qmgr}\index{auth.qmgr} table.
+The format of this table is:
+\begin{quote}\small\begin{verbatim}
+<name> ":" "passwd=" <password> "," "rights=" <rights>
+\end{verbatim}\end{quote}
+
+These parameters are interpreted in the following way:
+\begin{describe}
+\item[\verb|name|:] This is the name given in the bind parameters. If
+the connection was bound with no authentication, the name \verb|anon|
+is used for the lookup. If the name is not found in the table, then if
+the user bound with authentication, the request is refused. If the
+user bound without authentication, and the name \verb|anon| is not
+present in the table, then limited access is allowed.
+
+\item[\verb|passwd|:] This value takes an encrypted passwd, which can
+be generated with the utility \pgm{mkpasswd}\index{mkpasswd}. The
+password passed in the bind information is encrypted and compared
+against this value if present. If no \verb|passwd| field is present,
+then a passwd is not required.
+
+\item[\verb|rights|:] This value is used to indicate the rights that
+the initiator will be allowed. It may be one of the following values:
+\[\begin{tabular}{|l | p{0.6\textwidth} |}
+\hline
+	\multicolumn{1}{|c|}{\bf Value} &
+		\multicolumn{1}{|c|}{\bf Meaning} \\
+\hline
+	\tt none & The association is refused. \\
+	\tt limited & The initiator is allowed to examine the queue
+			but not to change any parameters. \\
+	\tt full & The initiator is allowed to examine the queue and
+		modify queue paramters \\
+\hline
+\end{tabular}\]
+
+If it is missing, then limited access is assumed.
+\end{describe}
+
+For example:
+\begin{quote}\small\begin{verbatim}
+anon:rights=none
+admin:passwd=YNKJHgaawczz,rights=limited
+pp:passwd=YNKcyeOsT6Fqc,rights=full
+\end{verbatim}\end{quote}
+
+In this case the following is true:
+
+\begin{describe}
+\item[\verb|anon|:] Unauthenticated users are not allowed any access
+to the QMGR.
+
+\item[\verb|admin|:] The user admin with the correct password is
+allowed to view the queue.
+
+\item[\verb|pp|:] The user pp, with the correct password, is allowed
+full access to control the queue manager.
+\end{describe}
+
+If no table is specified, limited access is allowed for any
+connection.
+
+\section {The 822 Local Table}\index{tables, local}
+\label{sect:local}
+
+The \file{ch.local}\index{ch.local} table is an example of a table
+accessed by different channels; both \pgm{822-local} and \pgm{slocal} 
+channels use it in order to find out where and how to delivery mail to
+registered users.
+The LHS is the registered users mail address.
+The format is of the RHS is of the form ``key=value.'' 
+The following table of key/value pairs
+are allowed:
+\begin{describe}
+\item[uid]
+The numeric user id to deliver the message as.
+\item[gid] The numeric group id to deliver the message as.
+\item[username] A username found in the password file. If this
+entry is set, it sets defaults for uid,gid,shell,home and directory.
+\item[directory] The directory to change to before starting delivery.
+This implies CWD for any files which use relative path names.
+If it is not set it defaults to home.
+\item[mailbox] The name of the mailbox if default delivery is being
+done.
+\item[shell]	The user's shell and the one which is exec'd to run
+pipes etc.
+\item[home] The user's home directory.
+\item[mailformat] The default format to deliver mail in; this can be
+either \verb|pp| for MMDF/PP style mailboxes or \verb|unix| for
+sendmail compatible style (the default is \verb|pp|).
+\item[restricted] this is set to true if the user is restricted. In
+restricted mode the user cannot run arbitrary programs on delivery and
+cannot change the PATH environment variable.
+\item[mailfilter] The mailfilter file to use. This defaults to the
+name of the mailfilter global tailor variable in the users home
+directory. A value of \verb|none| disables this feature.
+\item[sysmailfilter] The system default mailfilter file. This defaults
+to the global tailor entry. A keyword of \verb|none| disables this facility.
+\item[searchpath] The directory to look for binaries that the user can
+run in restricted mode.
+\item[opts] other options; not currently used.
+%\hline
+\end{describe}
+If the
+\verb|resticted| mode is in force, then the
+\file{.mailfilter} file processing is reduced in functionality as
+follows:
+\begin{itemize}
+\item	The user is not allowed to set the variable PATH to search
+other directories for programs. (Actually this variable can be set, it
+is just ignored.)
+\item	The processes executed by the \verb|pipe| command must be in
+the directory named in \verb|searchpath| (defaults to
+\verb|USRBINDIR|\index{USRBINDIR} defined in the \file{Make.defs} file).
+\item	The processes executed by the \verb|pipe| command must be
+executable by the system call \man exec(2). (E.g. redirection and
+shell syntax will not be obeyed).
+\end{itemize}
+
+For an entry in this table to be valid, it must either contain at
+least a UNIX login id, or have a userid/groupid/directory to deliver to.
+
+For example:
+
+\begin{quote}\small\begin{verbatim}
+Alina.DaCruz:username=alina home=/cs/users/vs1/alina
+John.Taylor:username=jtaylor
+Postie.Pat:username=pp
+bug-filter:uid=32767 gid=1001 mailbox=/usr/spool/mail/bugs mailformat=unix
+\end{verbatim}\end{quote}
+
+\pgm{Note}: for compatability with earlier releases the following format is
+allowed:
+\begin{quote}\begin{verbatim}
+name ":" <unix ID> [<home directory> [<file>]]
+\end{verbatim}\end{quote}
+
+\section {The X.400 (1984/1988) Outbound Table}
+\index{tables, X.400 84}\index{tables, X.400 88}\label{tab:X.400(84)out}
+
+This table is used by the outbound X.400 channels, allowing them to map the
+host name to the information needed for addressing of and connecting
+to the remote MTA\index{ch.x400out84}.  The key in this table is the
+value representing the MTA derived from the ``mtaname'' field of the 
+\file{channel} table. The value is a set of \verb+key=value+ fields
+separated by white space and/or commas.
+
+\begin{quote}\small\begin{verbatim}
+mta key:rmta=xx,rpass=xx,rpsap='"591"/Janet=000005110000'
+\end{verbatim}\end{quote}
+
+The \verb+mta key+ is the key from the address lookup. This is the
+remote host to which the outgoing connection it to be made.
+The following keys are recognised in the value field.
+The format of these keys are common to both the outbound and inbound
+X.400 tables and as such are described here and not under the X.400
+inbound table section.
+
+\begin{describe}
+\item[\verb+lmta+:]	The name of the local mtaname to pass in the
+RTS connect parameters.
+
+\item[\verb+lpass+:]	The passwd of the local site to pass in the
+RTS connect parameters.
+
+\item[\verb+rmta+:]	The name of the remote MTA to pass in the RTS
+connect parameters. If this is not set, then no authentication will be
+specified in the RTS connect.
+
+\item[\verb+rpass+:]	The name of the remote password to pass in the
+RTS connect parameters. There is no default for this and it should 
+not be set if the \verb+rmta+ is set.
+
+\item[\verb+rpsap+:]	The remote presentation address. This is
+specified in the string encoded format. Note that session selectors
+and presentation selectors should always be absent in the 1984 RTS.
+This is the only mandatory key on the RHS of the X.400 outbound table.
+
+\item[\verb+lpsap+:]	The local presentation address. This is only
+necessary if you need to claim to originate from a specific selector
+or network address. Normally this parameter is not specified.
+
+\item[\verb+mode+:]	The mode of RTS connection. This is either
+\verb+mon+ for monologue (the default) or \verb+twa+ for two way
+alternate. This only governs the mode passed initially, it does not
+imply that the channel will work in TWA mode.
+
+\item[\verb+type+:]	The type of RTS connection. This is one of the
+following:
+
+\[\begin{tabular}{|l | p{0.6\textwidth}|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value} &
+		\multicolumn{1}{|c|}{\bf Meaning} \\
+\hline
+	\tt 1984 & Use the 1984 protocol mode (default). \\
+	\tt 1988-X410 & Use the 1988 X.410 mode protocol, \\
+	\tt 1988-normal & Use the 1988 normal mode protocol. \\
+	\tt 1988 & Use the 1988 normal mode protocol (same as previous). \\
+\hline
+\end{tabular}\]
+
+Obviously, this information is dependent on the capabilities of the
+channel (a 1984-based channel will not be able to use the 1988
+protocol).
+
+\item[\verb+trynext+:] A key to another entry in the table. If a
+connection using the current information fails, the outbound channel
+will look up this key and
+try making a connection using that data.
+
+\item[\verb+tracing+:] The style of tracing information to use. It may
+take one of the following values:
+
+\[\begin{tabular}{|l | p{0.5\textwidth}|}
+\hline
+	\multicolumn{1}{|c|}{\bf Value} &
+		\multicolumn{1}{|c|}{\bf Meaning} \\
+\hline
+	\tt admd & Remove all but the first tracing component. \\
+	\tt nointernal & Remove all internal tracing components. \\
+	\tt local-internal & Keep only internal trace related to the
+				current PRMD. \\
+	\tt all & keep all tracing information\\
+\hline
+\end{tabular}\]
+The default value is \verb|all|.
+
+The \verb|admd| mode should only be used when talking to a
+particularly restrictive ADMD. Again, it depends on the capabilities
+of the channel how closely this information can be followed.
+
+\item[\verb+rname+:]	The ``real'' name of the remote MTA. This is
+an entry 
+that is suitable for lookup in the domain table. It is not used for
+the outbound channel.
+
+\item[\verb|fix-orig|:] This applies an on-the-fly change to the
+originator address. The syntax is
+\begin{quote}\small\begin{verbatim}
+"fix-orig=" <old-or> "->" <new-or>
+\end{verbatim}\end{quote}
+and might be applied as
+\begin{quote}\small\begin{verbatim}
+fix-orig="/ADMD= /C=GB/->/ADMD=Gold 400/C=GB/
+\end{verbatim}\end{quote}
+to change the ADMD from space, to \verb|Gold 400| in the originator
+for outgoing messages to specific hosts.
+
+This key is only used by the outbound table.
+
+\item[\verb+other+:]	Other information. This is a string and is
+interpreted by the channel to allow other types of operation to be
+specified. It is not currently used by the X.400 outbound channels.
+
+It is used by the X.400 inbound channels.
+If \verb+other+ is set to \verb+sloppy+, the inbound channel will not
+check against any \verb+rpass+ specified in the inbound table.
+
+\end{describe}
+
+If an entry with a key \verb|default|\index{default} exists in the
+table, then this may be used to set default setting for all entries.
+The value \verb|default| is looked up first and values filled in from
+that setting, then the real entry is looked up and those values
+override the default entry.
+
+An example outbound table is shown in Figure~\ref{example:x400out}
+(lines are folded for clarity).
+
+\tagrind[hbtp]{x400out-examp}{Example of X.400 Outbound Channel Table}{example:x400out}
+
+\section {The X.400 (1984/1988) Inbound Table}\label{tab:X.400(84)in}
+
+This table\index{ch.x400in84}\index{ch.x400in88} is used by the inbound
+X.400 channels, 
+and allows the channels to obtain the MTA name and other information
+from the OSI calling address. The syntax is the same as the X.400
+outbound table, only the key is different.
+
+The key here is the information given in the session connection of the
+remote calling host; the values are as indicated for the outbound
+table.  It is encoded in the string encoding for presentation
+addresses using no macro substitution. Therefore, the keys look pretty
+horrible. It is usual to maintain these tables with keys in macro form
+and run them through the utility \pgm{nsapexpand} to expand the macros.
+
+The matching of incoming information with an entry in this table provides the
+major security checking.  Again an entry \verb|default| in the table
+may be used to default many of the fields.
+
+An example inbound table is shown in Figure~\ref{example:x400in}
+(again lines are 
+folded for clarity).
+
+\tagrind[hbtp]{x400in-examp}{Example of X.400 inbound Channel table}{example:x400in}
+
+\section {The List Table}\index{table, list}\label{sect:list}
+
+The \file{ch.list} table is used by the \pgm{list} channel to
+expand local distribution lists.
+Entries in this table have the format:
+
+\begin{quote}\begin{verbatim}
+<listname> ":" [<moderator> "|" ...] "," 
+       file=<filename> | <mail address> "|" ... "," 
+       description
+\end{verbatim}\end{quote}
+
+\begin{describe}
+
+\item[\verb+listname+:] 
+The name of the distribution list, e.g., \verb+listname+.
+Note that in order for the list to form
+a valid local address, the local part of the name, \verb+listname+ in
+the above examples, must have an entry in the local \file{users}
+table, specifying that messages addressed to the list should be
+delivered via the list channel.
+
+\item[\verb+moderator+:]\index{moderator}
+ The UNIX ids/login names of the moderators of the list.  This element
+of the table entry is purely for the use of the distribution list
+management tool, \pgm{mlist} (see Volume~III (The PP Manual: 
+User's Guide)).  Anyone with one of the specified uids
+may use \pgm{mlist} to modify the contents of the list.
+
+\item[\verb+file+:]
+The file containing the members of the list.  If \verb+<filename>+ is
+not a fully qualified pathname, the required file will be assumed to
+be under the \file{tbldir} directory structure.  The format of such
+files is one member's address per line.
+Note that the file must exist for \pgm{mlist} to be able to be used on
+the corresponding list (i.e. \pgm{mlist} is unable to create the files
+only modify them).
+Any lines in this file starting with the character \verb+#+ are ignored.
+
+\item[\verb+mail address+:] An address of a member of the list.
+Note that because they are specified in the list table itself,
+\pgm{mlist} cannot be used to modify such members.
+
+\item[\verb+description+:] A short description of the purpose of the list.
+This description is output by \pgm{mlist} when requested.
+\end{describe}
+
+Note that in order to form a valid entry in the list table, each entry
+must be on one line and must contain two and only two commas.
+
+Comment line in tables start with a \verb+#+.
+The list table extends this mechanism further.
+Comment lines that are printed by \pgm{mlist} start with \verb+#Comment:+.
+This allows the list table to have two levels of comments,
+one for the editor of the list table and one for the user of \pgm{mlist}.
+
+\tagrind[hbtp]{lists-examp}{Example of List Table}{example:lists}
+
+If you have a large sendmail alias file to convert, you may find the utility 
+\man make-lists(8) of use.
+\man make-lists(8) is found in the \file{Tools} directory. This utility
+attempts to 
+convert lists of names into a format suitable for use in the list channel
+of PP. Note: it does {\em not} convert all alias table entries, only lists.
+
+\section {The Shell Table}\index{table, shell}\label{sect:shell}
+
+The \file{ch.shell} table is referenced by the \pgm{shell} channel
+when converting from the recipient address to the commands to execute
+in its place.  Entries in this table have the format:
+
+\begin{quote}\begin{verbatim}
+<address> ":" <user id> "," [<timeout period>['|'<qualifier>]] 
+             "," <command line to execute>
+\end{verbatim}\end{quote}
+
+\begin{describe}
+
+\item[\verb+address+:] specifies the  recipient address, e.g.,
+\verb+shellprog+.
+Note that in order for this to form a valid local address, the local
+part, \verb+shellprog+ in the examples, must have an entry in the
+local \file{users} table, specifying that messages sent to the address
+should be delivered via the \pgm{shell} channel.
+
+\item[\verb+user id+:] specifies the user to run as when executing the
+commands.  This id is resolved using
+\file{/etc/passwd}\index{/etc/passwd}. Alternatively it may be
+specified as \verb|<uid>/<gid>| to run as an arbitrary user and group.
+
+\item[\verb+timeout period+:]
+specifies how long, in seconds, the commands should be allowed to run
+before the \pgm{shell} channel kills them off.  If the timeout period
+is not specified, the commands are allowed to run for the default
+period of time, five minutes.  If the period is zero then the
+\pgm{shell} channel will not enforce a time limit for the commands.
+
+\item[\verb+qualifier+:]
+qualifies the behaviour of the shell channel.
+This qualifier is optional appended to the timeout period with a
+\verb+|+ seperating the two values.
+If the qualifier is set to the string \verb+solo+ then the shell
+channel will restart(fork) the command line for each bodypart.
+
+\item[\verb+command line+:]
+specifies the command line to execute.  If the program name is not a
+fully qualified pathname, the program is assumed to be under the
+directory specified by \file{chandir}.  Arguments of the form
+\verb+$(key)+ will be expanded as described in
+Table~\ref{tab:shellexp}.
+
+\end{describe}
+
+\tagtable{shellexp}{Shell Channel Expansion Macros}{tab:shellexp}
+
+When running, the \pgm{shell} channel pipes all the message body parts, in
+order, to the program's standard input.
+The \pgm{shell} channel understands an exit code of 0 as success and
+otherwise as failure.
+
+An example of a \pgm{shell} table is shown in Figure~\ref{example:shell}.
+
+\tagrind[hbtp]{shell-examp}{Example of Shell Table}{example:shell}
+
+\subsection{Statistical Logging}
+
+Each line in the statistics log (``stat'') either logs the status of
+inbound messages, or delivery reports that are generated, or notes a
+message that is delivered. Amongst the parameters logged are:
+\begin{itemize}
+\item	A success indicator ( e.g., ``ok'' or ``DR'' ).
+\item	Unique message id.
+\item	A P1 message ID.
+\item	Inbound channel$\rightarrow$outbound channel.
+\item	Sender.
+\item	Sending MTA.
+\item	Recipient.
+\item	Destination MTA.
+\item	Message size.
+\item	A diagnostic message.
+\end{itemize}
+
+Fields are space-delimited and double quoted where necessary.
+
+Duplicate recipients are eliminated (second and subsequent) if there
+is an exact match on the 822 or X.400 address (as appropriate), \pgm{not} the
+original entry.
+
+Channel binding is performed after all other tests have been passed, and
+takes into account any body parts actually received but not specified in the
+message header.
+
+Unsuccessful recipients are flagged to generate nondelivery reports.
+
+The tool \pgm{statp}, found under the \file{Tools} directory, takes
+the statistics log and converts it to something suitable for
+processing via \verb+awk+ or other such processing tools.
+There are several example awk scripts under the source directory
+\file{Tools/statgen}.

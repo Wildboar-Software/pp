@@ -1,0 +1,40 @@
+#!/bin/csh -f
+
+################################################################################
+#
+# alert script for PP messages (PODA) - used by slocal
+#
+# slocal calls :
+#	alert username messagenumber message
+#
+################################################################################
+
+
+if ($#argv) then
+	set tlist=`w | awk  '/^'$1'/ {print $2}'`
+	set message=~$1/PPMail/inbox/$2
+	chmod777 $message
+	set header=$message/hdr.822
+	set filelist=`ls -F $message`
+	foreach i ($tlist)
+		echo "" >/dev/$i
+		echo '******************************************************' >/dev/$i
+		echo $argv[3-]	'('message $2')' >/dev/$i
+		echo "" >/dev/$i
+		if (-e $header) then
+			awk '\
+				/^Subject/	{printf "%s\n",$0 } \
+				/^Date/		{printf "%s\n",$0 } \
+				/^From/		{printf "%s\n",$0 } \
+				'\
+ 				$header >/dev/$i
+			echo "" >/dev/$i
+		else
+			echo No hdr.822 file in $message >/dev/$i
+		endif
+		echo	'Files: '$filelist >/dev/$i
+		echo "" >/dev/$i
+		echo '******************************************************' >/dev/$i
+		echo "" >/dev/$i
+	end
+endif

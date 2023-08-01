@@ -1,0 +1,576 @@
+-- qmgr.ry - Qmgr operation definitions
+
+
+-- @(#) $Header: /xtel/pp/pp-beta/Lib/qmgr/RCS/qmgr.ry,v 6.0 1991/12/18 20:23:58 jpo Rel $
+--
+-- $Log: qmgr.ry,v $
+-- Revision 6.0  1991/12/18  20:23:58  jpo
+-- Release 6.0
+--
+--
+--
+
+
+Qmgr 
+DEFINITIONS ::=
+BEGIN
+
+-- EXPORTS everything
+
+
+-- PORTS
+qmgr-use OBJECT
+        PORTS { newmessage[S],
+		readmsginfo[S],
+		msginfo[C],
+		channelinitialise[C],
+		processmessage,
+		channelbegin[S],
+		readqueue[C],
+                channelread[S],
+		channelinfo[C],
+		channelcontrol[S],
+		mtaread[S],
+		mtainfo[C],
+		mtacontrol[S],
+		qmgrstatus[S],
+		readchannelmtamessage[S] } ::= id-pt-qmgr-use
+
+
+activeChannel OBJECT
+	        PORTS { channelinitialise, 
+			processmessage [S] }
+	::= id-pt-activeChannel
+
+passiveChannel OBJECT
+	        PORTS { processmessage[S],
+	                channelbegin[C] }
+	::= id-pt-passiveChannel
+
+submitProcess OBJECT
+        PORTS { newmessage[C] }
+	::= id-pt-submitProcess
+
+queueReadProcess OBJECT 
+        PORTS { readqueue[S] }
+	::= id-pt-queueReadProcess
+
+managementUA OBJECT 
+	        PORTS { processmessage[C],
+	                readmsginfo[C],
+			msginfo[S],
+	                channelread[C],
+			channelinfo[S],
+			channelcontrol[C],
+	                mtaread[C],
+			mtainfo[S],
+	                mtacontrol[C],
+			qmgrstatus[C],
+			readchannelmtamessage[C] }
+	::= id-pt-managementUA
+
+-- OPERATIONS
+
+				-- new message arrived
+				-- Submit -> QMGR
+newmessage OPERATION
+	ARGUMENT MsgStruct
+	RESULT NULL
+	ERRORS { congested, protocol }
+	::= 0
+
+				-- read a message
+				-- Console -> QMGR
+				-- QMGR -> QMGR
+readmsginfo OPERATION
+	ARGUMENT ReadMessageArgument
+	RESULT MsgList
+	ERRORS { congested, protocol }
+	LINKED {msginfo}
+	::= 1
+
+				-- QMGR -> Console
+				-- Incremental update
+msginfo OPERATION
+	ARGUMENT MsgList
+	::= 10
+
+				-- processes a message
+				-- QMGR -> Channel
+processmessage OPERATION
+	ARGUMENT ProcMsg
+	RESULT DeliveryStatus
+	ERRORS { congested, protocol }
+	::= 2
+
+				-- start up a channel
+				-- Channel -> QMGR
+channelbegin OPERATION
+	ARGUMENT FilterList
+			-- type of message requested
+	RESULT FilterList
+			-- what you are going to get
+	ERRORS { congested, protocol }
+	::= 3
+
+				-- read the entire queue
+				-- QMGR -> Q reader
+readqueue OPERATION
+	ARGUMENT NULL
+	RESULT MsgList
+	ERRORS { congested, protocol }
+	::= 4
+
+				-- read a channel
+				-- Console -> QMGR
+				-- get info at channel level
+channelread OPERATION
+	ARGUMENT UTCTime
+	RESULT ChannelReadResult
+	ERRORS { congested, protocol }
+	LINKED {chaninfo}
+	::= 5
+
+				-- QMGR -> Console
+				-- Incremental update
+chaninfo OPERATION
+	ARGUMENT ChannelReadResult
+			-- info on ALL channels
+	::= 11
+
+				-- control a channels behaviour
+				-- Console -> QMGR
+channelcontrol OPERATION
+	ARGUMENT ChannelControl
+	RESULT PrioritisedChannelList
+	ERRORS { congested, protocol, noSuchChannel, illegalOperation,
+		authenticationFailure}
+	::= 6
+
+				-- read about a mta
+				-- Console -> QMGR
+mtaread OPERATION
+	ARGUMENT MtaRead
+	RESULT PrioritisedMtaList
+	ERRORS { congested, protocol, noSuchChannel }
+	LINKED {mtainfo}
+	::= 7
+
+				-- QMGR -> Console
+				-- Incremental update
+mtainfo OPERATION
+	ARGUMENT PrioritisedMtaList
+	::= 12
+
+				-- control a mta
+				-- Console -> QMGR
+mtacontrol OPERATION
+	ARGUMENT MtaControl
+	RESULT MtaInfo
+	ERRORS { congested, noSuchChannel, mtaNotInQueue,
+ 		authenticationFailure}
+	::= 8
+
+				-- control a message
+				-- Console -> QMGR
+msgcontrol OPERATION
+	ARGUMENT MsgControl
+	RESULT NULL
+	ERRORS { congested, protocol, noSuchChannel, mtaNotInQueue,
+ 		authenticationFailure}
+	::= 13
+
+				-- QMGR -> Channel (process)
+channelInitialise OPERATION
+	ARGUMENT Channel
+	RESULT NULL
+	ERRORS { congested, protocol, noSuchChannel}
+	::= 9
+
+qmgrControl OPERATION
+	ARGUMENT QMGRControl
+	RESULT NULL -- always works
+	ERRORS { congested, protocol, authenticationFailure}
+	::= 14
+
+readChannelMtaMessage OPERATION
+	ARGUMENT MsgRead
+	RESULT MsgList
+	ERRORS { congested, protocol, noSuchChannel, mtaNotInQueue }
+	::= 15
+
+qmgrStatus OPERATION
+	ARGUMENT NULL
+	RESULT QmgrStatus
+	ERRORS { congested, protocol }
+	::= 16
+-- ERRORS
+
+			-- congestion at the responder
+congested ERROR
+	::=		0
+
+			-- unknown channel
+noSuchChannel ERROR
+	::=		1
+
+			-- unknown operation
+illegalOperation ERROR
+	::=		2
+
+			-- operation on mta makes no sense
+mtaNotInQueue ERROR
+	::=		3
+
+			-- error in the protocol
+protocol ERROR
+	::=		4
+
+authenticationFailure ERROR
+	::= 		5
+
+-- Bind Arguments
+
+BindArgument ::= CHOICE {	-- structure used in association request
+	noAuthentication [0] NULL,
+	weakAuthentication [1] WeakAuthentication
+	}
+
+WeakAuthentication ::= SEQUENCE {
+	username [0] IA5String,
+	passwd   [1] IA5String OPTIONAL
+	}
+
+BindResult ::= SEQUENCE {
+		result[0] ENUMERATED {	-- result from the association request
+			acceptedLimitedAccess(0), -- accepted limited access
+			acceptedFullAccess(1)	  -- accepted full access
+		},
+		information[1] IA5String OPTIONAL,
+		version[2] IA5String OPTIONAL
+	}
+
+
+BindError ::= SEQUENCE {
+		reason[0] ENUMERATED {
+			badCredentials(0),	-- dont know this person
+			congested(1)		-- some system problem
+		},
+		information[1] IA5String OPTIONAL
+	}
+
+-- DATA TYPES
+
+Mta ::= IA5String
+
+Channel ::= PrintableString
+
+Priority ::= ENUMERATED {low(0), normal(1), high(2)}
+			-- Internal priorities COULD be different
+			-- to external ones
+
+UAContentId ::= PrintableString
+
+ContentType ::= PrintableString
+
+EncodedInformationTypes ::= SEQUENCE OF PrintableString
+
+QID ::= PrintableString
+
+User ::= IA5String
+			-- QMGR just sees users as strings.
+			-- This is 822 or /= X.400 syntax
+			-- The caller must get the right form!
+			
+
+ReadMessageArgument ::= SEQUENCE {
+		filters  FilterList,
+		interval UTCTime OPTIONAL
+			-- interval for control of the LINKED operation
+		}
+
+MsgList	::= SEQUENCE {
+		msgs SEQUENCE OF %[ type_Qmgr_MsgStructList %]
+			MsgStruct,
+		deleted SEQUENCE OF %[ type_Qmgr_QidList %] QID OPTIONAL
+		}
+
+ProcMsg ::= SEQUENCE {
+	qid QID,
+	users UserList,
+			-- if USER 0, do all outstanding DNs
+	channel Channel  -- Channel to apply
+		-- must be same for each user!
+		-- Warning and Expiry channels have "special" behaviour
+}
+
+Control ::= CHOICE {
+		stop [0] NULL,
+		start [1] NULL,
+		cacheClear [2] NULL,
+		cacheAdd [3] UTCTime }
+
+ChannelControl ::=  SEQUENCE {
+		channel [0] Channel,
+		control [1] Control 
+		}
+
+MtaControl ::= SEQUENCE {
+		channel [0] Channel,
+		mta [1] Mta,
+		control [2] Control 
+		}
+
+MsgControl ::= SEQUENCE {
+		qid [0] QID,
+		users [1] UserList,
+		control [2] Control
+		}
+
+UserList ::= SEQUENCE OF RecipientId
+
+RecipientId ::= INTEGER
+
+MsgStruct ::= SEQUENCE {
+	messageinfo	[0] PerMessageInfo,
+	recipientlist	[1] SEQUENCE OF %[ type_Qmgr_RecipientList %]
+				RecipientInfo
+			-- only recipients with responsibility bit set
+			-- AND originator (recipient 0)
+			-- The originator is needed for DRs
+	}
+			
+
+PerMessageInfo ::= SEQUENCE {
+	queueid		[0] QID,
+	mpduiden	[1] MPDUIdentifier,
+	originator	[2] User,
+	contenttype	[3] ContentType OPTIONAL,
+	eit		[4] EncodedInformationTypes OPTIONAL,
+	priority	[5] Priority,
+	size		[6] INTEGER,
+			-- size in bytes
+	age		[7] UTCTime,
+	warnInterval	[8] INTEGER,
+	numberWarningsSent [9] INTEGER,
+	expiryTime 	[10] UTCTime,
+	deferredTime	[11] UTCTime OPTIONAL,
+	uaContentId	[12] UAContentId OPTIONAL,
+	errorCount	[13] INTEGER OPTIONAL,
+	inChannel	[14] Channel OPTIONAL
+	}
+
+ProcStatus ::= 	SEQUENCE {
+	enabled		[0] BOOLEAN,
+	lastAttempt	[1] UTCTime OPTIONAL,
+	cachedUntil	[2] UTCTime OPTIONAL,
+	lastSuccess	[3] UTCTime OPTIONAL
+	}
+
+RecipientInfo ::= SEQUENCE {
+	user	 	[0] User,
+	id		[1] RecipientId,
+	mta		[2] Mta,
+	channelList	[3] SEQUENCE OF %[ type_Qmgr_ChannelList %] Channel,
+	channelsDone    [4] INTEGER,
+				-- Number of channels processed
+				-- If EQUAL to the number of channels, 
+				-- this implies DN is still pending
+	procStatus 	[4] ProcStatus OPTIONAL,
+	info		[5] IA5String OPTIONAL }
+
+
+FilterList ::= SEQUENCE OF Filter
+
+Filter ::= SEQUENCE {
+	contenttype	[0] ContentType OPTIONAL,
+	eit		[1] EncodedInformationTypes OPTIONAL,
+			-- message must have only specified types
+	priority	[2] Priority OPTIONAL,
+			-- messages of this priority and above
+	moreRecentThan	[3] UTCTime OPTIONAL,
+	earlierThan	[4] UTCTime OPTIONAL,
+	maxSize		[5] INTEGER DEFAULT 0,
+			-- size in bytes
+	originator	[6] User OPTIONAL,
+	recipient	[7] User OPTIONAL,
+	channel		[8] Channel OPTIONAL,
+	mta		[9] Mta OPTIONAL,
+	queueid		[10] QID OPTIONAL,
+	mpduiden	[11] MPDUIdentifier OPTIONAL,
+	uaContentId	[12] UAContentId OPTIONAL }
+
+ChannelReadResult ::= SEQUENCE {
+	channels	[0] PrioritisedChannelList,
+	load1		[1] INTEGER DEFAULT 0,
+	load2		[2] INTEGER DEFAULT 0,
+	currchans	[3] INTEGER DEFAULT 0,
+	maxchans	[4] INTEGER DEFAULT 0}
+
+PrioritisedChannelList ::= SEQUENCE OF PrioritisedChannel
+
+PrioritisedChannel ::= SEQUENCE {
+	channel	ChannelInfo,
+	priority Priority }
+
+ChannelInfo ::= SEQUENCE {
+	channel		[0] Channel,
+	channelDescription [1] PrintableString,
+	oldestMessage	[2] UTCTime,
+	numberMessages	[3] INTEGER,    -- not including DRs
+	volumeMessages	[4] INTEGER,	-- bytes
+	numberActiveProcesses [5] INTEGER,
+	status		[6] ProcStatus,
+	numberReports   [7] INTEGER,
+	direction	[8] BITSTRING {
+		inbound (0),	-- supports inbound traffic
+		outbound (1)	-- supports outbound traffic
+				-- both bits on => does both
+				-- both bits off is internal
+		},
+	chantype	[9] ENUMERATED {
+		mta (0),	-- is an MTA level channel
+		mts (1),	-- is an MTS level channel
+		internal (2),	-- is an internal channel (formatter etc)
+		passive (3)	-- responding channel?
+		},
+	maxprocs	[10] INTEGER DEFAULT 0,
+	numberMtas	[11] INTEGER DEFAULT 0
+	
+	}
+
+MtaRead ::= SEQUENCE {
+	channel Channel,
+	time UTCTime OPTIONAL
+	}
+
+MsgRead ::= SEQUENCE {
+	channel Channel,
+	mta Mta,
+	time UTCTime OPTIONAL
+	}
+
+PrioritisedMtaList ::= SEQUENCE OF PrioritisedMta
+
+PrioritisedMta ::= SEQUENCE {
+	mta MtaInfo,
+	priority Priority }
+
+MtaInfo ::= SEQUENCE {
+	channel		[0] Channel,
+	mta		[1] Mta,
+	oldestMessage	[2] UTCTime,
+	numberMessage	[3] INTEGER, -- not DRs
+	volumeMessages	[4] INTEGER,
+	status		[5] ProcStatus,
+	numberDRs	[6] INTEGER,
+	active		[7] BOOLEAN DEFAULT FALSE,
+	info		[8] IA5String OPTIONAL
+	}
+
+DeliveryStatus ::= SEQUENCE OF IndividualDeliveryStatus
+
+
+IndividualDeliveryStatus ::=  SEQUENCE {
+	recipient [0] RecipientId,
+	status	  [1] ENUMERATED {
+				  -- The QMGR should treat the following
+				  -- as successful.  In the latter cases
+				  -- a DR is processed in conjuction
+				  -- with a different recipient
+		success (0),
+		successSharedDR (1),
+		failureSharedDR (2),
+	
+				  -- The next set are treated by the
+				  -- QMGR as now having to send a DR
+		negativeDR (3),   -- negative DR
+		positiveDR (4),	  -- positive DR
+				  
+
+				  -- the final set are different types
+				  -- of transient failure, needing
+				  -- different QMGR retry strategies
+		messageFailure (5),-- temp failure on the Message (e.g. 
+			  	  -- protocol temp reject)
+		mtaFailure (6),	  -- MTA failure (e.g. couldn't connect)
+		mtaAndMessageFailure (7)  -- Both (e.g. connection bust)
+		},
+	info[2] IA5String OPTIONAL
+	}
+
+
+QMGRControl ::= SEQUENCE {
+	op [0] QMGROp
+	}
+
+QMGROp ::= ENUMERATED {
+	abort (0),	
+	gracefulTerminate (1),
+	restart (2),	-- as if from cold
+	rereadQueue (3),   -- but don't disguard curent information
+	disableSubmission (4),  -- Don't let processes submit
+	enableSubmission (5),
+	disableAll (6),
+	enableAll (7),
+	increasemaxchans(8),
+	decreasemaxchans(9) }
+	
+
+QmgrStatus ::= SEQUENCE {
+	boottime 	UTCTime,
+	messagesIn 	INTEGER,
+	messagesOut 	INTEGER,
+	addrIn		INTEGER,
+	addrOut		INTEGER,
+	opsPerSec 	INTEGER,	-- * 100
+	runnableChans 	INTEGER,	-- * 100
+	msgsInPerSec 	INTEGER,	-- * 100
+	msgsOutPerSec 	INTEGER,	-- * 100
+	maxChans 	INTEGER,
+	currChans 	INTEGER,
+	totalMsgs	INTEGER,
+	totalVolume	INTEGER,
+	totalDrs	INTEGER
+	}
+
+-- P1 definitions included for ease
+
+
+MPDUIdentifier ::=
+	[APPLICATION 4] IMPLICIT SEQUENCE {
+		global	GlobalDomainIdentifier,
+		local	IA5String
+	}
+GlobalDomainIdentifier ::=
+	[APPLICATION 3]
+	    IMPLICIT SEQUENCE {
+		country	CountryName,
+		admd AdministrationDomainName,
+		prmd PrivateDomainIdentifier OPTIONAL
+	    }
+
+CountryName ::=
+	[APPLICATION 1]
+	    CHOICE {
+		numeric NumericString,
+		printable PrintableString
+	    }
+
+AdministrationDomainName ::=
+	[APPLICATION 2]
+	    CHOICE {
+		numeric NumericString,
+		printable PrintableString
+	    }
+
+PrivateDomainIdentifier ::=
+	CHOICE {
+	    numeric NumericString,
+
+	    printable PrintableString
+	}
+
+
+
+END

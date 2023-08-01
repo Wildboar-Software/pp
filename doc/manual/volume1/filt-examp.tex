@@ -1,0 +1,12 @@
+\File{filt\-examp.tai},{12:11},{Dec  3 1991}
+\L{\LB{chan 822touk prog=fcontrol,type=shaper,}}
+\L{\LB{}\Tab{8}{     hdrin=822,hdrout=822\-jntmail,}}
+\L{\LB{}\Tab{8}{     outinfo=\S{}\"rfc822norm \-jnt \-jntsender \$(sender) \-fold 50\"\SE{}}}
+\L{\LB{}}
+\L{\LB{chan g3faxtotxt prog=fcontrol, type=shaper, bptin=g3fax,}}
+\L{\LB{}\Tab{8}{        bptout=ia5, outinfo=\'removebp \S{}\"Group 3 Fax\"\SE{}\',}}
+\L{\LB{}\Tab{8}{        show=\S{}\"Fax \-\> Text Mapper\"\SE{},cost=100,conv=loss}}
+\L{\LB{}}
+\L{\LB{chan dmd2odif prog=fcontrol, type=shaper, bptin=dmd,}}
+\L{\LB{}\Tab{8}{      bptout=odif, outinfo=f\-dmd2odif, }}
+\L{\LB{}\Tab{8}{      show=\S{}\"Diamond \-\> Odif\"\SE{},cost=5,conv=conv}}

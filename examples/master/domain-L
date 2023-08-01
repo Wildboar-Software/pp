@@ -1,0 +1,51 @@
+############################################################
+# 
+# The domain table. This lists all known domains. By default an exact
+# match is required, but a "*." preceeding an entry allows any number of
+# subdomains. This table is set up most of the major top level domains
+# are wildcarded.
+#
+############################################################
+LOC-DOM-MTA:local
+LOC-DOM-SITE:local
+SMTP-RELAY:mta=SMTP-RELAY
+*.arpa:key=arpa
+*.at:key=at
+*.au:key=au
+*.bitnet:key=bitnet
+*.ca:key=ca
+*.cdn:key=cdn
+*.cern.ch:key=cern.ch
+*.cern:key=cern
+*.ch:key=ch
+*.chunet:key=chunet
+*.com:key=com
+*.de:key=de
+*.dk:key=dk
+*.dunet:key=dunet
+*.earn:key=earn
+*.edu:key=edu
+*.es:key=es
+*.fi:key=fi
+*.fr:key=fr
+*.funet:key=funet
+*.gb:key=gb
+*.gov:key=gov
+*.ie:key=ie
+*.iris:key=iris
+*.isanet:key=isanet
+*.kr:key=kr
+*.mil:key=mil
+*.net:key=net
+*.nl:key=nl
+*.nz:key=nz
+*.org:key=org
+*.osiride:key=osiride
+*.pt:key=pt
+*.riup:key=riup
+*.se:key=se
+*.sunet:key=sunet
+*.surfnet:key=surfnet
+*.uninett:key=uninett
+*.us:key=us
+*.uucp:key=uucp

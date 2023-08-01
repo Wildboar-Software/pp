@@ -1,0 +1,50 @@
+############################################################
+#
+# This is a partial mapping for domains. It is not complete but
+# covers most of those in common usage.
+#
+# SMTP-RELAY should be replaced by a host reachable by SMTP that
+# can do the routing for you.
+#
+############################################################
+SMTP-RELAY:SMTP-RELAY(smtp)
+arpa:SMTP-RELAY(smtp)
+at:SMTP-RELAY(smtp)
+au:SMTP-RELAY(smtp)
+bitnet:SMTP-RELAY(smtp)
+ca:SMTP-RELAY(smtp)
+cdn:SMTP-RELAY(smtp)
+cern.ch:SMTP-RELAY(smtp)
+cern:SMTP-RELAY(smtp)
+ch:SMTP-RELAY(smtp)
+chunet:SMTP-RELAY(smtp)
+com:SMTP-RELAY(smtp)
+de:SMTP-RELAY(smtp)
+dk:SMTP-RELAY(smtp)
+dunet:SMTP-RELAY(smtp)
+earn:SMTP-RELAY(smtp)
+edu:SMTP-RELAY(smtp)
+es:SMTP-RELAY(smtp)
+fi:SMTP-RELAY(smtp)
+fr:SMTP-RELAY(smtp)
+funet:SMTP-RELAY(smtp)
+gb:SMTP-RELAY(smtp)
+gov:SMTP-RELAY(smtp)
+ie:SMTP-RELAY(smtp)
+iris:SMTP-RELAY(smtp)
+isanet:SMTP-RELAY(smtp)
+kr:SMTP-RELAY(smtp)
+mil:SMTP-RELAY(smtp)
+net:SMTP-RELAY(smtp)
+nl:SMTP-RELAY(smtp)
+nz:SMTP-RELAY(smtp)
+org:SMTP-RELAY(smtp)
+osiride:SMTP-RELAY(smtp)
+pt:SMTP-RELAY(smtp)
+riup:SMTP-RELAY(smtp)
+se:SMTP-RELAY(smtp)
+sunet:SMTP-RELAY(smtp)
+surfnet:SMTP-RELAY(smtp)
+uninett:SMTP-RELAY(smtp)
+us:SMTP-RELAY(smtp)
+uucp:SMTP-RELAY(smtp)

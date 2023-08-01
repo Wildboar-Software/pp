@@ -1,0 +1,426 @@
+\File{tailor.tai},{12:13},{Dec 13 1991}
+\L{\LB{\C{}\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\CE{}\L{\LB{\C{}\#}}
+\CE{}\L{\LB{\C{}\# Tailor file for PP}}
+\CE{}\L{\LB{\C{}\#}}
+\CE{}\L{\LB{\C{}\#      This version for sites with local smtp}}
+\CE{}\L{\LB{\C{}\#}}
+\CE{}\L{\LB{\C{}\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\CE{}\L{\LB{}}
+\L{\LB{\C{}\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\CE{}\L{\LB{\C{}\#}}
+\CE{}\L{\LB{\C{}\# The following variables will need tailoring }}
+\CE{}\L{\LB{\C{}\#}}
+\CE{}\L{\LB{\C{}\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\CE{}\L{\LB{\C{}\#}}
+\CE{}\L{\LB{\C{}\# The loc\_dom\_mta is the host that the MTA will reside on and execute from}}
+\CE{}\L{\LB{\C{}\# It is a fully qualified domain name and represent the physical machine}}
+\CE{}\L{\LB{\C{}\#}\Tab{8}{Examples might be}}
+\CE{}\L{\LB{\C{}\#}\Tab{16}{cheetah.nyser.net}}
+\CE{}\L{\LB{\C{}\#      }\Tab{16}{violet.berkeley.edu}}
+\CE{}\L{\LB{\C{}\#}\Tab{16}{john.cs.nott.ac.uk}}
+\CE{}\L{\LB{\C{}\#}}
+\CE{}\L{\LB{loc\_dom\_mta}\Tab{16}{lancaster.xtel.co.uk}}
+\L{\LB{\C{}\#}}
+\CE{}\L{\LB{\C{}\# The Sitename is what the rest of the world sees you as. This is typically}}
+\CE{}\L{\LB{\C{}\# a domain shorter than the full domain name. It is the name used to represent}}
+\CE{}\L{\LB{\C{}\# your site or group as a whole. This name normally hides the individual }}
+\CE{}\L{\LB{\C{}\# machine names}}
+\CE{}\L{\LB{\C{}\#}\Tab{8}{Examples might be}}
+\CE{}\L{\LB{\C{}\#}\Tab{16}{berkeley.edu}}
+\CE{}\L{\LB{\C{}\#}\Tab{16}{nyser.net}}
+\CE{}\L{\LB{\C{}\#}\Tab{16}{cs.nott.ac.uk}}
+\CE{}\L{\LB{\C{}\#}}
+\CE{}\L{\LB{loc\_dom\_site}\Tab{16}{xtel.co.uk}}
+\L{\LB{\C{}\#}}
+\CE{}\L{\LB{\C{}\# The postmaster should include the local site name}}
+\CE{}\L{\LB{\C{}\# e.g. postmaster@berkeley.edu or postmaster@cs.nott.ac.uk}}
+\CE{}\L{\LB{\C{}\#}}
+\CE{}\L{\LB{postmaster}\Tab{16}{postmaster@xtel.co.uk}}
+\L{\LB{\C{}\#}}
+\CE{}\L{\LB{\C{}\# The pplogin should be the username of the owner of pp.}}
+\CE{}\L{\LB{\C{}\#}}
+\CE{}\L{\LB{pplogin}\Tab{16}{pp}}
+\L{\LB{\C{}\#}}
+\CE{}\L{\LB{\C{}\# The qmgrhost should be the same as the name found in isoentities file.}}
+\CE{}\L{\LB{\C{}\# This can be the same as loc\_dom\_mta name}}
+\CE{}\L{\LB{\C{}\#}}
+\CE{}\L{\LB{pptsapd\_addr}\Tab{16}{LOCAL\-ETHER=lancaster+20001}}
+\L{\LB{qmgrhost}\Tab{16}{lancaster}}
+\L{\LB{\C{}\#}}
+\CE{}\L{\LB{\C{}\# The local or name should be the name of your site in X.400 terms.}}
+\CE{}\L{\LB{\C{}\# This is attribute value based, and starts with organisational units and}}
+\CE{}\L{\LB{\C{}\# works up to country. If you are unsure, leave it with just a country}}
+\CE{}\L{\LB{\C{}\# component, e.g. \"\/C=GB\/\"}}
+\CE{}\L{\LB{\C{}\#}}
+\CE{}\L{\LB{loc\_or}\Tab{16}{\S{}\"\/o=xtel\/prmd=X\-Tel Services\/admd= \/c=GB\/\"\SE{}}}
+\L{\LB{\C{}\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\CE{}\L{\LB{\C{}\#}}
+\CE{}\L{\LB{\C{}\# That is the end of the things you must tailor \- the rest are}}
+\CE{}\L{\LB{\C{}\# probably ok \- but you should check.}}
+\CE{}\L{\LB{\C{}\#}}
+\CE{}\L{\LB{\C{}\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\CE{}\L{\LB{}}
+\L{\LB{delim1}\Tab{16}{\S{}\"\!1\!1\!1\!1\!12\"\SE{}}}
+\L{\LB{delim2}\Tab{16}{\S{}\"\!1\!1\!1\!1\!12\"\SE{}}}
+\L{\LB{\C{}\#returntime 36}}
+\CE{}\L{\LB{\C{}\#queuestruct}\Tab{16}{100}}
+\CE{}\L{\LB{dap\_user}\Tab{16}{\S{}\"c=GB@o=X\-Tel Services Ltd@cn=lancaster@cn=pp qmgr\"\SE{}}}
+\L{\LB{}}
+\L{\LB{}}
+\L{\LB{authchannel}\Tab{16}{free}}
+\L{\LB{authloglevel}\Tab{16}{high}}
+\L{\LB{wrndfldir}\Tab{16}{warnings}}
+\L{\LB{\C{}\#submit\_addr}\Tab{16}{lancaster:pp\-submit}}
+\CE{}\L{\LB{}}
+\L{\LB{\C{}\# Body types}}
+\CE{}\L{\LB{}}
+\L{\LB{headertype}\Tab{16}{822 822\-jnt 822\-us p2 822\-uk p22 ipn g3fax ps}}
+\L{\LB{bodypart}\Tab{16}{ia5 dmd odif g3fax ipm voice iso6937 ia5\-dk ps ms}}
+\L{\LB{bodypart}\Tab{16}{oid.0.9.2342.60200172.99.1.4}}
+\L{\LB{}}
+\L{\LB{}}
+\L{\LB{\C{}\#  **\-\- Mapping tables \-\-**}}
+\CE{}\L{\LB{\C{}\#}}
+\CE{}\L{\LB{\C{}\# All of these table MUST have the names given here}}
+\CE{}\L{\LB{tbl}\Tab{8}{aliases}\Tab{24}{show=\S{}\"Aliases: mapping \-\> local id\"\SE{},}}
+\L{\LB{}\Tab{24}{flags=dbm}}
+\L{\LB{tbl}\Tab{8}{users}\Tab{24}{show=\S{}\"Users: mapping local id \-\> disposition\"\SE{},}}
+\L{\LB{}\Tab{24}{flags=dbm}}
+\L{\LB{tbl}\Tab{8}{x400\-developers\-aliases}\Tab{32}{show=\S{}\"Aliases: mapping \-\> local id\"\SE{},}}
+\L{\LB{}\Tab{24}{flags=linear}}
+\L{\LB{tbl}\Tab{8}{x400\-developers\-users}\Tab{32}{show=\S{}\"Users: mapping local id \-\> disposition\"\SE{},}}
+\L{\LB{}\Tab{24}{flags=linear}}
+\L{\LB{tbl}\Tab{8}{domain}\Tab{24}{show=\S{}\"Mapping domain key \-\>full domain\/MTA\"\SE{},}}
+\L{\LB{}\Tab{24}{flags=dbm}}
+\L{\LB{tbl}\Tab{8}{or}\Tab{24}{show=\S{}\"Mapping O\/R Address \-\> MTA\"\SE{},flags=dbm}}
+\L{\LB{tbl}\Tab{8}{channel}\Tab{24}{show=\S{}\"Binding MTA \-\> Channels\"\SE{},flags=dbm}}
+\L{\LB{tbl}\Tab{8}{or2rfc}\Tab{24}{show=\S{}\"RFC 987: X.400 \-\> RFC 822\"\SE{},flags=dbm}}
+\L{\LB{tbl}\Tab{8}{rfc2or}\Tab{24}{show=\S{}\"RFC 987: RFC 822 \-\> X.400\"\SE{},flags=dbm}}
+\L{\LB{tbl}\Tab{8}{rfc1148gate}\Tab{24}{show=\S{}\"Gateways that perform RFC 1148 conversions\"\SE{},}}
+\L{\LB{}\Tab{24}{flags=dbm}}
+\L{\LB{tbl}\Tab{8}{auth.channel}\Tab{24}{show=\S{}\"Authorisation: channel policy\"\SE{},flags=linear}}
+\L{\LB{tbl}\Tab{8}{auth.mta}\Tab{24}{show=\S{}\"Authorisation: mta based\"\SE{},flags=linear}}
+\L{\LB{tbl}\Tab{8}{auth.user}\Tab{24}{show=\S{}\"Authorisation: user based\"\SE{},flags=linear}}
+\L{\LB{tbl}\Tab{8}{auth.qmgr}\Tab{24}{show=\S{}\"Authorisation: qmgr control\"\SE{},flags=dbm}}
+\L{\LB{\C{}\#  **\-\- Channel tables \-\-**}}
+\CE{}\L{\LB{\C{}\#}}
+\CE{}\L{\LB{\C{}\# Needed by individual channels, not submit}}
+\CE{}\L{\LB{tbl}\Tab{8}{local}\Tab{24}{file=\S{}\"ch.local\"\SE{},}}
+\L{\LB{}\Tab{24}{show=\S{}\"local id \-\> user id + home directory\"\SE{},}}
+\L{\LB{}\Tab{24}{flags=dbm}}
+\L{\LB{}}
+\L{\LB{tbl}\Tab{8}{x400in84}\Tab{24}{file=\S{}\"ch.x400in84\"\SE{},}}
+\L{\LB{}\Tab{24}{show=\S{}\"MTA \-\> connect info\"\SE{},flags=linear}}
+\L{\LB{tbl}\Tab{8}{x400out84}\Tab{24}{file=\S{}\"ch.x400out84\"\SE{},}}
+\L{\LB{}\Tab{24}{show=\S{}\"X.400(84) connect info \-\> MTA + other info\"\SE{},}}
+\L{\LB{}\Tab{24}{flags=linear}}
+\L{\LB{tbl}\Tab{8}{x400in88}\Tab{24}{file=\S{}\"ch.x400in88\"\SE{},}}
+\L{\LB{}\Tab{24}{show=\S{}\"MTA \-\> connect info\"\SE{},flags=linear}}
+\L{\LB{tbl}\Tab{8}{x400out88}\Tab{24}{file=\S{}\"ch.x400out88\"\SE{},}}
+\L{\LB{}\Tab{24}{show=\S{}\"X.400(88) connect info \-\> MTA + other info\"\SE{},}}
+\L{\LB{}\Tab{24}{flags=linear}}
+\L{\LB{tbl}\Tab{8}{shell}\Tab{24}{file=\S{}\"ch.shell\"\SE{},}}
+\L{\LB{}\Tab{24}{show=\S{}\"info for shell chan\"\SE{}}}
+\L{\LB{}\Tab{24}{flags=dbm}}
+\L{\LB{tbl}\Tab{8}{list}\Tab{24}{file=\S{}\"ch.list\"\SE{},}}
+\L{\LB{}\Tab{24}{show=\S{}\"Lists: distribution lists\"\SE{},}}
+\L{\LB{}\Tab{24}{flags=dbm}}
+\L{\LB{tbl}\Tab{8}{uucp}\Tab{24}{file=\S{}\"ch.uucp\"\SE{}}}
+\L{\LB{}\Tab{24}{show=\S{}\"UUCP: rfc822 \-\> uucp\"\SE{},}}
+\L{\LB{}\Tab{24}{flags=dbm}}
+\L{\LB{tbl     fax}\Tab{24}{file=\S{}\"ch.fax\"\SE{},}}
+\L{\LB{                        show=\S{}\"FAX: mappings and info\"\SE{},}}
+\L{\LB{                        flags=linear}}
+\L{\LB{tbl}\Tab{8}{mslocal}\Tab{24}{file=\S{}\"ch.mslocal\"\SE{},}}
+\L{\LB{}\Tab{24}{show=\S{}\"Message Store:local id \-\> user id,home directory\"\SE{},}}
+\L{\LB{}\Tab{24}{flags=linear}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{822\-local}\Tab{24}{    prog=local,}}
+\L{\LB{}\Tab{8}{show=\S{}\"Local Delivery channel\"\SE{},type=both,}}
+\L{\LB{}\Tab{8}{sort=\S{}\"user time\"\SE{},adr=822,adr\-order=usapref,}}
+\L{\LB{}\Tab{8}{hdrin=822,hdrout=822\-us,}}
+\L{\LB{}\Tab{8}{bptin=ia5,bptout=ia5,}}
+\L{\LB{}\Tab{8}{content\-out=822,outtable=local,access=mts,drchan=dr2rfc}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{bugs\-local}\Tab{24}{    prog=local,}}
+\L{\LB{}\Tab{8}{show=\S{}\"Local Delivery channel for Bug Reports\"\SE{},type=both,}}
+\L{\LB{}\Tab{8}{sort=\S{}\"user time\"\SE{},adr=822,adr\-order=usapref,}}
+\L{\LB{}\Tab{8}{hdrin=822,hdrout=822\-us,}}
+\L{\LB{}\Tab{8}{bptin=ia5,bptout=ia5,}}
+\L{\LB{}\Tab{8}{content\-out=822,outtable=local,access=mts,drchan=dr2rfc}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{xua}\Tab{24}{show=\S{}\"XUA Submission Channel\"\SE{},type=in,}}
+\L{\LB{}\Tab{24}{access=mts,adr\-order=ukpref,}}
+\L{\LB{}\Tab{24}{adr=x400, access=mts,}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{x400in84}\Tab{24}{prog=x400in84,show=\S{}\"X400 inbound\"\SE{},type=in,}}
+\L{\LB{}\Tab{24}{content\-in=p2,adr=x400,}}
+\L{\LB{}\Tab{24}{adr\-order=ukpref,intable=x400in84}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{x400in88}\Tab{24}{prog=x400in88,show=\S{}\"X400 inbound (1988)\"\SE{},type=in,}}
+\L{\LB{}\Tab{24}{content\-in=p22,adr=x400,}}
+\L{\LB{}\Tab{24}{adr\-order=ukpref,intable=x400in88}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{x400out84}\Tab{24}{prog=x400out84,show=\S{}\"X400 outbound\"\SE{},type=out,}}
+\L{\LB{}\Tab{24}{adr=x400,adr\-order=ukpref,}}
+\L{\LB{}\Tab{24}{content\-out=p2,}}
+\L{\LB{}\Tab{24}{hdrout=p2,}}
+\L{\LB{}\Tab{24}{bptout=\S{}\"ia5,g3fax,odif\"\SE{},}}
+\L{\LB{}\Tab{24}{outtable=x400out84}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{x400out88}\Tab{24}{prog=x400out88,show=\S{}\"X400 outbound\"\SE{},type=out,}}
+\L{\LB{}\Tab{24}{adr=x400,adr\-order=ukpref,}}
+\L{\LB{}\Tab{24}{content\-out=p22,}}
+\L{\LB{}\Tab{24}{hdrout=p22,}}
+\L{\LB{}\Tab{24}{bptout=\S{}\"ia5,g3fax,voice,odif,iso6937,oid.0.9.2342.60200172.99.1.4\"\SE{},}}
+\L{\LB{}\Tab{24}{outtable=x400out88}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{mslocal}\Tab{24}{prog=mslocal,show=\S{}\"MS local delivery\"\SE{},type=out,}}
+\L{\LB{}\Tab{24}{hdrout=\S{}\"p22,p2,ipn\"\SE{},}}
+\L{\LB{}\Tab{24}{bptout=\S{}\"ia5,g3fax,voice,iso6937\"\SE{},outtable=mslocal,}}
+\L{\LB{}\Tab{24}{sort=\S{}\"user time\"\SE{},access=mts}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{mslocal\-beta}\Tab{24}{prog=mslocalbeta,show=\S{}\"MS local delivery\"\SE{},type=out,}}
+\L{\LB{}\Tab{24}{hdrout=\S{}\"p22,p2,ipn\"\SE{},}}
+\L{\LB{}\Tab{24}{bptout=\S{}\"ia5,g3fax,voice,iso6937,oid.0.9.2342.60200172.99.1.4\"\SE{},outtable=mslocal,}}
+\L{\LB{}\Tab{24}{sort=\S{}\"user time\"\SE{},access=mts}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{smtp}\Tab{24}{prog=smtp,show=\S{}\"with SMTP (PP)\"\SE{},type=both,}}
+\L{\LB{}\Tab{24}{adr=822,adr\-order=usapref,drchan=dr2rfc,}}
+\L{\LB{}\Tab{24}{bptout=ia5,hdrout=822\-us,content\-out=822,}}
+\L{\LB{}}
+\L{\LB{chan    pac\-janet}\Tab{24}{prog=\S{}\"greyout \-P\"\SE{},show=\S{}\"via JANET with NIFTP (PP)\"\SE{},}}
+\L{\LB{}\Tab{24}{type=in, adr=822,adr\-order=ukpref,}}
+\L{\LB{}\Tab{24}{hdrin=822\-us,}}
+\L{\LB{}\Tab{24}{outinfo=janet}}
+\L{\LB{}}
+\L{\LB{chan    gb\-janet        prog=\S{}\"greyout \-P\"\SE{},show=\S{}\"via JANET with NIFTP (PP)\"\SE{},}}
+\L{\LB{}\Tab{24}{type=both, adr=822,adr\-order=ukpref,}}
+\L{\LB{}\Tab{24}{hdrout=822\-jnt,}}
+\L{\LB{}\Tab{24}{bptout=ia5,drchan=dr2rfc,}}
+\L{\LB{}\Tab{24}{content\-out=822,outinfo=janet}}
+\L{\LB{\C{}\#}\Tab{24}{mta=much.cs.nott.ac.uk,}}
+\CE{}\L{\LB{}}
+\L{\LB{chan}\Tab{8}{gb\-pss}\Tab{24}{prog=smtp,key=ipss,}}
+\L{\LB{}\Tab{24}{show=\S{}\"via PSS with NIFTP (PP)\"\SE{},type=both,}}
+\L{\LB{}\Tab{24}{adr=822,adr\-order=ukpref,drchan=dr2rfc,}}
+\L{\LB{}\Tab{24}{bptout=ia5,hdrout=822\-jnt,}}
+\L{\LB{}\Tab{24}{content\-out=822,mta=much.cs.nott.ac.uk}}
+\L{\LB{}}
+\L{\LB{chan    fax             prog=G3Fax, show=\S{}\"Fax channel\"\SE{},type=both,}}
+\L{\LB{                        content\-in=p22, hdrout=g3fax, bptout=g3fax, }}
+\L{\LB{}\Tab{24}{drchan=dr2rfc,outtable=fax, sort=\S{}\"user time\"\SE{},}}
+\L{\LB{\C{}\#                       outinfo=\"in=\/dev\/ttyb,out=\/dev\/faxout,confirm,debug,master=gal@xtel.co.uk\"}}
+\CE{}\L{\LB{                        outinfo=\S{}\"in=\/dev\/ttyb,out=\/dev\/faxout,confirm,softcar,debug\"\SE{}}}
+\L{\LB{}\Tab{24}{ininfo=\S{}\"in=\/dev\/faxin,softcar,confirm,debug,master=gal@xtel.co.uk\"\SE{}}}
+\L{\LB{}}
+\L{\LB{chan    faxyuch         prog=G3Fax, show=\S{}\"Fax channel\"\SE{},type=both,}}
+\L{\LB{}\Tab{24}{content\-in=p22,}}
+\L{\LB{                        bptout=\S{}\"g3fax,ia5\"\SE{}, drchan=dr2rfc, outtable=fax,}}
+\L{\LB{                        outinfo=\S{}\"in=\/dev\/ttyb,out=\/dev\/ttyb,master=faxmaster\"\SE{}}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{dirlist}\Tab{24}{prog=dirlist,show=\S{}\"Directory List channel\"\SE{},type=both,}}
+\L{\LB{}\Tab{24}{drchan=dr2rfc,adr=x400,adr\-order=usapref,}}
+\L{\LB{}\Tab{24}{sort=\S{}\"user time\"\SE{}, outinfo=\S{}\"dn=C=GB@O=X\-Tel Services Ltd@CN=lancaster\"\SE{}}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{list}\Tab{24}{prog=list,show=\S{}\"List channel\"\SE{},type=both,}}
+\L{\LB{}\Tab{24}{adr\-order=usapref,outinfo=\S{}\"linked\"\SE{},}}
+\L{\LB{}\Tab{24}{outtable=list,drchan=dr2rfc,sort=\S{}\"user time\"\SE{}}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{uucp}\Tab{24}{prog=uucp\-out,key=\S{}\"uucp\-out,rmail\"\SE{},}}
+\L{\LB{}\Tab{24}{show=\S{}\"UUCP channel\"\SE{},type=both,}}
+\L{\LB{}\Tab{24}{adr=822,adr\-order=ukpref,outtable=uucp}}
+\L{\LB{}\Tab{24}{outinfo=\S{}\"uux=\/tmp\/uux,host=nott\-cs\"\SE{},drchan=dr2rfc}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{dr2rfc}\Tab{24}{prog=dr2rfc,show=\S{}\"Dr2rfc channel\"\SE{},type=both,}}
+\L{\LB{}\Tab{24}{adr=822,adr\-order=ukpref,}}
+\L{\LB{}\Tab{24}{bptin=ia5,hdrin=822,}}
+\L{\LB{}\Tab{24}{outinfo=\S{}\"return=all order=uk\"\SE{},}}
+\L{\LB{}\Tab{24}{content\-out=822}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{shell}\Tab{24}{prog=shell,type=out,access=mts}}
+\L{\LB{}\Tab{24}{show=\S{}\"Shell channel\"\SE{},}}
+\L{\LB{}\Tab{24}{outtable=shell,sort=\S{}\"user time\"\SE{},}}
+\L{\LB{}\Tab{24}{bptout=\S{}\"ia5,ps\"\SE{},hdrout=822\-uk}}
+\L{\LB{}}
+\L{\LB{\C{}\# QMGR special channels (load\/manage\/clean)}}
+\CE{}\L{\LB{}}
+\L{\LB{chan}\Tab{8}{qmgr\-load}\Tab{24}{prog=qmgr\-load,show=\S{}\"Loading the QMGR\"\SE{},}}
+\L{\LB{}\Tab{24}{type=qmgrload,outinfo=\S{}\"5\"\SE{};}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{msg\-clean}\Tab{24}{prog=msg\-clean,show=\S{}\"Removing finished message\"\SE{}}}
+\L{\LB{}\Tab{24}{type=delete}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{trash}\Tab{24}{prog=trash,show=\S{}\"Removing trash\"\SE{}}}
+\L{\LB{}\Tab{24}{type=debris,outinfo=5h}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{timeout}\Tab{24}{prog=timeout,show=\S{}\"Timeout messages\"\SE{}}}
+\L{\LB{}\Tab{24}{type=timeout}}
+\L{\LB{}}
+\L{\LB{chan    warning}\Tab{24}{prog=warnings,show=\S{}\"Send warning messages\"\SE{},}}
+\L{\LB{}\Tab{24}{type=warn}}
+\L{\LB{chan    splitter}\Tab{24}{prog=splitter,type=split,}}
+\L{\LB{}\Tab{24}{show=\S{}\"Divide message into single\"\SE{}}}
+\L{\LB{recipient messages}}
+\L{\LB{\C{}\#  **\-\- shaper channels \-\-**}}
+\CE{}\L{\LB{}}
+\L{\LB{\C{}\#   Flatteners}}
+\CE{}\L{\LB{}}
+\L{\LB{chan}\Tab{8}{p2flatten}\Tab{24}{prog=p2flatten,show=\S{}\"Structured message \-\> P2\"\SE{},}}
+\L{\LB{}\Tab{24}{type=shaper,content\-out=p2}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{822flatten}\Tab{24}{prog=rfc934,type=shaper,content\-out=822}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{p22flatten}\Tab{24}{prog=p2flatten,show=\S{}\"Structured Message \-\> P22\"\SE{},}}
+\L{\LB{}\Tab{24}{type=shaper,content\-out=p22}}
+\L{\LB{}}
+\L{\LB{\C{}\#   Unflatteners}}
+\CE{}\L{\LB{}}
+\L{\LB{chan}\Tab{8}{p2explode}\Tab{24}{prog=p2explode,type=shaper,content\-in=p2}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{p22explode}\Tab{24}{prog=p2explode,type=shaper,content\-in=p22}}
+\L{\LB{}}
+\L{\LB{}}
+\L{\LB{\C{}\# Header Filters}}
+\CE{}\L{\LB{chan    822tofax        prog=fcontrol,type=shaper,}}
+\L{\LB{                        hdrin=822\-us,hdrout=g3fax,}}
+\L{\LB{                        outinfo=\S{}\"hdr2fax \-from \$(400sender) \-to \$(400recip) \-subject \$(ua\-id) \-table \$(outtable) \-outmta \$(outmta)\"\SE{},outtable=fax,}}
+\L{\LB{                        cost=20,solo\-proc=yes}}
+\L{\LB{chan}\Tab{8}{822touk}\Tab{24}{prog=fcontrol,type=shaper,}}
+\L{\LB{}\Tab{24}{hdrin=822,}}
+\L{\LB{}\Tab{24}{hdrout=822\-uk,}}
+\L{\LB{}\Tab{24}{outinfo=\S{}\"rfc822norm \-jnt \-bigend\"\SE{}}}
+\L{\LB{chan}\Tab{8}{822tojnt}\Tab{24}{prog=fcontrol,type=shaper,}}
+\L{\LB{}\Tab{24}{hdrin=822,hdrout=822\-jnt,}}
+\L{\LB{}\Tab{24}{outinfo=\S{}\"rfc822norm \-jnt \-bigend \-jntsender \$(822SENDER)\"\SE{}}}
+\L{\LB{chan}\Tab{8}{822tous}\Tab{24}{prog=fcontrol,type=shaper,hdrin=822,}}
+\L{\LB{}\Tab{24}{hdrout=822\-us,}}
+\L{\LB{}\Tab{24}{outinfo=\S{}\"rfc822norm \-822 \-littleend\"\SE{}}}
+\L{\LB{chan}\Tab{8}{822top2}\Tab{24}{prog=RFCtoP2,type=shaper,hdrin=822\-us,conv=1148}}
+\L{\LB{}\Tab{24}{hdrout=p2,cost=10,}}
+\L{\LB{}\Tab{24}{show=\S{}\"RFC1148 RFC 822 \-\> P2\"\SE{}}}
+\L{\LB{chan}\Tab{8}{822top22}\Tab{24}{prog=RFCtoP2,type=shaper,hdrin=822\-us,conv=1148}}
+\L{\LB{}\Tab{24}{hdrout=p22,cost=10,}}
+\L{\LB{}\Tab{24}{show=\S{}\"RFC1148 RFC 822 \-\> P22\"\SE{}}}
+\L{\LB{chan}\Tab{8}{p2to822}\Tab{24}{prog=P2toRFC,type=shaper,hdrout=822,conv=1148,}}
+\L{\LB{}\Tab{24}{hdrin=\S{}\"ipn,p2\"\SE{},cost=10,}}
+\L{\LB{}\Tab{24}{show=\S{}\"RFC1148 P2 \-\> RFC 822\"\SE{}}}
+\L{\LB{chan}\Tab{8}{p22to822}\Tab{24}{prog=P2toRFC,type=shaper,hdrout=822,conv=1148}}
+\L{\LB{}\Tab{24}{hdrin=\S{}\"ipn,p22\"\SE{},cost=10,}}
+\L{\LB{}\Tab{24}{show=\S{}\"RFC1148 P22 \-\> RFC 822\"\SE{}}}
+\L{\LB{chan}\Tab{8}{p22top2}\Tab{24}{prog=fcontrol,type=shaper,hdrout=p2,hdrin=p22,}}
+\L{\LB{}\Tab{24}{show=\S{}\"P22 to P2 downgrade\"\SE{},}}
+\L{\LB{}\Tab{24}{conv=conv,cost=10,outinfo=\S{}\"p2norm \-downgrade\"\SE{}}}
+\L{\LB{\C{}\#identity map}}
+\CE{}\L{\LB{chan}\Tab{8}{p2top22}\Tab{24}{prog=fcontrol,type=shaper,hdrout=p22,hdrin=p2,}}
+\L{\LB{}\Tab{24}{show=\S{}\"P2 to P22 upgrade\"\SE{},cost=1,}}
+\L{\LB{}\Tab{24}{outinfo=\S{}\"\/bin\/cat\"\SE{}}}
+\L{\LB{}}
+\L{\LB{\C{}\# Body part filters}}
+\CE{}\L{\LB{}}
+\L{\LB{chan    ia5\-dk2ia5}\Tab{24}{prog=fcontrol,type=shaper,bptin=ia5\-dk,}}
+\L{\LB{}\Tab{24}{bptout=ia5,show=\S{}\"Danish ia5 to ia5\"\SE{},}}
+\L{\LB{}\Tab{24}{conv=loss,outinfo=\S{}\"charset DK 38 UK 29\"\SE{}}}
+\L{\LB{}\Tab{24}{}}
+\L{\LB{chan    iso6937totxt}\Tab{24}{prog=fcontrol,type=shaper,bptin=iso6937,}}
+\L{\LB{}\Tab{24}{bptout=ia5,conv=loss,cost=15,}}
+\L{\LB{}\Tab{24}{outinfo=\S{}\"asn \-inchar iso\_6937\-2\-add \-outchar irv \-inasn motis\-86\-6937 \-outasn ia5\"\SE{},}}
+\L{\LB{}\Tab{24}{show=\S{}\"ISO6937 \-\> IA5\"\SE{}}}
+\L{\LB{}}
+\L{\LB{chan}\Tab{8}{g3faxtotxt}\Tab{24}{prog=fcontrol,type=shaper,bptin=g3fax,}}
+\L{\LB{}\Tab{24}{bptout=ia5,outinfo=\S{}\"removebp G3Fax\"\SE{},}}
+\L{\LB{}\Tab{24}{show=\S{}\"Fax \-\> Text mapper\"\SE{},cost=100,conv=loss}}
+\L{\LB{chan    txttofax        prog=fcontrol,type=shaper,bptin=ia5,}}
+\L{\LB{                        bptout=g3fax,}}
+\L{\LB{}\Tab{24}{outinfo=\S{}\"ia52fax \-table \$(outtable)\"\SE{},outtable=fax,}}
+\L{\LB{                        show=\S{}\"ia5 \-\> g3fax mapper\"\SE{}}}
+\L{\LB{}}
+\L{\LB{chan    faxtops}\Tab{24}{prog=fcontrol,type=shaper,bptin=g3fax,}}
+\L{\LB{}\Tab{24}{bptout=ps,outinfo=\S{}\"fax2ps\"\SE{},show=\S{}\"fax \-\> postscript\"\SE{}}}
+\L{\LB{}}
+\L{\LB{chan    mstops}\Tab{24}{prog=fcontrol,type=shaper,bptin=ms,}}
+\L{\LB{}\Tab{24}{bptout=ps,outinfo=\S{}\"\/usr\/local\/bin\/psroff \-ms \-t\"\SE{},}}
+\L{\LB{}\Tab{24}{show=\S{}\"ms macros \-\> postscript\"\SE{}}}
+\L{\LB{}}
+\L{\LB{chan    mstoia5}\Tab{24}{prog=fcontrol,type=shaper,bptin=ms,}}
+\L{\LB{}\Tab{24}{bptout=ia5,outinfo=\S{}\"\/bin\/cat\"\SE{},}}
+\L{\LB{}\Tab{24}{show=\S{}\"MS\-\>Text mapper\"\SE{},cost=100,conv=loss}}
+\L{\LB{}}
+\L{\LB{chan    xxtotxt}\Tab{16}{prog=fcontrol,type=shaper,bptin=oid.0.9.2342.60200172.99.1.4,}}
+\L{\LB{}\Tab{24}{bptout=ia5,outinfo=\S{}\"removebp oid.0.9.2342.60200172.99.1.4\"\SE{}}}
+\L{\LB{}\Tab{24}{show=\S{}\"XXX \-\> Text mapper\"\SE{},cost=100,conv=loss}}
+\L{\LB{}}
+\L{\LB{chan    voicetotxt}\Tab{24}{prog=fcontrol,type=shaper,bptin=voice,}}
+\L{\LB{}\Tab{24}{bptout=ia5,outinfo=\S{}\"removebp Voice\"\SE{}}}
+\L{\LB{}\Tab{24}{show=\S{}\"Voice \-\> Text mapper\"\SE{},cost=100,conv=loss}}
+\L{\LB{}}
+\L{\LB{\C{}\#  **\-\- Logging for the rest of the prog \-\-**}}
+\CE{}\L{\LB{\C{}\#}}
+\CE{}\L{\LB{authlog level=notice, size=400}}
+\L{\LB{operlog level=notice, size=400}}
+\L{\LB{normlog level=notice, size=400, sflags=zero}}
+\L{\LB{}}
+\L{\LB{822flatten}\Tab{16}{normlog}\Tab{24}{ file=filter}}
+\L{\LB{p2flatten}\Tab{16}{normlog}\Tab{24}{ file=filter}}
+\L{\LB{822touk}\Tab{16}{normlog}\Tab{24}{ file=filter}}
+\L{\LB{822tous}\Tab{16}{normlog}\Tab{24}{ file=filter}}
+\L{\LB{dr2rfc}\Tab{16}{normlog}\Tab{24}{ file=filter}}
+\L{\LB{fcontrol}\Tab{16}{normlog}\Tab{24}{ file=filter}}
+\L{\LB{odif2txt}\Tab{16}{normlog}\Tab{24}{ file=filter}}
+\L{\LB{p2explode}\Tab{16}{normlog}\Tab{24}{ file=filter}}
+\L{\LB{rfc822norm}\Tab{16}{normlog}\Tab{24}{ file=filter}}
+\L{\LB{trash}\Tab{16}{normlog}\Tab{24}{ file=filter}}
+\L{\LB{}}
+\L{\LB{822top2}\Tab{16}{normlog}\Tab{24}{ file=rfc987}}
+\L{\LB{p2to822}\Tab{16}{normlog}\Tab{24}{ file=rfc987}}
+\L{\LB{}}
+\L{\LB{list}\Tab{16}{normlog}\Tab{24}{ file=lists}}
+\L{\LB{}}
+\L{\LB{qmgr}\Tab{16}{normlog}\Tab{24}{ file=qmgr}}
+\L{\LB{qmgr\-load}\Tab{16}{normlog}\Tab{24}{ file=qmgr}}
+\L{\LB{}}
+\L{\LB{smtp}\Tab{16}{normlog}\Tab{24}{ file=smtp}}
+\L{\LB{smtpsrvr}\Tab{16}{normlog}\Tab{24}{ file=smtp}}
+\L{\LB{}}
+\L{\LB{greyout}\Tab{16}{normlog}\Tab{24}{ file=greyout}}
+\L{\LB{gb\-janet}\Tab{16}{normlog  file=greyin}}
+\L{\LB{submit}\Tab{16}{normlog}\Tab{24}{ file=submit dflags=close}}
+\L{\LB{}}
+\L{\LB{local}\Tab{16}{normlog}\Tab{24}{ file=local}}
+\L{\LB{msg\-clean}\Tab{16}{normlog}\Tab{24}{ file=msg\-clean}}
+\L{\LB{}}
+\L{\LB{x400in84}\Tab{16}{normlog}\Tab{24}{ file=x400in84,level=pdus}}
+\L{\LB{x400in84}\Tab{16}{isodelog rtsaplevel file=rts,level=all}}
+\L{\LB{x400in84}\Tab{16}{isodelog ssaplevel file=ssap,level=all}}
+\L{\LB{x400out84}\Tab{16}{normlog}\Tab{24}{ file=x400out84}}
+\L{\LB{}}
+\L{\LB{x400in88}\Tab{16}{normlog}\Tab{24}{ file=x400in88 level=pdus,level=trace}}
+\L{\LB{x400out88}\Tab{16}{normlog}\Tab{24}{ file=x400out88 \C{}\#level=all}}
+\CE{}\L{\LB{}}
+\L{\LB{p7server}\Tab{16}{normlog}\Tab{24}{ file=p7server level=all}}
+\L{\LB{}}
+\L{\LB{xfax}\Tab{16}{normlog}\Tab{24}{ file=fax \C{}\#level=debug}}
+\CE{}\L{\LB{xfaxd}\Tab{16}{normlog}\Tab{24}{ file=fax \C{}\#level=debug}}
+\CE{}\L{\LB{G3Fax}\Tab{16}{normlog}\Tab{24}{ file=fax}}
+\L{\LB{hdr2fax}\Tab{16}{normlog}\Tab{24}{ file=fax}}
+\L{\LB{ia52fax}\Tab{16}{normlog}\Tab{24}{ file=fax}}
+\L{\LB{}}
+\L{\LB{\C{}\#x400out88 isodelog}\Tab{24}{rtsaplevel file=rts\-out}\Tab{48}{level=all}}
+\CE{}\L{\LB{\C{}\#x400out88 isodelog}\Tab{24}{acsaplevel file=acsap\-out}\Tab{56}{level=all}}
+\CE{}\L{\LB{\C{}\#x400out88 isodelog}\Tab{24}{psap2level file=psap2\-out}\Tab{56}{level=all}}
+\CE{}\L{\LB{\C{}\#x400out88 isodelog}\Tab{24}{ssaplevel file=ssap\-out}\Tab{48}{level=all}}
+\CE{}\L{\LB{}}
+\L{\LB{}}
+\L{\LB{\C{}\#x400in88 isodelog}\Tab{24}{rtsaplevel file=proto\-in}\Tab{56}{level=all}}
+\CE{}\L{\LB{\C{}\#x400in88 isodelog}\Tab{24}{acsaplevel file=proto\-in}\Tab{56}{level=all}}
+\CE{}\L{\LB{\C{}\#x400in88 isodelog}\Tab{24}{psap2level file=proto\-in}\Tab{56}{level=all}}
+\CE{}\L{\LB{}}
+\L{\LB{pptsapd}\Tab{16}{normlog}\Tab{24}{ file=pptsapd,}\Tab{48}{dlevel=notice}}
+\L{\LB{dirlist}\Tab{16}{normlog}\Tab{24}{file=dirlist}\Tab{40}{}}
+\L{\LB{mslocal}\Tab{16}{normlog file=mslocal}}
+\L{\LB{xprobe}\Tab{16}{normlog file=probe level=trace,level=pdus level=all}}
+\L{\LB{p7server}\Tab{16}{isode ns\_enable off}}
+\L{\LB{xua}\Tab{16}{isode ns\_enable off}}
+\L{\LB{libmsattr}\Tab{24}{isode ns\_enable off}}
+\L{\LB{\C{}\#xckadr normlog level=all file=ckadr}}
