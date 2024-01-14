@@ -13,9 +13,9 @@ NAME
 
 READ THIS
      This documentation describes how to configure, generate, and
-     install  the  PP  message  system.  It is intended only as a
-     quick guide. The full details are in  the  PP  documentation
-     set  -  _P_P  _M_a_n_u_a_l$  _I_n_s_t_a_l_l_a_t_i_o_n _a_n_d _O_p_e_r_a_t_i_o_n. This can be
+     install  the  PP  message  system. It is intended only as a
+     quick guide. The full details are in the  PP documentation
+     set PP Manual Installation and Operation This can be
      found in the doc/manual/volume1 directory
 
 SYNOPSIS
@@ -40,7 +40,7 @@ DESCRIPTION
      name you have chosen, e.g.:
 
           % cd /usr/src/local/
-          % tar xf _t_a_r_f_i_l_e
+          % tar xf tarfile
           % cd pp-6.0/
 
 CONFIGURATION
@@ -56,7 +56,7 @@ CONFIGURATION
           s5r4    System Five, release 4
           hpux    Hewlet Packard
 
-          _m_o_r_e _s_a_m_p_l_e_s _w_e_l_c_o_m_e
+          more samples welcome
 
 
 
@@ -77,10 +77,9 @@ PP-GEN(8)             MAINTENANCE COMMANDS              PP-GEN(8)
   MAKEFILE
      Copy the makefile skeleton of your  choice  to  pickle.make,
      where  "pickle"  is  the name of your system.  Now edit this
-     file to set the _m_a_k_e variables.  There are  many  of  these,
-     please  refer  to _T_h_e _P_P _M_a_n_u_a_l: _V_o_l_u_m_e _1 - _I_n_s_t_a_l_l_a_t_i_o_n _a_n_d
-     _O_p_e_r_a_t_i_o_n. However, some of the more obvious  variables  are
-     documented in ./OPTIONS.make.
+     file to set the make variables.  There are  many  of  these,
+     please  refer  to The PP Manual: Volume 1 - Installation and Operation.
+     However, some of the more obvious variables are documented in ./OPTIONS.make.
 
      Link pickle.make to Make.defs in the base directory.
 
@@ -161,7 +160,7 @@ PP-GEN(8)             MAINTENANCE COMMANDS              PP-GEN(8)
 
   NOTE
      If you wish to use smtp then it may be appropriate to  start
-     the  smtp server for /_e_t_c/_i_n_e_t_d by adding a suitable line to
+     the  smtp server for /etc/inetd by adding a suitable line to
      /etc/inetd.conf. See Volume 1  for  more  details,  but  the
      basic format is something like:
 
@@ -239,7 +238,7 @@ PP-GEN(8)             MAINTENANCE COMMANDS              PP-GEN(8)
      an example and will not deal with all your needs.
 
      After all is set up, and at regular  intervals,  you  should
-     check  all  is  ok  by  running _c_k_c_o_n_f_i_g (found in the tools
+     check  all  is  ok  by  running ckconfig (found in the tools
      directory) which will check things are installed correctly.
 
      Finally, if you are interested in discussing PP with  others
@@ -278,13 +277,13 @@ PP-GEN(8)             MAINTENANCE COMMANDS              PP-GEN(8)
 
      If you received this distribution from the network, then the
      directory  doc/ps/  does  not  contain any PostScript files.
-     There should be a separate compressed _t_a_r  file,  containing
+     There should be a separate compressed tar file,  containing
      only  PostScript  files,  available on the machine where you
      retrieved this distribution.
 
 REPORTING PROBLEMS
      Comments concerning this release should be directed  to  the
-     authors.   Consult  the  preface  in the _U_s_e_r'_s _M_a_n_u_a_l for a
+     authors.   Consult  the  preface  in the User's Manual for a
      current postal address.  Alternately, if you have access  to
      the  Janet  network,  comments  may  be  sent to the mailbox
      "pp-support@cs.ucl.ac.uk".  Do not send bug reports  to  the
@@ -292,7 +291,7 @@ REPORTING PROBLEMS
 
 SEE ALSO
      ckconfig(8), dbmbuild(8)
-     _T_h_e _P_P _M_a_n_u_a_l: _V_o_l_u_m_e _1 - _I_n_s_t_a_l_l_a_t_i_o_n _a_n_d _O_p_e_r_a_t_i_o_n
+     The PP Manual: Volume 1 - Installation and Operation
 
 
 
