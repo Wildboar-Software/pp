@@ -44,7 +44,8 @@ struct lc_dispatch *getds();
 
 #define NVARGS	10
 
-void advise (), adios ();
+void adios (char *what, char* fmt, ...);
+void advise (char *what, char *fmt, ...);
 extern char *datasize ();
 extern void display_status ();
 extern void free_chanlist ();

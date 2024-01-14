@@ -19,6 +19,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Tools/ckadr/RCS/ckadr.c,v 6
 #include "adr.h"
 #include "retcode.h"
 #include "list_rchan.h"
+#include <stdio.h>
 
 static int	responsibility = YES;
 #ifdef UKORDER
@@ -37,7 +38,7 @@ static int	adno = 1;
 
 extern ADDR *adr_new_new();
 
-main(argc, argv)
+void main(argc, argv)
 int	   argc;
 char	   **argv;
 {

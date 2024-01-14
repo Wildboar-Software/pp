@@ -24,7 +24,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/x40084/RCS/x400topp.c
 #include "dr.h"
 #include "retcode.h"
 #include <isode/rtsap.h>
-#include <varargs.h>
+#include <stdarg.h>
 
 extern char		*remote_site;
 extern char		*postmaster;

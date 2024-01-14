@@ -16,17 +16,18 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Tools/statgen/RCS/statp.c,v
 
 
 #include "util.h"
-#include <varargs.h>
+#include <stdarg.h>
 
 char	*myname;
 int	lineno;
 static char *curfile;
 
-static void process ();
-static int parseline ();
-static void adios (), advise ();
+static void process (FILE *fp, char *name);
+static int parseline (char *line);
+static void adios (char *what, char* fmt, ...);
+static void advise (char *what, char *fmt, ...);
 
-main (argc, argv)
+void main (argc, argv)
 int	argc;
 char	**argv;
 {
@@ -59,9 +60,7 @@ char	**argv;
 	exit (0);
 }
 
-static void process (fp, name)
-FILE	*fp;
-char	*name;
+static void process (FILE *fp, char *name)
 {
 	char	linebuf[BUFSIZ*4];
 
@@ -73,8 +72,7 @@ char	*name;
 	}
 }
 
-static int parseline (line)
-char	*line;
+static int parseline (char *line)
 {
 	int	month, day;
 	int	hour, mins, sec;
@@ -123,7 +121,7 @@ char	*line;
 		return badline (argv[0], "unknown key");
 }
 
-do_basic (argc, argv)
+int do_basic (argc, argv)
 int	argc;
 char	**argv;
 {
@@ -169,7 +167,7 @@ char	**argv;
 	return OK;
 }	
 
-do_dr (argc, argv)
+int do_dr (argc, argv)
 int	argc;
 char	**argv;
 {
@@ -271,7 +269,7 @@ char	**argv;
 	return OK;
 }	
 
-do_deliv (argc, argv)
+int do_deliv (argc, argv)
 int	argc;
 char	**argv;
 {
@@ -336,51 +334,26 @@ char	*line, *mesg;
 	return NOTOK;
 }
 
-#ifndef	lint
-static void	_advise ();
+static void _advise (va_list ap);
 
-
-static void	adios (va_alist)
-va_dcl
+static void adios (char *what, char* fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
+    va_start (ap, fmt);
     _advise (ap);
-
     va_end (ap);
-
     _exit (1);
 }
-#else
-/* VARARGS */
 
-static void	adios (what, fmt)
-char   *what,
-       *fmt;
-{
-    adios (what, fmt);
-}
-#endif
-
-
-#ifndef	lint
-static void	advise (va_alist)
-va_dcl
+static void advise (char *what, char *fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
+    va_start (ap, fmt);
     _advise (ap);
-
     va_end (ap);
 }
 
-
-static void  _advise (ap)
-va_list	ap;
+static void _advise (va_list ap)
 {
     char    buffer[BUFSIZ];
 
@@ -394,13 +367,3 @@ va_list	ap;
 
     (void) fflush (stderr);
 }
-#else
-/* VARARGS */
-
-static void	advise (what, fmt)
-char   *what,
-       *fmt;
-{
-    advise (what, fmt);
-}
-#endif

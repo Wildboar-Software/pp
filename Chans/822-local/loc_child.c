@@ -21,7 +21,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/822-local/RCS/loc_chi
 #include "sys.file.h"
 #include "retcode.h"
 #include <sys/stat.h>
-#include <varargs.h>
+#include <stdarg.h>
 #include "expand.h"
 #include "q.h"
 #include "loc_user.h"
@@ -71,7 +71,7 @@ static	char msg_size[20];
 
 static	int hdr_fd, body_fd;
 
-static	int	restrict;	/* >0 -> restricted access */
+static	int	restrict_;	/* >0 -> restricted access */
 
 static	void setstatus (), cleanup (), suckuperrors ();
 
@@ -91,11 +91,11 @@ LocUser	*loc;
 int	h_fd, b_fd;
 {
 	int	childpid, pid;
-#ifdef SVR4
+// #ifdef SVR4
 	int status;
-#else
-	union wait status;
-#endif
+// #else
+// 	union wait status;
+// #endif
 
 	PP_TRACE (("child_process (loc, %d, %d)", h_fd, b_fd));
 
@@ -103,11 +103,11 @@ int	h_fd, b_fd;
 		return NOTOK;
 
 	if (childpid) {		/* parent */
-#ifdef SVR4
+// #ifdef SVR4
 		while ((pid = wait(&status)) != childpid && pid != -1)
-#else
-		while ((pid = wait(&status.w_status)) != childpid && pid != -1)
-#endif
+// #else
+		// while ((pid = wait(&status.w_status)) != childpid && pid != -1)
+// #endif
 			continue;
 		if (pid == -1) {
 			PP_LOG (LLOG_EXCEPTIONS, ("Pid == -1 something bad"));
@@ -115,9 +115,9 @@ int	h_fd, b_fd;
 		}
 		if (WIFEXITED(status))
 			return WEXITSTATUS(status);
-		PP_LOG (LLOG_EXCEPTIONS, ("processed killed %s",
-					  WCOREDUMP(status) ? "core dumped" :
-					  ""));
+		// PP_LOG (LLOG_EXCEPTIONS, ("processed killed %s",
+		// 			  WCOREDUMP(status) ? "core dumped" :
+		// 			  ""));
 		return NOTOK;
 	}
 
@@ -509,11 +509,11 @@ char	*proc;
 	char	buffer[BUFSIZ];
 	int	killed = 0;
 	FILE	*fp;
-#ifdef SVR4
+// #ifdef SVR4
 	int status;
-#else
-	union wait status;
-#endif
+// #else
+// 	union wait status;
+// #endif
 
 	PP_TRACE(("putpipe (%s)", proc));
 
@@ -545,7 +545,7 @@ char	*proc;
 		install_vars (variables, nvars, MAXVARS);
 		(void) expand (buffer, proc, variables);
 		PP_TRACE (("exec %s", buffer));
-		if (restrict <= 0)
+		if (restrict_ <= 0)
 			fillin_var ("PATH", env_path);
 
 		(void) close (tofds[1]);
@@ -567,7 +567,7 @@ char	*proc;
 			(void) close (i);
 		}
 #endif	
-		if (restrict > 0) {
+		if (restrict_ > 0) {
 			char	pathname[BUFSIZ];
 			char	*argv[50];
 			sstr2arg (buffer, 50, argv, " \t\n");
@@ -641,16 +641,16 @@ char	*proc;
 
 	suckuperrors (fromfds[0]);
 
-#ifdef SVR4
+// #ifdef SVR4
 	while ((cpid = wait (&status)) != pid && pid != -1)
-#else
-	while ((cpid = wait (&status.w_status)) != pid && pid != -1)
-#endif
+// #else
+// 	while ((cpid = wait (&status.w_status)) != pid && pid != -1)
+// #endif
 		PP_TRACE (("proc %d", cpid));
 
-	PP_TRACE (("pid %d returned term=%d, retcode=%d core=%d killed =%d",
-		   pid, WTERMSIG(status), WEXITSTATUS(status),
-		   WCOREDUMP(status), killed));
+	// PP_TRACE (("pid %d returned term=%d, retcode=%d core=%d killed =%d",
+	// 	   pid, WTERMSIG(status), WEXITSTATUS(status),
+	// 	   WCOREDUMP(status), killed));
 	(void) alarm (0);
 	suckuperrors (fromfds[0]);
 
@@ -750,59 +750,26 @@ FILE	*fp;
 	return n;
 }
 
-#ifndef	lint
-void	adios (va_alist)
-va_dcl
+void adios (char *what, char* fmt, ...)
 {
     va_list ap;
-    char buffer[BUFSIZ];
-
-    va_start (ap);
-    
-    asprintf (buffer, ap);
-    ll_log (pp_log_norm, LLOG_EXCEPTIONS, NULLCP, "%s", buffer);
-
+	char buffer[BUFSIZ];
+    va_start (ap, fmt);
+	asprintf (buffer, ap);
+	ll_log (pp_log_norm, LLOG_EXCEPTIONS, NULLCP, "%s", buffer);
     va_end (ap);
     longjmp (jbuf, DONE);
 }
-#else
-/* VARARGS2 */
 
-void	adios (what, fmt)
-char   *what,
-       *fmt;
+void advise (char *what, char *fmt, ...)
 {
-    adios (what, fmt);
-}
-#endif
-
-
-#ifndef	lint
-void	advise (va_alist)
-va_dcl
-{
-    int	    code;
+	int	code;
     va_list ap;
-
-    va_start (ap);
-    
+    va_start (ap, fmt);
     code = va_arg (ap, int);
-
     _ll_log (pp_log_norm, code, ap);
-
     va_end (ap);
 }
-#else
-/* VARARGS3 */
-
-void	advise (code, what, fmt)
-char   *what,
-       *fmt;
-int	code;
-{
-    advise (code, what, fmt);
-}
-#endif
 
 static int readinfile (file)
 char	*file;

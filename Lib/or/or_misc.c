@@ -19,7 +19,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/or/RCS/or_misc.c,v 6.0 
 #include "table.h"
 #include "or.h"
 #include "ap.h"
-#include <varargs.h>
+#include <stdarg.h>
 #include <isode/cmd_srch.h>
 
 extern CMD_TABLE ortbl_ddvalid[];

@@ -18,7 +18,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/qmgr/RCS/chan_control.c
 #include <stdio.h>
 #include <syslog.h>
 #include <setjmp.h>
-#include <varargs.h>
+#include <stdarg.h>
 #include "qmgr.h"
 #include "retcode.h"
 #include <isode/tsap.h>
@@ -34,7 +34,7 @@ static struct type_Qmgr_DeliveryStatus *(*workfnx)();
 
 static int     ros_init (), ros_work (), ros_lose ();
 static int     ros_worker (), error (), ureject ();
-static void    adios ();
+static void    adios (char *what, char* fmt, ...);
 static void    acs_advise ();
 static void    ros_adios (), ros_advise ();
 static void    ros_indication ();
@@ -360,9 +360,7 @@ char   *event;
     PP_LOG (LLOG_EXCEPTIONS, ("%s: %s", event, buffer));
 }
 
-/*  */
-
-static void    acs_advise (aca, event)
+static void acs_advise (aca, event)
 register struct AcSAPabort *aca;
 char   *event;
 {
@@ -379,40 +377,19 @@ char   *event;
 		aca -> aca_source));
 }
 
-/*  */
-
-#ifndef lint
-
-static void    adios (va_alist)
-va_dcl
+static void adios (char *what, char* fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
+    va_start (ap, fmt);
     _ll_log (pp_log_oper, LLOG_FATAL, ap);
-
     va_end (ap);
-
     _exit (1);
 }
-#else
-/* VARARGS */
-
-static void    adios (what, fmt)
-char   *what,
-       *fmt;
-{
-    adios (what, fmt);
-}
-#endif
-
-/*    ERROR */
 
 static int  error (sd, err, param, rox, roi)
 int     sd,
 	err;
-caddr_t param;
+void *param;
 struct RoSAPinvoke *rox;
 struct RoSAPindication *roi;
 {

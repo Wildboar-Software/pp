@@ -28,7 +28,7 @@ static void do_alias ();
 /* ---------------------  Begin	 Routines  -------------------------------- */
 
 
-main (ac,av)
+void main (ac,av)
 int	ac;
 char	*av [];
 {

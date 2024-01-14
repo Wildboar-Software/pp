@@ -20,7 +20,9 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Uip/misc/RCS/strip_addr.c,v
 
 static int no_routes = 0;
 
-main (argc, argv)
+void do_addr (char *str);
+
+void main (argc, argv)
 int	argc;
 char	**argv;
 {
@@ -55,8 +57,7 @@ char	**argv;
 }
 
 
-do_addr (str)
-char	*str;
+void do_addr (char *str)
 {
 	char	*cp;
 	AP_ptr local, domain, route, tree;

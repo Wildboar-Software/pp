@@ -44,7 +44,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/lists/RCS/list.c,v 6.
 
 #include "retcode.h"
 #include "sys.file.h"
-#include <varargs.h>
+#include <stdarg.h>
 
 extern void 	rd_end(), sys_init(), err_abrt();
 extern struct type_Qmgr_DeliveryStatus *delivery_resetDRs();

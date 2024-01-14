@@ -192,7 +192,7 @@ static CMD_TABLE chtbl_check[] = {
 
 /* ---------------------  Begin	 Routines  -------------------------------- */
 
-chan_tai (argc, argv)
+int chan_tai (argc, argv)
 int	argc;
 char	**argv;
 {

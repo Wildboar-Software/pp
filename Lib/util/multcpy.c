@@ -15,7 +15,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/util/RCS/multcpy.c,v 6.
 
 
 
-#include <varargs.h>
+#include <stdarg.h>
 
 /* VARARGS 2 */
 char *

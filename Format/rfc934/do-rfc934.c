@@ -388,7 +388,7 @@ int	fd;
 	return ((--noInput >= 0) ? *bufp++ : EOF);
 }
 
-static int getline(fd,linebuf)
+static int get_line(fd,linebuf)
 int	fd;
 char	linebuf[];
 {
@@ -471,7 +471,7 @@ int	first;
 	int	msgtype;
 
 	msgtype = FALSE;
-	while(getline(fd_in,line) != 0) { 
+	while(get_line(fd_in,line) != 0) { 
 		if (first == TRUE
 		    && line[0] == '\n'
 		    && msgtype == FALSE)
@@ -491,7 +491,7 @@ int	fd_in,
 {
 	if (noBps > 1)
 		output_startbodypart(fp, bp_num, deep);
-	while (getline(fd_in,line) != 0) {
+	while (get_line(fd_in,line) != 0) {
 		if (line[0] == EBch)
 			output_stuffing(fp, deep);
 		output_line(fp, line);

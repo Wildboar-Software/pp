@@ -19,9 +19,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/util/RCS/prefix.c,v 6.0
 
 extern  char    chrcnv[];
 
-int prefix(str1, str2)
-register char   *str1;
-register char   *str2;
+int prefix(register char *str1, register char *str2)
 {
 	while(*str1)
 		if(chrcnv[*str1++] != chrcnv[*str2++])

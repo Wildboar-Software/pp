@@ -22,7 +22,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/grey/RCS/ppp.c,v 6.0 
 #include "q.h"
 #include "adr.h"
 #include "chan.h"
-#include <varargs.h>
+#include <stdarg.h>
 #include "retcode.h"
 #include "dr.h"
 #include "ap.h"

@@ -16,26 +16,24 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/util/RCS/multcat.c,v 6.
 
 
 #include "util.h"
-#include <varargs.h>
+#include <stdarg.h>
 
 /* VARARGS 1*/
-char *
-multcat (va_alist)
-va_dcl
+char* multcat (char *s1, ...)
 {
 	register va_list ap;
 	register char  *oldstr, *ptr;
 	char    *newstr;
 	unsigned  newlen;
 
-	va_start(ap);
+	va_start(ap, s1);
 	for (newlen = 1; oldstr = va_arg(ap, char *);)
 		newlen += strlen (oldstr);
 	va_end(ap);
 
 	ptr = newstr = smalloc ((int)newlen);
 
-	va_start(ap);
+	va_start(ap, s1);
 	for (; oldstr = va_arg(ap, char *); ptr--)
 		while(*ptr++ = *oldstr++);
 	va_end(ap);

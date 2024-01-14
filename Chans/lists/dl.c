@@ -20,7 +20,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/lists/RCS/dl.c,v 6.0 
 #include <isode/quipu/ds_search.h>
 #include <isode/quipu/connection.h>	/* ds_search uses di_block - include this for lint !!! */
 #include <isode/quipu/dua.h>
-#include <varargs.h>
+#include <stdarg.h>
 #include <isode/tailor.h>
 #include "dl.h"
 

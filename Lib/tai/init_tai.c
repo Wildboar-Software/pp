@@ -19,7 +19,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/tai/RCS/init_tai.c,v 6.
 #include <sys/stat.h>
 #include <isode/tailor.h>
 #include <fcntl.h>
-#include <varargs.h>
+#include <stdarg.h>
 
 #define MAXTAIARGS	100
 #define COMMENTCHAR	'#'
@@ -50,7 +50,7 @@ char	*name;
 	return pp_initialise (name, TAI_ALL);
 }
 
-pp_initialise (name, flags)
+int pp_initialise (name, flags)
 char	*name;
 int	flags;
 {
@@ -253,29 +253,21 @@ VFP fnx;
 		teh = fnx;
 }
 
-#ifdef lint
-/* VARARGS1 */
-void tai_error (fmt)
-char *fmt;
-{
-	tai_error (fmt);
-}
-#else
-void tai_error (va_alist)
-va_dcl
+
+void tai_error (char *fmt, ...)
 {
 	char buf[BUFSIZ];
 	char buf2[BUFSIZ];
 	va_list ap;
 
-	va_start (ap);
-	_asprintf (buf, NULLCP, ap);
+	va_start (ap, fmt);
+	_asprintf (buf, NULLCP, fmt, ap);
 	(void) sprintf (buf2, "Tailor error in entry ending line %d: %s\n",
 			tlineno, buf);
 	(teh)(buf2);
 	va_end (ap);
 }
-#endif
+
 /* ------------------------------------------------------------------ */
 struct logpairs {
 	LLog	**isode_log;

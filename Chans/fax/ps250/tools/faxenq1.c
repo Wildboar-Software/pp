@@ -18,7 +18,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/fax/ps250/tools/RCS/f
 #include <stdio.h>
 #include "../../faxgeneric.h"
 #include "../ps250.h"
-#include <varargs.h>
+#include <stdarg.h>
 
 void	adios (), advise ();
 

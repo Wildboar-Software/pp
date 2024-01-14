@@ -24,7 +24,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/x40088/RCS/x400inmsg.
 #include "dr.h"
 #include "retcode.h"
 #include <isode/rtsap.h>
-#include <varargs.h>
+#include <stdarg.h>
 
 #define bit_ison(x,y)	(bit_test(x,y) == 1)
 

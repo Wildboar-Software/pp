@@ -20,10 +20,11 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Uip/resend/RCS/resend.c,v 6
 #include "q.h"
 #include "adr.h"
 #include "retcode.h"
+#include "io.h"
 #include <pwd.h>
 #include <signal.h>
 #include <sys/stat.h>
-#include <varargs.h>
+#include <stdarg.h>
 
 extern	char *strdup();
 extern UTC	utclocalise();
@@ -50,11 +51,21 @@ static RP_Buf	*rp = &rps;
 static struct prm_vars prm;
 static Q_struct qs;
 
-static void adios ();
+static void adios (char *what, char* fmt, ...);
+
+void pgminit ();
+void sendmail ();
+void dumpheader();
+void doresent();
+void sndhdr (char name[], char contents[]);
+void doto ();
+void dobody ();
+
+void uip_init (char *pname);
 
 #define prefix(a,b)	(lexnequ ((a), (b), strlen(a)) == 0)
 
-main (argc, argv)
+void main (argc, argv)
 int     argc;
 char   *argv[];
 {
@@ -95,7 +106,7 @@ char   *argv[];
 	exit (0);
 }
 
-pgminit ()
+void pgminit ()
 {
 	extern struct passwd *getpwuid ();
 	extern char *getmailid ();
@@ -112,7 +123,7 @@ pgminit ()
 	}
 }
 
-sendmail ()
+void sendmail ()
 {
 	ADDR	*adr;
 	int i;
@@ -164,7 +175,7 @@ sendmail ()
 	dobody ();
 }
 
-dumpheader()
+void dumpheader()
 {
 	char	line[LINESIZE];
 
@@ -182,7 +193,7 @@ dumpheader()
 	}
 }
 
-doresent()
+void doresent()
 {
 	char    datbuf[64];
 	UTC	now, lut;
@@ -198,7 +209,7 @@ doresent()
 		adios (NULLCP, "Can't setup for body part: %s", rp -> rp_line);
 }
 
-sndhdr (name, contents)
+void sndhdr (name, contents)
 char    name[],
 	contents[];
 {
@@ -209,7 +220,7 @@ char    name[],
 		adios (NULLCP, "Data Copy failed");
 }
 
-doto ()
+void doto ()
 {
 	register int    i;
 
@@ -219,7 +230,7 @@ doto ()
 		sndhdr ("Resent-Cc:", ccadrs[i]);
 }
 
-dobody ()
+void dobody ()
 {
 	char    buffer[BUFSIZ];
 	register int    i;
@@ -235,27 +246,11 @@ dobody ()
 		adios (NULLCP, "Error terminating: %s", rp -> rp_line);
 }
 
-#ifndef lint
-static void    adios (va_alist)
-va_dcl
+static void adios (char *what, char* fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
-    _ll_log (pp_log_norm, LLOG_FATAL, ap);
-    
+    va_start (ap, fmt);
+	_ll_log (pp_log_norm, LLOG_FATAL, ap);
     va_end (ap);
-
     _exit (1);
 }
-#else
-/* VARARGS2 */
-
-static void    adios (what, fmt)
-char   *what,
-       *fmt;
-{
-    adios (what, fmt);
-}
-#endif

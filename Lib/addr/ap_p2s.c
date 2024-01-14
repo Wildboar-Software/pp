@@ -30,7 +30,7 @@ Format one address from pointers to constitutents, in a tree
 #include "chan.h"
 #include "ap.h"
 
-static ap_compress_local();
+static void ap_compress_local();
 
 extern int      ap_outtype;
 
@@ -586,7 +586,7 @@ int			comments;
 }
 
 
-static ap_compress_local (group, name, local, domain, route, comments)
+static void ap_compress_local (group, name, local, domain, route, comments)
 AP_ptr                  group,          /* -- start of group name -- */
 			name,           /* -- start of person name -- */
 			local,          /* -- start of local-part -- */

@@ -14,8 +14,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/tai/RCS/init_uip.c,v 6.
  */
 
 
-void uip_init (pname)
-char    *pname;
+void uip_init (char *pname)
 {
 	(void) sys_init (pname);
 }

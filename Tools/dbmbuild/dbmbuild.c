@@ -40,7 +40,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Tools/dbmbuild/RCS/dbmbuild
 #include        "chan.h"
 #include        "dbase.h"
 #include 	"sys.file.h"
-#include        <varargs.h>
+#include <stdarg.h>
 
 extern int      errno;
 extern char     *tbldfldir,

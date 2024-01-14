@@ -24,7 +24,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/fax/dexNet200/RCS/dex
 #include	"IOB-types.h"
 #include	"MTA-types.h"
 #include	"or.h"
-#include 	<varargs.h>
+#include <stdarg.h>
 #include	<sys/termios.h>
 #include	<sys/stat.h>
 #include	"../faxgeneric.h"

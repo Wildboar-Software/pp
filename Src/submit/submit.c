@@ -19,7 +19,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/submit/RCS/submit.c,v 6
 #include "prm.h"
 #include "q.h"
 #include "or.h"
-#include <varargs.h>
+#include <stdarg.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <signal.h>

@@ -26,7 +26,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/fax/RCS/fax_out.c,v 6
 #include        "MTA-types.h"
 #include 	<sys/stat.h>
 #include 	<sys/time.h>
-#include	<varargs.h>
+#include <stdarg.h>
 #include	"faxgeneric.h"
 
 extern char	*quedfldir;
@@ -875,55 +875,21 @@ char           *msg;
         return NOTOK;
 }
 
-#ifndef lint
-void    adios (va_alist)
-va_dcl
+void adios (char *what, char* fmt, ...)
 {
-        va_list ap;
-
-        va_start (ap);
-
-        _ll_log (pp_log_norm, LLOG_FATAL, ap);
-
-        va_end (ap);
-
-        _exit (1);
+    va_list ap;
+    va_start (ap, fmt);
+	_ll_log (pp_log_norm, LLOG_FATAL, ap);
+    va_end (ap);
+    _exit (1);
 }
-#else
-/* VARARGS2 */
 
-void    adios (what, fmt)
-char   *what,
-       *fmt;
+void advise (char *what, char *fmt, ...)
 {
-        adios (what, fmt);
+	int code;
+    va_list ap;
+    va_start (ap, fmt);
+	code = va_arg (ap, int);
+    _ll_log (pp_log_norm, code, ap);
+    va_end (ap);
 }
-#endif
-
-
-#ifndef lint
-void    advise (va_alist)
-va_dcl
-{
-        int     code;
-        va_list ap;
-
-        va_start (ap);
-
-        code = va_arg (ap, int);
-
-        _ll_log (pp_log_norm, code, ap);
-
-        va_end (ap);
-}
-#else
-/* VARARGS3 */
-
-void    advise (code, what, fmt)
-char   *what,
-       *fmt;
-int     code;
-{
-        advise (code, what, fmt);
-}
-#endif

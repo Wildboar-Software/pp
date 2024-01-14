@@ -28,10 +28,11 @@ struct server_dispatch {
 
 extern int	debug;
 
-void		adios(), advise();
+void adios (char *what, char* fmt, ...);
+void advise (int code, char *what, char *fmt, ...);
+void ryr_advise (char *what, char* fmt, ...);
 void		acs_advise();
 void		ros_adios(), ros_advise();
-void		ryr_advise();
 int		ryresponder();
 
 #endif

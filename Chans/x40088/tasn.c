@@ -167,54 +167,28 @@ FILE	*fp;
 }
 
 
-#include <varargs.h>
+#include <stdarg.h>
 
+static void _advise (va_list ap);
 
-#ifndef	lint
-void	_advise ();
-
-
-void	adios (va_alist)
-va_dcl
+static void adios (char *what, char* fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
-    _advise (ap);
-
+    va_start (ap, fmt);
+	_advise (ap);
     va_end (ap);
-
     _exit (1);
 }
-#else
-/* VARARGS */
 
-void	adios (what, fmt)
-char   *what,
-       *fmt;
-{
-    adios (what, fmt);
-}
-#endif
-
-
-#ifndef	lint
-void  advise (va_alist)
-va_dcl
+void advise (char *what, char *fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
+    va_start (ap, fmt);
     _advise (ap);
-
     va_end (ap);
 }
 
-
-void  _advise (ap)
-va_list	ap;
+static void  _advise (va_list ap)
 {
     char    buffer[BUFSIZ];
 
@@ -228,13 +202,3 @@ va_list	ap;
 
     (void) fflush (stderr);
 }
-#else
-/* VARARGS */
-
-void  advise (what, fmt)
-char   *what,
-       *fmt;
-{
-    advise (what, fmt);
-}
-#endif

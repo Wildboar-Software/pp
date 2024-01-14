@@ -16,7 +16,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/MTAconsole/RCS/assoc.c,
 
 
 #include "util.h"
-#include <varargs.h>
+#include <stdarg.h>
 #include "console.h"
 #include "Qmgr-ops.h"
 #include "qmgr.h"

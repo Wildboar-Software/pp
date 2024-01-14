@@ -17,7 +17,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/submit/RCS/auth_ut.c,v 
 
 #include "util.h"
 #include "q.h"
-#include <varargs.h>
+#include <stdarg.h>
 
 extern char		auth2submit_msg[];
 

@@ -28,7 +28,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/qmgr-load/RCS/ryrespo
 
 #include "Qmgr-ops.h"                   /* operation definitions */
 #include "util.h"
-#include <varargs.h>
+#include <stdarg.h>
 #include "ryresponder.h"
 #include <isode/tsap.h>         /* for listening */
 
@@ -328,83 +328,29 @@ char   *event;
 	   ("%s: %s (source %d)", event, buffer,aca -> aca_source));
 }
 
-/*  */
-
-#ifndef lint
-void    adios (va_alist)
-va_dcl
+void adios (char *what, char* fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
+    va_start (ap, fmt);
     _ll_log (pp_log_norm, LLOG_FATAL, ap);
-
     va_end (ap);
-
     _exit (1);
 }
-#else
-/* VARARGS */
 
-void    adios (what, fmt)
-char   *what,
-       *fmt;
+void advise (char *what, char *fmt, ...)
 {
-    adios (what, fmt);
-}
-#endif
-
-
-#ifndef lint
-void    advise (va_alist)
-va_dcl
-{
-    int     code;
+    int code;
     va_list ap;
-
-    va_start (ap);
-
+    va_start (ap, fmt);
     code = va_arg (ap, int);
-
     _ll_log (pp_log_norm, code, ap);
-
     va_end (ap);
 }
 
-
-#else
-/* VARARGS */
-
-void    advise (what, code, fmt)
-char   *what,
-       *fmt;
-int     code;
-{
-    advise (what, code, fmt);
-}
-#endif
-
-
-/* VARARGS */
-
-#ifndef lint
-void    ryr_advise (va_alist)
-va_dcl
+void ryr_advise (char *what, char *fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
+    va_start (ap, fmt);
     _ll_log (pp_log_norm, LLOG_NOTICE, ap);
-
     va_end (ap);
 }
-#else
-void    ryr_advise (what, fmt)
-char   *what,
-       *fmt;
-{
-    ryr_advise (what, fmt);
-}
-#endif

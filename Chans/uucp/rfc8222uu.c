@@ -29,7 +29,7 @@ extern int	ap_outtype;
 static char     nextnode[LINESIZE];
 static char     who[LINESIZE];
 static char	*MakeUucpFrom();
-static int	ScanUucpFrom();
+static void	ScanUucpFrom();
 
 extern char	*loc_dom_site, *loc_dom_mta;
 
@@ -204,7 +204,7 @@ char *adr;
   	return(new);
 }
 
-static int
+static void
 ScanUucpFrom(new, adr)
 register char *new;
 register char *adr;
@@ -241,8 +241,7 @@ char	**realfrom;
 /*
  *      LOWERFY()  -  convert string to lower case
  */
-lowerfy (strp)
-	char *strp;
+void lowerfy (char *strp)
 {
 	while (*strp = uptolow (*strp))
 		strp++;

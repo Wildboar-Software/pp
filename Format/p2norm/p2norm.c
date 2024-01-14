@@ -18,7 +18,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Format/p2norm/RCS/p2norm.c,
 #include "IOB-types.h"
 #include "or.h"
 #include "adr.h"
-#include <varargs.h>
+#include <stdarg.h>
 #include <isode/cmd_srch.h>
 
 extern char	*dn2ufn();

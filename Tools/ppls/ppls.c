@@ -14,7 +14,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Tools/ppls/RCS/ppls.c,v 6.0
  */
 
 #include "util.h"
-#include <varargs.h>
+#include <stdarg.h>
 #include <sys/stat.h>
 #include <isode/usr.dirent.h>
 
@@ -81,51 +81,26 @@ struct dirent *dp;
 	return 1;
 }
 
-#ifndef	lint
-static void	_advise ();
+static void _advise (va_list ap);
 
-
-static void	adios (va_alist)
-va_dcl
+static void adios (char *what, char* fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
+    va_start (ap, fmt);
     _advise (ap);
-
     va_end (ap);
-
     _exit (1);
 }
-#else
-/* VARARGS */
 
-static void	adios (what, fmt)
-char   *what,
-       *fmt;
-{
-    adios (what, fmt);
-}
-#endif
-
-
-#ifndef	lint
-static void	advise (va_alist)
-va_dcl
+static void advise (char *what, char *fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
+    va_start (ap, fmt);
     _advise (ap);
-
     va_end (ap);
 }
 
-
-static void  _advise (ap)
-va_list	ap;
+static void _advise (va_list ap)
 {
     char    buffer[BUFSIZ];
 
@@ -139,13 +114,3 @@ va_list	ap;
 
     (void) fflush (stderr);
 }
-#else
-/* VARARGS */
-
-static void	advise (what, fmt)
-char   *what,
-       *fmt;
-{
-    advise (what, fmt);
-}
-#endif

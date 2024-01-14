@@ -18,8 +18,6 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/util/RCS/arg2str.c,v 6.
 #include "util.h"
 #include "retcode.h"
 
-extern void err_abrt ();
-
 /* convert an array of strings to one or more lines of 'arguments'.
  *
  * this is intended to be used along with the str2arg() routine.

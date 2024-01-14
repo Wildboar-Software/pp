@@ -19,7 +19,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/qmgr/RCS/ryresponder.c,
 #include "qmgr.h"
 #include "ryresponder.h"
 #include <isode/tsap.h>         /* for listening */
-#include <varargs.h>
+#include <stdarg.h>
 #include <fcntl.h>
 #include <signal.h>
 
@@ -498,8 +498,6 @@ char   *event;
 	PP_LOG (LLOG_EXCEPTIONS, ("%s: %s", event, buffer));
 }
 
-/*  */
-
 void    acs_advise (aca, event)
 register struct AcSAPabort *aca;
 char   *event;
@@ -518,82 +516,29 @@ char   *event;
 				  aca -> aca_source));
 }
 
-/*  */
-
-#ifndef lint
-void    adios (va_alist)
-va_dcl
+void adios (char *what, char* fmt, ...)
 {
 	va_list ap;
-	
-	va_start (ap);
-	
+	va_start (ap, fmt);
 	_ll_log (pp_log_norm, LLOG_FATAL, ap);
-	
 	va_end (ap);
-	
 	_exit (1);
 }
-#else
-/* VARARGS2 */
 
-void    adios (what, fmt)
-char   *what,
-	*fmt;
+void advise (int code, char *what, char *fmt, ...)
 {
-	adios (what, fmt);
-}
-#endif
-
-
-#ifndef lint
-/* VARARGS */
-void    advise (va_alist)
-va_dcl
-{
-	int     code;
+	int code;
 	va_list ap;
-
-	va_start (ap);
-
+	va_start (ap, fmt);
 	code = va_arg (ap, int);
-
 	_ll_log (pp_log_norm, code, ap);
-
 	va_end (ap);
 }
-#else
-/* VARARGS3 */
 
-void    advise (code, what, fmt)
-char   *what,
-       *fmt;
-int     code;
-{
-	advise (code, what, fmt);
-}
-#endif
-
-
-#ifndef lint
-void    ryr_advise (va_alist)
-va_dcl
+void ryr_advise (char *what, char* fmt, ...)
 {
 	va_list ap;
-
-	va_start (ap);
-
+	va_start (ap, fmt);
 	_ll_log (pp_log_norm, LLOG_NOTICE, ap);
-
 	va_end (ap);
 }
-#else
-/* VARARGS2 */
-
-void    ryr_advise (what, fmt)
-char   *what,
-       *fmt;
-{
-	ryr_advise (what, fmt);
-}
-#endif

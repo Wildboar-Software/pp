@@ -18,7 +18,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/qmgr/RCS/comms.c,v 6.0 
 #include "Qmgr-types.h"
 #include "Qmgr-ops.h"
 #include "qmgr.h"
-#include <varargs.h>
+#include <stdarg.h>
 #include "consblk.h"
 
 #define PP_SERVICE	"pp qmgr"

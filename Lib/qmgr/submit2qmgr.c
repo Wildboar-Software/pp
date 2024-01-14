@@ -16,7 +16,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/qmgr/RCS/submit2qmgr.c,
 
 
 #include "head.h"
-#include <varargs.h>
+#include <stdarg.h>
 
 #include "qmgr.h"
 

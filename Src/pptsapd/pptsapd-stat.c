@@ -19,7 +19,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/pptsapd/RCS/pptsapd-sta
 #include <signal.h>
 #include "util.h"
 #include "chan.h"
-#include <varargs.h>
+#include <stdarg.h>
 #include <isode/manifest.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
@@ -60,8 +60,8 @@ static char myhost[BUFSIZ];
 
 static struct TSAPaddr *tz;
 
-
-static void    adios (), advise ();
+static void adios (char *what, char* fmt, ...);
+static void advise (char *what, char *fmt, ...);
 
 static char *getchanpgm ();
 static void tsapd ();
@@ -361,60 +361,24 @@ static void envinit () {
     advise (LLOG_NOTICE, NULLCP, "starting");
 }
 
-/*    ERRORS */
-
-#ifndef lint
-static void    adios (va_alist)
-va_dcl
+static void adios (char *what, char* fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
+    va_start (ap, fmt);
     _ll_log (pp_log_norm, LLOG_FATAL, ap);
-
     va_end (ap);
-
     _exit (1);
 }
-#else
-/* VARARGS */
 
-static void    adios (what, fmt)
-char   *what,
-       *fmt;
-{
-    adios (what, fmt);
-}
-#endif
-
-
-#ifndef lint
-static void    advise (va_alist)
-va_dcl
+void advise (char *what, char *fmt, ...)
 {
     int     code;
     va_list ap;
-
-    va_start (ap);
-
+    va_start (ap, fmt);
     code = va_arg (ap, int);
-
     _ll_log (pp_log_norm, code, ap);
-
     va_end (ap);
 }
-#else
-/* VARARGS */
-
-static void    advise (code, what, fmt)
-char   *what,
-       *fmt;
-int     code;
-{
-    advise (code, what, fmt);
-}
-#endif
 
 static SFD childserver (sig, code, sc)
 int	sig;

@@ -609,63 +609,29 @@ static int do_debug_transfer ()
 }
 #endif
 
-#include <varargs.h>
+#include <stdarg.h>
 
-#ifndef lint
-static void    adios (va_alist)
-va_dcl
+static void adios (char *what, char* fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
+    va_start (ap, fmt);
     _ll_log (pp_log_oper, LLOG_FATAL, ap);
     _ll_log (pp_log_norm, LLOG_FATAL, ap);
-
     va_end (ap);
-
     _exit (1);
 }
-#else
 
-/* VARARGS2 */
-static void    adios (what, fmt)
-char   *what,
-       *fmt;
-{
-    adios (what, fmt);
-}
-#endif
-
-
-#ifndef lint
-static void    advise (va_alist)
-va_dcl
+static void advise (char *what, char *fmt, ...)
 {
     int     code;
     va_list ap;
-
     va_start (ap);
-
     code = va_arg (ap, int);
-
     _ll_log (pp_log_norm, code, ap);
-
     va_end (ap);
 }
-#else
 
-/* VARARGS3 */
-static void    advise (code, what, fmt)
-char   *what,
-       *fmt;
-int     code;
-{
-    advise (code, what, fmt);
-}
-#endif
 #define RC_BASE         0x80
-
 
 static char *reason_err0[] = {
         "no specific reason stated",

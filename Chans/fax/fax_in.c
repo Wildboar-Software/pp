@@ -20,7 +20,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/fax/RCS/fax_in.c,v 6.
 #include	"sys.file.h"
 #include	"ap.h"
 #include	"or.h"
-#include	<varargs.h>
+#include <stdarg.h>
 #include 	"faxgeneric.h"
 
 void    advise ();
@@ -480,7 +480,7 @@ struct type_IOB_IPMIdentifier **mid_ptr;
 
 }
 
-/* 
+/*
  * various isode-like routines
  */
 

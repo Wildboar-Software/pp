@@ -64,7 +64,7 @@ static char sccsid[] = "@(#)rmail.c	1.4 (UKNET Altered by pb/pc) 7/23/91";
 #include <pwd.h>
 #include <signal.h>
 #include <sys/stat.h>
-#include <varargs.h>
+#include <stdarg.h>
 
 #define VERSION "3.0"
 #define NAMESZ  256		/* Limit on component name size.

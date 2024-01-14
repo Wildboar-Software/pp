@@ -18,7 +18,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Format/ascii2fax/RCS/image2
 #include	"util.h"
 #include	"IOB-types.h"
 #include	"g3.h"
-#include 	<varargs.h>
+#include <stdarg.h>
 #include	"fonts.h"
 
 # define BITSPERBYTE	8
@@ -266,57 +266,21 @@ int d;
     }
 }
 
-/*    ERRORS */
-
-#ifndef lint
-void    adios (va_alist)
-va_dcl
+void adios (char *what, char* fmt, ...)
 {
 	va_list ap;
-
-	va_start (ap);
-
+	va_start (ap, fmt);
 	_ll_log (pp_log_norm, LLOG_FATAL, ap);
-
 	va_end (ap);
-
 	_exit (1);
 }
-#else
-/* VARARGS2 */
 
-void    adios (what, fmt)
-char   *what,
-       *fmt;
+void advise (char *what, char* fmt, ...)
 {
-	adios (what, fmt);
-}
-#endif
-
-
-#ifndef lint
-void    advise (va_alist)
-va_dcl
-{
-	int     code;
+	int code;
 	va_list ap;
-
-	va_start (ap);
-
+	va_start (ap, fmt);
 	code = va_arg (ap, int);
-
 	_ll_log (pp_log_norm, code, ap);
-
 	va_end (ap);
 }
-#else
-/* VARARGS3 */
-
-void    advise (code, what, fmt)
-char   *what,
-       *fmt;
-int     code;
-{
-	advise (code, what, fmt);
-}
-#endif

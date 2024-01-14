@@ -17,7 +17,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Uip/mail/RCS/mail.c,v 6.0 1
 
 #include "util.h"
 #include "retcode.h"
-#include <varargs.h>
+#include <stdarg.h>
 
 #define		TO		1
 #define		CC		2
@@ -43,11 +43,12 @@ static RP_Buf	rps, *rp = &rps;
 static void do_text ();
 static void mail_init ();
 static void do_addrs ();
+void uip_init (char *pname);
 
 /* ---------------------  Start	 Routines  -------------------------------- */
 
 
-main (argc, argv)
+void main (argc, argv)
 int	argc;
 char	**argv;
 {
@@ -167,64 +168,34 @@ static void do_text()
 
 /* ---------------------  Error	 Routines  -------------------------------- */
 
-
-
-
-#ifdef lint
-/*VARARGS2*/
-user_err (n, fmt)
-int	n;
-char	*fmt;
-{
-	user_err (n, fmt);
-}
-#else
-user_err (va_alist)
-va_dcl
+void user_err (int code, char *fmt, ...)
 {
 	char	buf[BUFSIZ];
 	va_list ap;
-	int	n;
 
-	va_start (ap);
-	n = va_arg (ap, int);
+	va_start (ap, fmt);
 
-	_asprintf (buf, NULLCP, ap);
+	_asprintf (buf, NULLCP, fmt, ap);
 	fprintf (stderr, "%s: %s\n", invo_name, buf);
 	va_end (ap);
 
-	exit (n);
+	exit (code);
 }
-#endif
 
-#ifdef lint
-/*VARARGS4*/
-sys_err (n, proc, rp, fmt)
-int	n;
-RP_Buf	*rp;
-char	*proc, *fmt;
+void sys_err (int code, char *fmt, ...)
 {
-	sys_err (n, proc, rp, fmt);
-}
-#else
-sys_err (va_alist)
-va_dcl
-{
-	int	n;
 	char	buf[BUFSIZ];
 	RP_Buf	*rp;
 	char	*proc;
 	va_list ap;
 
-	va_start (ap);
-	n = va_arg (ap, int);
+	va_start (ap, fmt);
 	proc = va_arg (ap, char *);
 	rp = va_arg (ap, RP_Buf *);
 
-	_asprintf (buf, NULLCP, ap);
+	_asprintf (buf, NULLCP, fmt, ap);
 	fprintf (stderr, "%s: %s %s [%s]\n", invo_name, proc,
 		 buf, rp -> rp_line);
 	va_end (ap);
-	exit (n);
+	exit (code);
 }
-#endif
