@@ -34,7 +34,7 @@ static  void	DoDomainOutput(), PrintOutList(), PrintThing(),
 		FreePrintList();
 static	int	HighestCost(), CountAts();
 
-PRINT		*DoChanOrder(), *InsertPrint(), *DeleteItem();
+static PRINT		*DoChanOrder(), *InsertPrint(), *DeleteItem();
 
 
 /* ------------------------  Begin  Routines  ------------------------------- */

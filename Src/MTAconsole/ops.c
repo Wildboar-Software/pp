@@ -452,7 +452,7 @@ struct RoSAPindication	*roi;
 
 /*  */
 /* msgs */
-struct msg_struct		*currentmsg,
+extern struct msg_struct	*currentmsg,
 				**global_msg_list,
 				*find_msg();
 struct type_Qmgr_UserList	*create_userlist();

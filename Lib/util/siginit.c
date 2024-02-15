@@ -53,7 +53,9 @@ int     sig, code;
 struct sigcontext *context;
 #endif
 {
-#ifdef BSD43
+#ifdef LINUX
+	extern char *strsignal(int);
+#elif BSD43
 	extern char *sys_siglist[];
 #endif
 
@@ -68,12 +70,15 @@ struct sigcontext *context;
 					     | sigmask(SIGABRT)
 #endif
 					     ));
-#ifndef BSD43
+#ifdef LINUX
 	PP_OPER (NULLCP,
-		("Process dying on signal %d", sig));
-#else
+		("Process dying on signal %d (%s)", sig, strsignal(sig)));
+#elif BSD43
 	PP_OPER (NULLCP,
 		("Process dying on signal %d (%s)", sig, sys_siglist[sig]));
+#else
+	PP_OPER (NULLCP,
+		("Process dying on signal %d", sig));
 #endif
 	(void) abort ();
 	/* NOTREACHED */

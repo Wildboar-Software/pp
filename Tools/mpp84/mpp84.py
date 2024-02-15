@@ -19,6 +19,7 @@ static char *rcsid = "$Header: /xtel/pp/pp-beta/Tools/mpp84/RCS/mpp84.py,v 6.0 1
 #endif  lint
 
 #include <stdio.h>
+#include <stdarg.h>
 
 
 #define ps_advise(ps, f) \
@@ -34,11 +35,15 @@ static enum { ps2mpp, pl2mpp } mode = ps2mpp;
 static enum format { p1, p2, sfd, p2hdr, p1hdr } topfmt = p2;
 
 
-void    adios ();
+void    adios (char *, char *, ...);
+void    advise (char *, char *, ...);
+void    _advise (char *, char *, va_list);
 
 /*    MAIN */
 
 /* ARGSUSED */
+
+static int  process ();
 
 main (argc, argv, envp)
 int     argc;
@@ -235,21 +240,15 @@ register char *s;
 
 /* VARARGS2 */
 
-void    adios (what, fmt, a, b, c, d, e, f, g, h, i, j)
-char   *what,
-       *fmt,
-       *a,
-       *b,
-       *c,
-       *d,
-       *e,
-       *f,
-       *g,
-       *h,
-       *i,
-       *j;
+void    adios (char *what, char *fmt, ...)
 {
-    advise (what, fmt, a, b, c, d, e, f, g, h, i, j);
+    va_list ap;
+    va_start(ap, fmt);
+
+    _advise(what, fmt, ap);
+
+    va_end(ap);
+
     _exit (1);
 }
 
@@ -257,24 +256,20 @@ char   *what,
 
 /* VARARGS2 */
 
-void    advise (what, fmt, a, b, c, d, e, f, g, h, i, j)
-char   *what,
-       *fmt,
-       *a,
-       *b,
-       *c,
-       *d,
-       *e,
-       *f,
-       *g,
-       *h,
-       *i,
-       *j;
+void    advise (char *what, char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    _advise(what, fmt, ap);
+    va_end(ap);
+}
+
+void    _advise (char *what, char *fmt, va_list ap)
 {
     (void) fflush (stdout);
 
     fprintf (stderr, "%s: ", myname);
-    fprintf (stderr, fmt, a, b, c, d, e, f, g, h, i, j);
+    vfprintf (stderr, fmt, ap);
     if (what)
         (void) fputc (' ', stderr), perror (what);
     else

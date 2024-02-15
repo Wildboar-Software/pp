@@ -23,7 +23,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Tools/dbmedit/RCS/dbmedit.c
 
 extern char *ppdbm;
 extern char *dupfpath();
-extern char *multcat();
+extern char *multcat(char *, ...);
 
 #ifdef GDBM
 GDBM_FILE	thedb;

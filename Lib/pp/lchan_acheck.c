@@ -18,6 +18,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/pp/RCS/lchan_acheck.c,v
 #include "util.h"
 #include "adr.h"
 #include "qmgr.h"
+#include "Qmgr-types.h"
 
 int lchan_acheck (ap, mychan, first, recip)
 ADDR    *ap;

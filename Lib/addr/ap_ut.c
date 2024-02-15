@@ -44,7 +44,7 @@ extern char *typtab[];
 
 
 int                             (*ap_gfunc)(); /* -- ptr to char get fn -- */
-int                             ap_peek; /* -- basic parse state info -- */
+extern int                             ap_peek; /* -- basic parse state info -- */
 extern int                      ap_perlev;
 extern int                      ap_grplev;
 AP_ptr                          ap_pstrt,

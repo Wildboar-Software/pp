@@ -16,6 +16,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/lconsole/RCS/mtas.c,v 6
 #include "lconsole.h"
 #include "qmgr.h"
 #include "qmgr-int.h"
+#include "Qmgr-ops.h"
 #include <isode/cmd_srch.h>
 #ifdef  BSD42
 #include <sys/ioctl.h>
@@ -149,7 +150,7 @@ char **vec;
 	char *av[NVARGS];
 
 	if (*++vec == NULLCP) {
-		if (getline ("Channel to list MTA's on: ", buffer) == NOTOK ||
+		if (_getline ("Channel to list MTA's on: ", buffer) == NOTOK ||
 		    str2vec (buffer, av) < 1)
 			return OK;
 		vec[1] = NULLCP;

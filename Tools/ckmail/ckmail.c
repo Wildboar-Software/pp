@@ -38,11 +38,10 @@ static char *myservice = 	"pp qmgr";
 /* OPERATIONS */
 static int 	do_readmsginfo(),
 		do_quit(),
-		p_msg(),
 		p_msginfo(),
-		p_recip(),
 		isPP();
      
+static void	p_msg(), p_recip();
 
 /* RESULTS */
 int 	readmsginfo_result();
@@ -441,7 +440,7 @@ struct RoSAPindication				*roi;
 	return OK;
 }
 
-static	int	p_msg(msg, sender)
+static void	p_msg(msg, sender)
 struct type_Qmgr_MsgStruct	*msg;
 {
 	int	len, tlen;
@@ -552,7 +551,7 @@ int				sender;
 	return retval;
 }
 
-static int 	p_recip(recip, tab, sender)
+static void 	p_recip(recip, tab, sender)
 struct type_Qmgr_RecipientInfo	*recip;
 int				tab;
 int				sender;

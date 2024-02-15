@@ -13,6 +13,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/LINEconsole/RCS/status.
  *
  */
 
+#include	"Qmgr-types.h"
 #include	"console.h"
 
 time_t convert_time(qb)

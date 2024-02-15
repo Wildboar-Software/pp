@@ -51,7 +51,7 @@ Jun 81  D. Crocker      Back in the fold.  Finished v7 conversion
 extern char     ap_lxtable[],
 		ap_lxtable_per[];   /* ascii chars -> symbolic terminals */
 extern int      ap_intype;
-int             ap_peek = -1;   /* one-character look-ahead */
+extern int      ap_peek = -1;   /* one-character look-ahead */
 char            ap_llex;        /* last lexeme returned by ap_lex() */
 
 #ifdef AP_DEBUG

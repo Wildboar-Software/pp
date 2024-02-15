@@ -73,7 +73,7 @@ extern char	*inet_ntoa ();
 
 static	char
 	buf [BUFL],		/* -- for general usage -- */
-	*getline(),
+	*_getline(),
 	netbuf [BUFL],		/* -- contains the valid characters -- */
 	*adrfix(),
 	*arg,			/* -- 0 if no arg - pts to comm param -- */
@@ -88,7 +88,7 @@ static	char
 static	int
 	hellod = 0,
 	nstimeout = 30,
-	dont_mung = 0,		/* -- used by getline() to limit munging -- */
+	dont_mung = 0,		/* -- used by _getline() to limit munging -- */
 	net_count = 0,		/* -- no of valid characters in netbuf -- */
 	no_recip = 0;		/* -- no of valid recipients accepted -- */
 
@@ -231,7 +231,7 @@ char	**argv;
 			us, postmaster);
 	netreply (replybuf);
 
-	while (cp = getline()) {
+	while (cp = _getline()) {
 		PP_LOG (LLOG_PDUS, ("<- %s", buf));
 
 		dispatch (buf);
@@ -308,7 +308,7 @@ static void initialise ()
 }	
 
 /*
-name:		getline()
+name:		_getline()
 
 function:
 		- get commands from the standard input terminated by <cr><lf>.
@@ -350,7 +350,7 @@ variables:
 
 --------------------------------------------------------------------------- */
 
-static char *getline()
+static char *_getline()
 {
 	register char	*inp;		/* -- input pointer in netbuf -- */
 	static char *outp;   /* -- output pointer in buf -- */
@@ -744,14 +744,14 @@ static void data()
 
 	netreply ("354 Enter Mail, end by a line with only '.'\r\n");
 
-	dont_mung = 1;	    /* -- tell getline only to drop cr -- */
+	dont_mung = 1;	    /* -- tell _getline only to drop cr -- */
 
 
 	PP_TRACE (("body of message"));
 
 	while (1) {  /* -- forever -- */
 
-		if ((p = getline()) == 0) {
+		if ((p = _getline()) == 0) {
 			p = "\n***Sender closed connection***\n";
 			errflg++;
 			break;
@@ -821,7 +821,7 @@ static void data()
 			return;
 		}
 	}
-	dont_mung = 0;	/* -- set getline to normal operation -- */
+	dont_mung = 0;	/* -- set _getline to normal operation -- */
 
 	PP_TRACE (("Finished receiving text."));
 	timer_end (&data_time, size, "Data Received");

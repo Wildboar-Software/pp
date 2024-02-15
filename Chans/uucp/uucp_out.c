@@ -18,6 +18,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/uucp/RCS/uucp_out.c,v
 #include "util.h"
 #include "head.h"
 #include "qmgr.h"
+#include "Qmgr-types.h"
 #include "q.h"
 #include "dr.h"
 #include "prm.h"
@@ -407,7 +408,7 @@ char	*orig,	/* original directory */
 		(void) dup2 (fd[0], 0);
 		(void) close (fd[0]);
 		(void) close (fd[1]);
-		(void) setpgrp (0, getpid());
+		(void) setpgrp ();
 
 		(void) execv (program,margv);
 		_exit (1);
@@ -418,7 +419,7 @@ char	*orig,	/* original directory */
 		(void) close (fd[1]);
 		result = NOTOK;
 	} else {
-#ifdef SYS5
+#ifndef UNIONWAIT
 		int w;
 #else
 		union wait w;
@@ -455,7 +456,7 @@ char	*orig,	/* original directory */
 			(void) killpg (pid, SIGKILL);
 		}
 
-#ifdef SYS5
+#ifndef UNIONWAIT
 		while ((pgmresult = wait (&w)) != pid &&
 		       pgmresult != -1)
 #else

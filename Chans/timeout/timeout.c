@@ -18,6 +18,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/timeout/RCS/timeout.c
 #include "head.h"
 #include "dbase.h"
 #include "qmgr.h"
+#include "Qmgr-types.h"
 #include "q.h"
 #include "dr.h"
 #include "prm.h"

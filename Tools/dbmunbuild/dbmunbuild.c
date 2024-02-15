@@ -18,11 +18,11 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Tools/dbmunbuild/RCS/dbmunb
 #include "dbase.h"
 #include "sys.file.h"
 #include <ctype.h>
-#include <varargs.h>
+#include <stdarg.h>
 
 extern char *ppdbm;
 extern char *dupfpath();
-extern char *multcat();
+extern char *multcat(char *, ...);
 
 extern Table **tb_all;
 
@@ -303,13 +303,13 @@ close_tables ()
 				adios ("failed", "fclose");
 }
 
-static void _advise (va_list ap);
+static void _advise (char *what, char* fmt, va_list ap);
 
 static void adios (char *what, char* fmt, ...)
 {
     va_list ap;
     va_start (ap, fmt);
-    _advise (ap);
+    _advise (what, fmt, ap);
     va_end (ap);
     _exit (1);
 }
@@ -318,15 +318,15 @@ static void advise (char *what, char *fmt, ...)
 {
     va_list ap;
     va_start (ap, fmt);
-    _advise (ap);
+    _advise (what, fmt, ap);
     va_end (ap);
 }
 
-static void _advise (va_list ap)
+static void _advise (char *what, char* fmt, va_list ap)
 {
     char    buffer[BUFSIZ];
 
-    asprintf (buffer, ap);
+    _asprintf (buffer, what, fmt, ap);
 
     (void) fflush (stdout);
 

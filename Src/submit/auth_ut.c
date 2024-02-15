@@ -25,7 +25,7 @@ extern char		auth2submit_msg[];
 /* -- local routines -- */
 void			authchan_add();
 void			authmta_add();
-void			do_reason();
+void			do_reason(AUTH *, char *, ...);
 AUTH			*auth_new();
 AUTH_USER		*authusr_new();
 LIST_AUTH_CHAN		*authchan_new();
@@ -51,17 +51,13 @@ char   *str;
 }
 
 #else
-void do_reason (va_alist)
-va_dcl
+void do_reason (AUTH *au, char *str, ...)
 {
 	va_list		ap;
-	AUTH		*au;
 
-	va_start (ap);
+	va_start (ap, str);
 
-	au = va_arg (ap, AUTH *);
-
-	_asprintf (auth2submit_msg, NULLCP, ap);
+	_asprintf (auth2submit_msg, NULLCP, str, ap);
 
 	au -> reason = strdup (auth2submit_msg);
 	va_end (ap);

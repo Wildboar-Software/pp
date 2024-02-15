@@ -18,6 +18,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Format/rfc1148/RCS/c-RFCtoP
 #include "util.h"
 #include "head.h"
 #include "qmgr.h"
+#include "Qmgr-types.h"
 #include "q.h"
 #include "prm.h"
 #include "chan.h"
@@ -331,7 +332,7 @@ char	*hdr;
 	int	num;
 	struct dirent	**namelist;
 
-	num = _scandir(dir, &namelist, is_822_hdr, NULL);
+	num = scandir(dir, &namelist, is_822_hdr, NULL);
 	if (num != 1) {
 		PP_LOG(LLOG_EXCEPTIONS,
 		       ("Format/RFCtoP2 : cannot find unique 822 hdr file"));
@@ -519,7 +520,7 @@ int	x40084;
 			PP_LOG(LLOG_EXCEPTIONS,
 			       ("Format/RFCtoP2 : cannot find 822 hdr '%s'",hdr822));
 			
-		num = _scandir(olddir,&namelist, do_link, NULL);
+		num = scandir(olddir,&namelist, do_link, NULL);
 		/* rewind newdir and olddir */
 		ix = rindex(olddir,'/');
 		*ix = '\0';
@@ -545,7 +546,7 @@ char	**ep;
 	struct dirent	**namelist;
 
 	dirlevel = 0;
-	num = _scandir(orig,&namelist, do_link, NULL);
+	num = scandir(orig,&namelist, do_link, NULL);
 	if (linkerror != NULLCP) {
 		if (*ep == NULLCP) 
 			*ep = linkerror;
@@ -570,24 +571,12 @@ int		num;
 	return ix;
 }
 
-void    advise (what, fmt, a, b, c, d, e, f, g, h, i, j)
-char   *what,
-       *fmt,
-       *a,
-       *b,
-       *c,
-       *d,
-       *e,
-       *f,
-       *g,
-       *h,
-       *i,
-       *j;
+void    _advise (char *what, char *fmt, va_list ap)
 {
     (void) fflush (stdout);
 
     fprintf (stderr, "RFCtoP2 test");
-    fprintf (stderr, fmt, a, b, c, d, e, f, g, h, i, j);
+    vfprintf (stderr, fmt, ap);
     if (what)
 	(void) fputc (' ', stderr), perror (what);
     else
@@ -596,22 +585,20 @@ char   *what,
     (void) fflush (stderr);
 }
 
+void    advise (char *what, char *fmt, ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	_advise(what, fmt, ap);
+	va_end(ap);
+}
 
 /* VARARGS 2 */
-void    adios (what, fmt, a, b, c, d, e, f, g, h, i, j)
-char   *what,
-       *fmt,
-       *a,
-       *b,
-       *c,
-       *d,
-       *e,
-       *f,
-       *g,
-       *h,
-       *i,
-       *j;
+void    adios (char *what, char *fmt, ...)
 {
-    advise (what, fmt, a, b, c, d, e, f, g, h, i, j);
+	va_list ap;
+	va_start(ap, fmt);
+	_advise(what, fmt, ap);
+	va_end(ap);
     _exit (1);
 }

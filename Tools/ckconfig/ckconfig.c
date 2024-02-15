@@ -35,6 +35,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Tools/ckconfig/RCS/ckconfig
 
 extern struct passwd	*getpwnam(), *getpwuid();
 extern void	getfpath(), dsap_init();
+void pnewline();
 
 typedef enum {
 	ok,

@@ -18,6 +18,8 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/qmgr/RCS/tables.c,v 6.0
 #include "util.h"
 #include "types.h"
 #include "qmgr.h"
+#include "Qmgr-ops.h"
+#include <isode/acsap.h>
 
 /* Variables */
 
@@ -1276,7 +1278,7 @@ Mlist	*ml1, *ml2;
 	return 0;
 }
 
-static mtaenqueue (ml, mlp, clp)
+static void mtaenqueue (ml, mlp, clp)
 Mlist	*ml;
 Mtalist  *mlp;
 Chanlist *clp;

@@ -18,6 +18,9 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/qmgr/RCS/assoc.c,v 6.0 
 #include "util.h"
 #include "types.h"
 #include "qmgr.h"
+#include "isode/psap2.h"
+#include "isode/acsap.h"
+#include "isode/rosap.h"
 
 int	assoc_start (myservice, fd)
 char	*myservice;

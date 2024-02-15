@@ -41,7 +41,7 @@ typedef struct  asn_body_struct {	/* -- holds the body part contents -- */
 
 
 extern int		errno;
-extern char		*sys_errlist[];
+extern char		*strerror(int);
 extern PE		asn_rd_stdin();
 
 

@@ -33,7 +33,7 @@ struct client_dispatch {
 	IFP		ds_error;
 
 	char		*ds_help;
-} Client_dispatch;
+};
 
 
 void advise (char *what, char *fmt, ...);

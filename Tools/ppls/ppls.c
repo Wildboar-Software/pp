@@ -21,8 +21,9 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Tools/ppls/RCS/ppls.c,v 6.0
 
 char	*myname;
 static int	selection ();
-static void adios (), advise ();
+static void adios (char *, char *, ...), advise (char *, char *, ...);
 extern int alphasort ();
+void dols();
 
 main (argc, argv)
 int	argc;
@@ -50,7 +51,7 @@ char	**argv;
 	exit (0);
 }
 
-dols (directory)
+void dols (directory)
 char	*directory;
 {
 	struct stat st;
@@ -63,7 +64,7 @@ char	*directory;
 	if ((st.st_mode & S_IFMT) != S_IFDIR)
 		printf ("%s\n", directory);
 
-	num = _scandir (directory, &namelist, selection, alphasort);
+	num = scandir (directory, &namelist, selection, alphasort);
 	
 	if (num == 0)
 		return;
@@ -81,13 +82,13 @@ struct dirent *dp;
 	return 1;
 }
 
-static void _advise (va_list ap);
+static void _advise (char *what, char* fmt, va_list ap);
 
 static void adios (char *what, char* fmt, ...)
 {
     va_list ap;
     va_start (ap, fmt);
-    _advise (ap);
+    _advise (what, fmt, ap);
     va_end (ap);
     _exit (1);
 }
@@ -96,15 +97,15 @@ static void advise (char *what, char *fmt, ...)
 {
     va_list ap;
     va_start (ap, fmt);
-    _advise (ap);
+    _advise (what, fmt, ap);
     va_end (ap);
 }
 
-static void _advise (va_list ap)
+static void _advise (char *what, char* fmt, va_list ap)
 {
     char    buffer[BUFSIZ];
 
-    asprintf (buffer, ap);
+    _asprintf (buffer, what, fmt, ap);
 
     (void) fflush (stdout);
 

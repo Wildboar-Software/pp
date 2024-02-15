@@ -31,12 +31,14 @@ int		unpack = 1;
 static char	*myname = "mpp88";
 static enum	{ ps2mpp, pl2mpp } mode = ps2mpp;
 static enum	format { p1, p2, p2hdr, ipn} topfmt = p2;
-void		adios ();
+void		adios (char *, char *, ...), advise(char *, char *, ...);
 
 
 /*    MAIN */
 
 /* ARGSUSED */
+
+static int  process ();
 
 main (argc, argv, envp)
 int     argc;
@@ -222,21 +224,14 @@ register char *s;
 
 /* VARARGS2 */
 
-void    adios (what, fmt, a, b, c, d, e, f, g, h, i, j)
-char   *what,
-       *fmt,
-       *a,
-       *b,
-       *c,
-       *d,
-       *e,
-       *f,
-       *g,
-       *h,
-       *i,
-       *j;
+static void _advise();
+
+void    adios (char *what, char *fmt, ...)
 {
-    advise (what, fmt, a, b, c, d, e, f, g, h, i, j);
+    va_list ap;
+    va_start(ap, fmt);
+    _advise (what, fmt, ap);
+    va_end(ap);
     _exit (1);
 }
 
@@ -244,24 +239,20 @@ char   *what,
 
 /* VARARGS2 */
 
-void    advise (what, fmt, a, b, c, d, e, f, g, h, i, j)
-char   *what,
-       *fmt,
-       *a,
-       *b,
-       *c,
-       *d,
-       *e,
-       *f,
-       *g,
-       *h,
-       *i,
-       *j;
+void    advise (char *what, char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    _advise(what, fmt, ap);
+    va_end(ap);
+}
+
+static void    _advise (char *what, char *fmt, va_list ap)
 {
     (void) fflush (stdout);
 
     fprintf (stderr, "%s: ", myname);
-    fprintf (stderr, fmt, a, b, c, d, e, f, g, h, i, j);
+    vfprintf (stderr, fmt, ap);
     if (what)
         (void) fputc (' ', stderr), perror (what);
     else

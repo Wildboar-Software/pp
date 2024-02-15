@@ -82,6 +82,11 @@ struct dn_seq *dn_seq_push ();
 int	dn_seq_print ();
 PE	grab_pe ();
 
+static int do_search (), do_bind ();
+static void _advise ();
+void dec_photo ();
+void quipurc ();
+
 #ifdef TESTVERSION
 void main (argc, argv)
 int argc;
@@ -1066,7 +1071,7 @@ static void adios (char *what, char* fmt, ...)
 {
     va_list ap;
     va_start (ap, fmt);
-	_ll_log (pp_log_norm, LLOG_FATAL, ap);
+	_ll_log (pp_log_norm, LLOG_FATAL, what, fmt, ap);
     va_end (ap);
     _exit (1);
 }
@@ -1075,15 +1080,15 @@ void advise (char *what, char *fmt, ...)
 {
     va_list ap;
     va_start (ap, fmt);
-    _advise (ap);
+    _advise (what, fmt, ap);
     va_end (ap);
 }
 
-static void _advise (va_list ap)
+static void _advise (char *what, char *fmt, va_list ap)
 {
     char    buffer[BUFSIZ];
 
-    asprintf (buffer, ap);
+    _asprintf (buffer, what, fmt, ap);
 
     (void) fflush (stdout);
 

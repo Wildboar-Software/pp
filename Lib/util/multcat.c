@@ -21,8 +21,8 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/util/RCS/multcat.c,v 6.
 /* VARARGS 1*/
 char* multcat (char *s1, ...)
 {
-	register va_list ap;
-	register char  *oldstr, *ptr;
+	va_list ap;
+	char  *oldstr, *ptr;
 	char    *newstr;
 	unsigned  newlen;
 

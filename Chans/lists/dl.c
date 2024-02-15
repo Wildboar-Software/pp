@@ -1891,17 +1891,13 @@ retry_policy:;
 
 #ifndef lint
 
-void    advise (va_alist)
-va_dcl
+void    advise (int code, char *what, char *fmt, ...)
 {
-    int     code;
     va_list ap;
 
-    va_start (ap);
+    va_start (ap, fmt);
 
-    code = va_arg (ap, int);
-
-    (void) _ll_log (log_dsap, code, ap);
+    (void) _ll_log (log_dsap, code, what, fmt, ap);
 
     va_end (ap);
 }

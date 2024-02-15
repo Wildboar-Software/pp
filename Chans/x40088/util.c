@@ -23,8 +23,8 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/x40088/RCS/util.c,v 6
 extern char             *sys_errlist[];
 extern int              sys_nerr;
 
-void                    adios(),
-			advise(),
+void                    adios(char *, char *, ...),
+			advise(int, char *, char *, ...),
 			rts_adios(),
 			rts_advise();
 
@@ -123,18 +123,16 @@ void adios (char *what, char* fmt, ...)
 {
     va_list ap;
     va_start (ap, fmt);
-    _ll_log (pp_log_oper, LLOG_FATAL, ap);
-    _ll_log (pp_log_norm, LLOG_FATAL, ap);
+    _ll_log (pp_log_oper, LLOG_FATAL, what, fmt, ap);
+    _ll_log (pp_log_norm, LLOG_FATAL, what, fmt, ap);
     va_end (ap);
     _exit (1);
 }
 
-void advise (char *what, char *fmt, ...)
+void advise (int code, char *what, char *fmt, ...)
 {
-    int code;
     va_list ap;
     va_start (ap, fmt);
-    code = va_arg (ap, int);
-    _ll_log (pp_log_norm, code, ap);
+    _ll_log (pp_log_norm, code, what, fmt, ap);
     va_end (ap);
 }

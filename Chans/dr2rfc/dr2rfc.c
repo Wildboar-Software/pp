@@ -31,6 +31,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/dr2rfc/RCS/dr2rfc.c,v
 #include "head.h"
 #include "prm.h"
 #include "qmgr.h"
+#include "Qmgr-types.h"
 #include "q.h"
 #include "tb_a.h"
 #include "ap.h"

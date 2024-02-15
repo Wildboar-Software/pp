@@ -100,11 +100,13 @@ char  **argv,
 			    sel2str (na -> na_pid, na -> na_pidlen, 1));
 		    break;
 
+#ifdef NA_BRG
 		case NA_BRG:
 		    advise (LLOG_NOTICE, NULLCP,
 			    "listening on X.25 (BRIDGE) %s %s", na2str (na),
 			    sel2str (na -> na_pid, na -> na_pidlen, 1));
 		    break;
+#endif
 
 		case NA_NSAP:
 		    advise (LLOG_NOTICE, NULLCP, "listening on NS %s",
@@ -360,7 +362,7 @@ void adios (char *what, char* fmt, ...)
 {
     va_list ap;
     va_start (ap, fmt);
-    _ll_log (pp_log_norm, LLOG_FATAL, ap);
+    _ll_log (pp_log_norm, LLOG_FATAL, what, fmt, ap);
     va_end (ap);
     _exit (1);
 }
@@ -369,6 +371,6 @@ static void advise (int code, char *what, char *fmt, ...)
 {
     va_list ap;
     va_start (ap, fmt);
-    _ll_log (pp_log_norm, code, ap);
+    _ll_log (pp_log_norm, code, what, fmt, ap);
     va_end (ap);
 }

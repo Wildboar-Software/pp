@@ -142,15 +142,14 @@ char *str;
 	return or_lose (str);
 }
 #else
-int or_lose (va_alist)
-va_dcl
+int or_lose (char *str, ...)
 {
 	va_list ap;
 	extern char or_error[];
 
-	va_start (ap);
+	va_start (ap, str);
 
-	_asprintf (or_error, NULLCP, ap);
+	_asprintf (or_error, NULLCP, str, ap);
 	
 	PP_LOG (LLOG_EXCEPTIONS, ("or_lose: %s", or_error));
 

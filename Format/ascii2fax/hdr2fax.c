@@ -751,7 +751,7 @@ static	CMD_TABLE  htbl_rfc [] = {
 	0,			0
 	};
 
-static int getline (bp, fp)
+static int _getline (bp, fp)
 char	**bp;
 FILE	*fp;
 {
@@ -839,7 +839,7 @@ char	**psubject;
 	char	*retstr = NULLCP, *bp, *temp, *addon, *name, *contents;
 	int	retval, type, len;
 
-	while (getline (&bp, stdin) == OK) {
+	while (_getline (&bp, stdin) == OK) {
 		switch (retval = hdr_parse (bp, &name, &contents)) {
 		    case HDV_MORE:
 			continue;

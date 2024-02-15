@@ -23,6 +23,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Format/p2flatten/RCS/flatte
 #include "retcode.h"
 #include <sys/stat.h>
 #include "sys.file.h"
+#include "Qmgr-types.h"
 
 extern char	*quedfldir;
 extern CHAN	*ch_nm2struct();

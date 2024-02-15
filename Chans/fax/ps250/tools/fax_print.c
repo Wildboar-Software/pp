@@ -48,18 +48,16 @@ int	isP2 = TRUE;
 char	*file = NULLCP;
 int	res;
 
+static int fax_bitstrings(), do_decode_fax();
+
 #ifndef lint
-void    advise (va_alist)
-va_dcl
+void    advise (int code, char *what, char *fmt, ...)
 {
-        int     code;
         va_list ap;
 
-        va_start (ap);
+        va_start (ap, fmt);
 
-        code = va_arg (ap, int);
-
-        _ll_log (pp_log_norm, code, ap);
+        _ll_log (pp_log_norm, code, what, fmt, ap);
 
         va_end (ap);
 }
@@ -456,7 +454,7 @@ void adios (char *what, char* fmt, ...)
 {
     va_list ap;
     va_start (ap, fmt);
-	_ll_log (pp_log_norm, LLOG_FATAL, ap);
+	_ll_log (pp_log_norm, LLOG_FATAL, what, fmt, ap);
     va_end (ap);
     _exit (1);
 }

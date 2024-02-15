@@ -23,8 +23,8 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/fax/RCS/fax_in.c,v 6.
 #include <stdarg.h>
 #include 	"faxgeneric.h"
 
-void    advise ();
-void    adios ();
+void    advise (int, char *, char *, ...);
+void    adios (char *, char *, ...);
 #define ps_advise(ps, f) \
         advise (LLOG_EXCEPTIONS, NULLCP, "%s: %s",\
                 (f), ps_error ((ps) -> ps_errno))
@@ -34,6 +34,7 @@ extern struct type_IOB_ORName	*orn2orname();
 extern char	*quedfldir;
 
 static void dirinit();
+static int init_PP_stuff(), decode_ch_in_info();
 
 CHAN	*mychan;
 struct	type_IOB_InformationObject	*infoobj = NULL;
@@ -157,7 +158,7 @@ PE	pe;
 	}
 
 	if (str_setup (ps, NULLPE, 0, 0) == NOTOK) {
-		advise (NULLCP, "str_setup loses");
+		advise (LLOG_EXCEPTIONS, NULLCP, "str_setup loses");
 		exit (1);
 	}
 
@@ -514,14 +515,13 @@ char           *msg;
 }
 
 #ifndef lint
-void    adios (va_alist)
-va_dcl
+void    adios (char *what, char *fmt, ...)
 {
         va_list ap;
 
-        va_start (ap);
+        va_start (ap, fmt);
 
-        _ll_log (pp_log_norm, LLOG_FATAL, ap);
+        _ll_log (pp_log_norm, LLOG_FATAL, what, fmt, ap);
 
         va_end (ap);
 
@@ -540,17 +540,13 @@ char   *what,
 
 
 #ifndef lint
-void    advise (va_alist)
-va_dcl
+void    advise (int code, char *what, char *fmt, ...)
 {
-        int     code;
         va_list ap;
 
-        va_start (ap);
+        va_start (ap, fmt);
 
-        code = va_arg (ap, int);
-
-        _ll_log (pp_log_norm, code, ap);
+        _ll_log (pp_log_norm, code, what, fmt, ap);
 
         va_end (ap);
 }

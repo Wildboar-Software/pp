@@ -34,7 +34,7 @@ static int		ad_extend;
 
 
 /* -- local routines -- */
-int		rplose ();
+int		rplose (RP_Buf *, int, char *, ...);
 int		validate_sender ();
 void		ad_init ();
 int		validate_recip ();

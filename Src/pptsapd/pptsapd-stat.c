@@ -61,7 +61,7 @@ static char myhost[BUFSIZ];
 static struct TSAPaddr *tz;
 
 static void adios (char *what, char* fmt, ...);
-static void advise (char *what, char *fmt, ...);
+static void advise (int, char *what, char *fmt, ...);
 
 static char *getchanpgm ();
 static void tsapd ();
@@ -105,11 +105,13 @@ char  **argv,
 			    sel2str (na -> na_pid, na -> na_pidlen, 1));
 		    break;
 
+#ifdef NA_BRG
 		case NA_BRG:
 		    advise (LLOG_NOTICE, NULLCP,
 			    "listening on X.25 (BRIDGE) %s %s", na2str (na),
 			    sel2str (na -> na_pid, na -> na_pidlen, 1));
 		    break;
+#endif
 
 		case NA_NSAP:
 		    advise (LLOG_NOTICE, NULLCP, "listening on NS %s",
@@ -365,18 +367,16 @@ static void adios (char *what, char* fmt, ...)
 {
     va_list ap;
     va_start (ap, fmt);
-    _ll_log (pp_log_norm, LLOG_FATAL, ap);
+    _ll_log (pp_log_norm, LLOG_FATAL, what, fmt, ap);
     va_end (ap);
     _exit (1);
 }
 
-void advise (char *what, char *fmt, ...)
+void advise (int code, char *what, char *fmt, ...)
 {
-    int     code;
     va_list ap;
     va_start (ap, fmt);
-    code = va_arg (ap, int);
-    _ll_log (pp_log_norm, code, ap);
+    _ll_log (pp_log_norm, code, what, fmt, ap);
     va_end (ap);
 }
 
@@ -385,7 +385,7 @@ int	sig;
 long	code;
 struct sigcontext *sc;
 {
-	union wait status;
+	int status;
 	struct rusage rusage;
 	int	pid;
 

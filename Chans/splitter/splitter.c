@@ -16,6 +16,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/splitter/RCS/splitter
 
 #include "util.h"
 #include "qmgr.h"
+#include "Qmgr-types.h"
 #include "q.h"
 #include "prm.h"
 #include "retcode.h"
