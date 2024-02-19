@@ -578,7 +578,7 @@ char	*dir;
 {
 	struct dirent	**namelist = NULL;
 
-	int ret = _scandir(dir, &namelist, bpFile, NULLIFP);
+	int ret = scandir(dir, &namelist, bpFile, NULLIFP);
 
 	if (namelist) free ((char *) namelist);
 	return ret;

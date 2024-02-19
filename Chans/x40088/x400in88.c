@@ -50,7 +50,7 @@ static int rts_abort ();
 static int rts_finish ();
 static int rts_uptrans ();
 static char *SReportString ();
-void	advise (), adios ();
+static void	advise (int, char *, char *, ...), adios (char *, char *, ...);
 #if PP_DEBUG >= PP_DEBUG_SOME
 static int do_debug_transfer ();
 static int waittime = 0;
@@ -171,15 +171,15 @@ struct PSAPctxlist *ctxlist;
 			continue;
 		}
 
-		advise (NULLCP, "Unexpected context %s",
+		advise (LLOG_EXCEPTIONS, NULLCP, "Unexpected context %s",
 			sprintoid (pp -> pc_asn));
 	}
 	if (a != 1)
-		advise (NULLCP, "context %s not present", aCSE);
+		advise (LLOG_EXCEPTIONS, NULLCP, "context %s not present", aCSE);
 	if (r != 1)
-		advise (NULLCP, "context %s not present", rTSE);
+		advise (LLOG_EXCEPTIONS, NULLCP, "context %s not present", rTSE);
 	if (m != 1)
-		advise (NULLCP, "context %s not present", mTSE);
+		advise (LLOG_EXCEPTIONS, NULLCP, "context %s not present", mTSE);
 	oid_free (a_ctx);
 	oid_free (m_ctx);
 	oid_free (r_ctx);
@@ -605,7 +605,7 @@ static int do_debug_transfer ()
 	ssa.sv_type = SV_ENDIND;
 	rts_uptrans (0, SI_ACTIVITY, (caddr_t)&ssa, &rti);
         if (result != DONE)
-                advise (NULLCP, "Read message - not parsed");
+                advise (LLOG_EXCEPTIONS, NULLCP, "Read message - not parsed");
 }
 #endif
 
@@ -615,19 +615,17 @@ static void adios (char *what, char* fmt, ...)
 {
     va_list ap;
     va_start (ap, fmt);
-    _ll_log (pp_log_oper, LLOG_FATAL, ap);
-    _ll_log (pp_log_norm, LLOG_FATAL, ap);
+    _ll_log (pp_log_oper, LLOG_FATAL, what, fmt, ap);
+    _ll_log (pp_log_norm, LLOG_FATAL, what, fmt, ap);
     va_end (ap);
     _exit (1);
 }
 
-static void advise (char *what, char *fmt, ...)
+static void advise (int code, char *what, char *fmt, ...)
 {
-    int     code;
     va_list ap;
-    va_start (ap);
-    code = va_arg (ap, int);
-    _ll_log (pp_log_norm, code, ap);
+    va_start (ap, fmt);
+    _ll_log (pp_log_norm, code, what, fmt, ap);
     va_end (ap);
 }
 

@@ -216,7 +216,7 @@ enum cb_type {
 	cb_special,
 	cb_responder,
 	cb_timer
-} cb_type;
+};
 
 
 
@@ -300,7 +300,7 @@ extern struct stats stats;
 #define OP_SHUTDOWN	1
 #define OP_RESTART	2
 
-extern void		advise(), adios(), acs_advise(), 
+extern void		advise(int, char *, char *, ...), adios(char *, char *, ...), acs_advise(), 
 			ros_advise(), ros_adios();
 extern time_t		time(), utc2time_t(), utcqb2time_t();
 extern char		*chan2mta();

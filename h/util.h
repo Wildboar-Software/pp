@@ -44,8 +44,8 @@
 #include <unistd.h>
 #endif
 
-extern char *multcat ();
-extern char *multcpy ();
+extern char *multcat (char *, ...);
+extern char *multcpy (char *, ...);
 extern char *smalloc ();
 
 /* -- some common logical values -- */

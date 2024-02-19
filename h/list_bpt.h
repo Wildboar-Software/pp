@@ -26,12 +26,12 @@ typedef struct list_bpt {
 #define NULLIST_BPT             ((LIST_BPT *)0)
 
 
-extern  LIST_BPT                *list_bpt_dup();
-extern  LIST_BPT                *list_bpt_find();
-extern  LIST_BPT                *list_bpt_nfind();
-extern  LIST_BPT                *list_bpt_malloc();
-extern  LIST_BPT                *list_bpt_new();
-extern	void			list_bpt_add ();
-extern	void			list_bpt_free ();
+LIST_BPT                *list_bpt_dup();
+LIST_BPT                *list_bpt_find();
+LIST_BPT                *list_bpt_nfind();
+LIST_BPT                *list_bpt_malloc();
+LIST_BPT                *list_bpt_new();
+void			list_bpt_add ();
+void			list_bpt_free ();
 
 #endif

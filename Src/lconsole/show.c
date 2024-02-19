@@ -16,6 +16,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/lconsole/RCS/show.c,v 6
 #include "lconsole.h"
 #include "qmgr.h"
 #include "qmgr-int.h"
+#include "Qmgr-ops.h"
 #include <isode/cmd_srch.h>
 #ifdef  BSD42
 #include <sys/ioctl.h>
@@ -149,7 +150,7 @@ char **vec;
 	int pid;
 
 	if (*++vec == NULLCP) {
-		if (getline ("expression: ", buffer) == NOTOK ||
+		if (_getline ("expression: ", buffer) == NOTOK ||
 		    str2vec (buffer, vec) < 1)
 			return OK;
 	}

@@ -36,7 +36,7 @@ static int 	fdin = NOTOK, fdout = NOTOK;
 static int 	pid, sysreply;
 static FILE	*cur_fp = NULL;
 static DIR	*mb_dp	= NULL;
-static int 	copy();
+static int 	copy(), loc_set(), send_pac(), do_child_stuff(), do_packet(), val(), isdir();
 
 static struct loc_packet {
 	int		command;

@@ -35,8 +35,8 @@ extern char *hdr_p22_bp, *hdr_p2_bp, *hdr_ipn_bp, *cont_p22, *cont_p2;
 LIST_BPT	*outbound_bpts = NULLIST_BPT;
 LIST_BPT	*outbound_hdrs = NULLIST_BPT;
 
-void    advise ();
-void    adios ();
+void    advise (int, char *, char *, ...);
+void    adios (char *, char *, ...);
 #define ps_advise(ps, f) \
 	advise (LLOG_EXCEPTIONS, NULLCP, "%s: %s",\
 		(f), ps_error ((ps) -> ps_errno))
@@ -818,17 +818,15 @@ void adios (char *what, char* fmt, ...)
 {
 	va_list ap;
 	va_start (ap, fmt);
-	_ll_log (pp_log_norm, LLOG_FATAL, ap);
+	_ll_log (pp_log_norm, LLOG_FATAL, what, fmt, ap);
 	va_end (ap);
 	_exit (1);
 }
 
-void advise (char *what, char *fmt, ...)
+void advise (int code, char *what, char *fmt, ...)
 {
-	int code;
 	va_list ap;
 	va_start (ap, fmt);
-	code = va_arg (ap, int);
-	_ll_log (pp_log_norm, code, ap);
+	_ll_log (pp_log_norm, code, what, fmt, ap);
 	va_end (ap);
 }

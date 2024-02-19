@@ -45,9 +45,9 @@ install clean tidy all lint define depend:
 dirs:
 	@for i in $(DIRS); \
 	do if [ ! -d $$i ]; \
-	   then set -x; mkdir $$i; \
+	   then set -x; mkdir -p $$i; \
 		$(CHOWN) $(PPUSER) $$i; \
-		case "$$i" in $(LOGDIR)) $(CHMOD) a=rwx $@;; esac; \
+		case "$$i" in $(LOGDIR)) $(CHMOD) a=rwx $$i;; esac; \
 	   fi; \
 	done
 		

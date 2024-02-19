@@ -51,12 +51,19 @@ static enum {
 #define check_proto(x)	if (is_state != (x)) \
 	return io_lose (rp, RP_MECH, "Protocol state mismatch")
 
-void set_protocol_mode ();
-void unset_protocol_mode ();
+static void set_protocol_mode ();
+static void unset_protocol_mode ();
 SFP	sigpipe;
 
 extern void getfpath ();
 static  char *io_data_vis ();
+
+static int io_init_local ();
+static int io_init_remote ();
+static int io_tdata_aux ();
+static int io_rrply ();
+static int io_wrec ();
+
 /* ---------------------  Begin  Routines  -------------------------------- */
 
 // Source: https://man7.org/linux/man-pages/man3/gethostbyname.3.html ("Historical")

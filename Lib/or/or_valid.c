@@ -19,7 +19,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/or/RCS/or_valid.c,v 6.0
 /* see table 10 in X.402 */
 /* forms of O/R address */
 
-static int or_valid_term(), or_valid_post(), or_valid_mnem(), or_valid_none();
+static int or_valid_term(), or_valid_post(), or_valid_mnem(), or_valid_none(), or_valid_numr();
 
 int or_valid_or (or)
 OR_ptr	or;

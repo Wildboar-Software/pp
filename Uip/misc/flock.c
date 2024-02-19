@@ -34,7 +34,7 @@ char	**argv;
 	FILE	*fp;
 	extern int errno;
 	int	pid, cpid;
-#ifdef SYS5
+#ifndef UNIONWAIT
 	int     status;
 #else
 	union wait status;
@@ -65,7 +65,7 @@ char	**argv;
 		_exit (1);
 	}
 
-#ifdef SYS5
+#ifndef UNIONWAIT
 	while ((cpid = wait( &status)) != pid && cpid != NOTOK)
 #else
 	while ((cpid = wait( &status.w_status)) != pid && cpid != NOTOK)

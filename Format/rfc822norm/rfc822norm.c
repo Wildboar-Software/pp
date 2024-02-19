@@ -190,7 +190,7 @@ static int tidy_up();
 #endif
 static getitm(), out_adr();
 
-char		*myname;
+static char		*myname;
 int		nadrs;
 int		pcol;
 int		nonempty;

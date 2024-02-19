@@ -36,10 +36,12 @@ int     curdepth = 0;
 int     more = TRUE;
 int     flatresult = OK, err_fatal = FALSE;
 
-void advise (char *what, char *fmt, ...);
+void advise (int, char *what, char *fmt, ...);
 void adios (char *what, char* fmt, ...);
 #define ps_advise(ps, f) \
 	advise (NULLCP, "%s: %s", (f), ps_error ((ps) -> ps_errno))
+
+void fillin_ipn(), fillin_forwarded();
 
 flatten(old,new, x40084, perr)
 char    *old;
@@ -158,7 +160,7 @@ char	**perr;
 	}
 }
 
-int	fillin_ipn (pipn, x40084, perr)
+void	fillin_ipn (pipn, x40084, perr)
 struct type_IOB_IPN	**pipn;
 int 	x40084;
 char	**perr;
@@ -804,7 +806,7 @@ int     *len;
 	*len = st.st_size;
 	p = smalloc (*len + 1);
 	if (read (fd, p, *len) != *len) {
-		advise ("read", "Read failed");
+		advise (LLOG_EXCEPTIONS, "read", "Read failed");
 		flatresult = NOTOK;
 	}
 	close (fd);
@@ -891,7 +893,7 @@ struct type_IOB_ODIFBodyPart	**podif;
 	}
 }
 	
-fillin_forwarded(pbp, x40084, perr)
+void fillin_forwarded(pbp, x40084, perr)
 struct type_IOB_BodyPart	**pbp;
 int	x40084;
 char	**perr;
@@ -937,17 +939,15 @@ void adios (char *what, char* fmt, ...)
 {
 	va_list ap;
 	va_start (ap, fmt);
-	_ll_log (pp_log_norm, LLOG_FATAL, ap);
+	_ll_log (pp_log_norm, LLOG_FATAL, what, fmt, ap);
 	va_end (ap);
 	_exit (1);
 }
 
-void advise (char *what, char *fmt, ...)
+void advise (int code, char *what, char *fmt, ...)
 {
-	int code;
 	va_list ap;
 	va_start (ap, fmt);
-	code = va_arg (ap, int);
-	_ll_log (pp_log_norm, code, ap);
+	_ll_log (pp_log_norm, code, what, fmt, ap);
 	va_end (ap);
 }

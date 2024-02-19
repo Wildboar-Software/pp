@@ -19,6 +19,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/shell/RCS/shell.c,v 6
 #include "expand.h"
 #include "head.h"
 #include "qmgr.h"
+#include "Qmgr-types.h"
 #include "q.h"
 #include "dr.h"
 #include "prm.h"
@@ -512,7 +513,7 @@ ProgInfo *info;
 		(void) close(fd[1]);
 		(void) close(fd_stderr[0]);
 		(void) close(fd_stderr[1]);
-		(void) setpgrp(0, getpid());
+		(void) setpgrp();
 
 		if(chdir (info -> home) == NOTOK)
 			chdir ("/tmp");
@@ -546,7 +547,7 @@ ProgInfo *info;
 		(void) close(fd[0]);
 		result = NOTOK;
 	} else {
-#ifdef SVR4
+#ifndef UNIONWAIT
 		int w;
 #else
 		union wait w;

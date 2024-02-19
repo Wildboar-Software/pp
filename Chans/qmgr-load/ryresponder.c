@@ -332,18 +332,16 @@ void adios (char *what, char* fmt, ...)
 {
     va_list ap;
     va_start (ap, fmt);
-    _ll_log (pp_log_norm, LLOG_FATAL, ap);
+    _ll_log (pp_log_norm, LLOG_FATAL, what, fmt, ap);
     va_end (ap);
     _exit (1);
 }
 
-void advise (char *what, char *fmt, ...)
+void advise (int code, char *what, char *fmt, ...)
 {
-    int code;
     va_list ap;
     va_start (ap, fmt);
-    code = va_arg (ap, int);
-    _ll_log (pp_log_norm, code, ap);
+    _ll_log (pp_log_norm, code, what, fmt, ap);
     va_end (ap);
 }
 
@@ -351,6 +349,6 @@ void ryr_advise (char *what, char *fmt, ...)
 {
     va_list ap;
     va_start (ap, fmt);
-    _ll_log (pp_log_norm, LLOG_NOTICE, ap);
+    _ll_log (pp_log_norm, LLOG_NOTICE, what, fmt, ap);
     va_end (ap);
 }

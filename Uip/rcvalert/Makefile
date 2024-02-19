@@ -138,7 +138,7 @@ xalert-false xalert-:; @echo "X11 not defined so not builing xalert"
 xalert:xxalert
 	@true
 xxalert: $(XALERTOBJ)
-	$(CC) $(LDFLAGS) -o $@ $(XALERTOBJ) $(LIBPHOTO) $(LIBSYS) $(LIBX)
+	$(CC) $(LDFLAGS) -o $@ $(XALERTOBJ) $(LIBPHOTO) $(LIBPP) $(LIBSYS) $(LIBX)
 
 xalert.o: xalert.c
 	$(CC) $(CFLAGS) -c $(NOPHOTO) xalert.c

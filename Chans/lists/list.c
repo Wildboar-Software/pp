@@ -18,6 +18,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/lists/RCS/list.c,v 6.
 #include "util.h"
 #include "head.h"
 #include "qmgr.h"
+#include "Qmgr-types.h"
 #include "chan.h"
 #include "q.h"
 #include "dr.h"
@@ -963,7 +964,7 @@ int	complain;
 
 
 /* --- rm this from the list --- */
-static adr_rm (this, list)
+static void adr_rm (this, list)
 ADDR	*this,
 	**list;
 {
@@ -1273,17 +1274,13 @@ ADDR		*origsender;
 	
 #ifndef lint
 
-void    advise (va_alist)
-va_dcl
+void    advise (int code, char *what, char *fmt, ...)
 {
-    int     code;
     va_list ap;
 
-    va_start (ap);
+    va_start (ap, fmt);
 
-    code = va_arg (ap, int);
-
-    (void) _ll_log (log_dsap, code, ap);
+    (void) _ll_log (log_dsap, code, what, fmt, ap);
 
     va_end (ap);
 }

@@ -65,7 +65,7 @@ static char     **get_all_messages()
 	char            **ret;
 	extern char     *quedfldir;
 
-	num = _scandir(quedfldir, &namelist, isMsg, NULL);
+	num = scandir(quedfldir, &namelist, isMsg, NULL);
 
 	ret = (char **) calloc((num+1), sizeof(char *));
 	ix = namelist;

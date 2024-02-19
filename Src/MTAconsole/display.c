@@ -57,7 +57,7 @@ extern int 			max_vert_lines,
 				read_currentchan,
 				monitor_form_managed;
 Widget				*channel_array = NULL;
-int				actual_nchans_present = 0,
+extern int		actual_nchans_present = 0,
 				num_channels,
 				chan_info_shown = FALSE;
 extern struct monitor_item	**display_list;

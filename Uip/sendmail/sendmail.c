@@ -501,7 +501,7 @@ static void adios (char *what, char* fmt, ...)
 {
     va_list ap;
     va_start (ap, fmt);
-	_ll_log (pp_log_norm, LLOG_FATAL, ap);
+	_ll_log (pp_log_norm, LLOG_FATAL, what, fmt, ap);
     va_end (ap);
     _exit (1);
 }

@@ -17,6 +17,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/qmgr/RCS/recipstate.c,v
 
 #include "util.h"
 #include "qmgr.h"
+#include "Qmgr-types.h"
 
 #define STR2QB(s)	str2qb((s), strlen((s)), 1)
 

@@ -19,6 +19,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/fax/RCS/fax_out.c,v 6
 #include 	"prm.h"
 #include	"q.h"
 #include	"qmgr.h"
+#include	"Qmgr-types.h"
 #include	"dr.h"
 #include 	<isode/cmd_srch.h>
 #include 	"tb_bpt88.h"
@@ -38,9 +39,10 @@ static void dirinit(), douser();
 static char *get_fax_number();
 static char	*this_msg;
 static int firstSuccessDR, firstFailureDR;
+static int fax_bodypart(), fax_ia5_bodypart(), fax_g3_bodypart(), fax_bitstrings(), do_decode_fax();
 
-void    advise ();
-void    adios ();
+void    advise (int, char *, char *, ...);
+void    adios (char *, char *, ...);
 #define ps_advise(ps, f) \
         advise (LLOG_EXCEPTIONS, NULLCP, "%s: %s",\
                 (f), ps_error ((ps) -> ps_errno))
@@ -879,17 +881,15 @@ void adios (char *what, char* fmt, ...)
 {
     va_list ap;
     va_start (ap, fmt);
-	_ll_log (pp_log_norm, LLOG_FATAL, ap);
+	_ll_log (pp_log_norm, LLOG_FATAL, what, fmt, ap);
     va_end (ap);
     _exit (1);
 }
 
-void advise (char *what, char *fmt, ...)
+void advise (int code, char *what, char *fmt, ...)
 {
-	int code;
     va_list ap;
-    va_start (ap, fmt);
 	code = va_arg (ap, int);
-    _ll_log (pp_log_norm, code, ap);
+    _ll_log (pp_log_norm, code, what, fmt, ap);
     va_end (ap);
 }

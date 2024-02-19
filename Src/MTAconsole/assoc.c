@@ -53,6 +53,7 @@ extern int do_readchannelmtamessage();
 extern int do_msgcontrol();
 extern int do_quecontrol();
 int do_quit();
+void do_disconnect();
 
 /* CLIENT RESULTS */
 extern int channelread_result();
@@ -188,7 +189,7 @@ static struct server_dispatch server_dispatches[] = {
 
 static void 	acs_advise(),
 		ros_advise();
-void		advise();
+void		advise(char *, char *, ...);
 int	remoteStop();
 PE	passwdpeps[1], *passwdpep = passwdpeps;
 int     fatal;
@@ -835,16 +836,15 @@ extern int	autoReconnect,
 extern char	*hostname;
 
 #ifndef lint
-void advise (va_alist)
-va_dcl
+void advise (char *what, char *fmt, ...)
 {
 	va_list ap;
 	
 	char	buffer[BUFSIZ],
 		headerbuf[BUFSIZ];
 
-	va_start (ap);
-	asprintf (buffer, ap);
+	va_start (ap, fmt);
+	_asprintf (buffer, what, fmt, ap);
 	if (header != NULL) {
 		XtSetMappedWhenManaged(error, True);
 		errorUp = 5;
@@ -986,7 +986,7 @@ int	ad;
 
 
 /* disconnect from current host with part of a quit */
-do_disconnect()
+void do_disconnect()
 {
 	struct AcSAPrelease acrs;
 	register struct AcSAPrelease   *acr = &acrs;

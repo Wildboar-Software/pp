@@ -17,6 +17,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/qmgr/RCS/chan_debug.c,v
 
 #include        "util.h"
 #include        "qmgr.h"
+#include        "Qmgr-types.h"
 static void pdeliverystatus (), pindividualdeliverystatus ();
 
 

@@ -16,6 +16,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/822-local/RCS/loc_chi
 
 #include "util.h"
 #include "qmgr.h"
+#include "Qmgr-types.h"
 #include <sys/wait.h>
 #include <signal.h>
 #include "sys.file.h"
@@ -65,7 +66,7 @@ extern	long	message_size;
 extern Q_struct Qstruct;
 extern CHAN	*mychan;
 extern void	create_var ();
-void	adios (), advise ();
+void	adios (char *, char *, ...), advise (int, char *, char *, ...);
 
 static	char msg_size[20];
 
@@ -559,7 +560,7 @@ char	*proc;
 		for (i = getdtablesize (); i > 2; i--)
 			(void) close (i);
 #ifndef SYS5
-		(void) setpgrp (0, getpid ());
+		(void) setpgrp ();
 #endif
 #ifdef TIOCNOTTY
 		if ((i = open ("/dev/tty", O_RDWR, 0)) >= 0) {
@@ -755,19 +756,17 @@ void adios (char *what, char* fmt, ...)
     va_list ap;
 	char buffer[BUFSIZ];
     va_start (ap, fmt);
-	asprintf (buffer, ap);
+	_asprintf (buffer, what, fmt, ap);
 	ll_log (pp_log_norm, LLOG_EXCEPTIONS, NULLCP, "%s", buffer);
     va_end (ap);
     longjmp (jbuf, DONE);
 }
 
-void advise (char *what, char *fmt, ...)
+void advise (int code, char *what, char *fmt, ...)
 {
-	int	code;
     va_list ap;
     va_start (ap, fmt);
-    code = va_arg (ap, int);
-    _ll_log (pp_log_norm, code, ap);
+    _ll_log (pp_log_norm, code, what, fmt, ap);
     va_end (ap);
 }
 
@@ -842,7 +841,7 @@ int	mvp;
 }
 
 /* ARGSUSED */
-printit (s)
+void printit (s)
 char	*s;
 {
 	return;

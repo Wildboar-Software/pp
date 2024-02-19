@@ -19,14 +19,12 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/util/RCS/multcpy.c,v 6.
 
 /* VARARGS 2 */
 char *
-multcpy (to, va_alist)
-register char   *to;
-va_dcl
+multcpy (char *to, ...)
 {
-	register va_list ap;
-	register char   *from;
+	va_list ap;
+	char   *from;
 
-	va_start(ap);
+	va_start(ap, to);
 
 	while(from = va_arg(ap, char *)){
 		while(*to++ = *from++);

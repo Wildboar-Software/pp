@@ -21,6 +21,7 @@ static void ad_copy_addresses(),
 	ad_copy_errors();
 
 static int rfc822thenx40090, x400thenrfc822(), parselose_exception();
+static int rfc822thenx400 ();
 
 int ad_fullparse (ad, rp, order_pref)
 register ADDR	*ad;

@@ -32,7 +32,7 @@ extern ADDR				*make_adr_new();
 
 /* --- static routines  --- */
 static void 				prompt_encoded();
-
+static int					prompt_yn();
 
 
 

@@ -13,6 +13,8 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/LINEconsole/RCS/assoc.c
  *
  */
 
+#include	"Qmgr-ops.h"
+#include	"Qmgr-types.h"
 #include	"console.h"
 
 extern char	*host, *actual_host, *cmd_argv[];
@@ -37,7 +39,7 @@ static struct client_dispatch   *channelread_op,
 				*qmgrStatus_op,
 				*quit_op;
 static void	acs_advise(), ros_advise();
-void		advise();
+void		advise(char *, char *, ...);
 int	remoteStop();
 PE	passwdpeps[1], *passwdpep = passwdpeps;
 /* CLIENT OPERATIONS */
@@ -548,15 +550,14 @@ char   *event;
 }
 
 #ifndef lint
-void advise (va_alist)
-va_dcl
+void advise (char *what, char *fmt, ...)
 {
 	va_list ap;
 	
 	char	buffer[BUFSIZ];
 
-	va_start (ap);
-	asprintf (buffer, ap);
+	va_start (ap, fmt);
+	_asprintf (buffer, what, fmt, ap);
 	fprintf(stdout, "%s\n",buffer);
 	va_end (ap);
 }

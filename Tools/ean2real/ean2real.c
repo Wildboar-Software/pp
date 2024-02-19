@@ -157,13 +157,13 @@ static int process (register char *file, register FILE *fp)
     return 0;
 }
 
-void _advise (va_list ap);
+static void _advise (char *what, char* fmt, va_list ap);
 
 void adios (char *what, char* fmt, ...)
 {
     va_list ap;
     va_start (ap, fmt);
-    _advise (ap);
+    _advise (what, fmt, ap);
     va_end (ap);
     _exit (1);
 }
@@ -172,15 +172,15 @@ void advise (char *what, char *fmt, ...)
 {
     va_list ap;
     va_start (ap, fmt);
-    _advise (ap);
+    _advise (what, fmt, ap);
     va_end (ap);
 }
 
-static void _advise (va_list ap)
+static void _advise (char *what, char* fmt, va_list ap)
 {
     char buffer[BUFSIZ];
 
-    asprintf (buffer, ap);
+    _asprintf (buffer, what, fmt, ap);
 
     (void) fflush (stdout);
 

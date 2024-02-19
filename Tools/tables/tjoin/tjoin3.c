@@ -26,6 +26,8 @@ MTA     	*NameToMta(), *InsertMta(), *GetMta();
 CHAN    	*InsertChan(), *GetChan();
 char    	*StoreStr(), *InChanList();
 
+static void ProcessAR(), MergeData(), MergeChanData(), DoDirectChans();
+
 extern  char    *av0, *MyName;
 extern  HOST    *HostList;
 extern  CHAN    *ChanList;
@@ -278,7 +280,7 @@ storeage used by the line input routines.
 --- *** --- */
 
 
-StoreHost (hostname)
+void StoreHost (hostname)
 char    *hostname;
 {
 	register MTA    *mta;
@@ -302,7 +304,7 @@ char    *hostname;
 
 
 
-StoreChans (name)
+void StoreChans (name)
 char    *name;
 {
 	register MTA    *mta;
@@ -386,7 +388,7 @@ responsible for freeing the space used by AR lines and HOST and
 CHAN buffers.
 --- *** --- */
 
-static MergeData (mta, host)
+static void MergeData (mta, host)
 register MTA    *mta;
 register HOST   *host;
 {
@@ -413,7 +415,7 @@ register HOST   *host;
 }
 
 
-static ProcessAR (mta, hostname)
+static void ProcessAR (mta, hostname)
 register MTA    *mta;
 register char   *hostname;
 {
@@ -447,7 +449,7 @@ register char   *hostname;
 
 
 
-static MergeChanData (mta, c1)
+static void MergeChanData (mta, c1)
 register MTA    *mta;
 register CHAN   *c1;
 {
@@ -473,7 +475,7 @@ register CHAN   *c1;
 }
 
 
-static DoDirectChans (mta, c1)
+static void DoDirectChans (mta, c1)
 register MTA    *mta;
 register CHAN   *c1;
 {

@@ -49,8 +49,8 @@ struct dn_seq *dn_seq_push ();
 static	int	dlevel = 0;
 static	int	dsa_status;
 
-struct dn_seq *dm2dn_seq ();
-struct dn_seq *dm2dn_seq_aux ();
+static struct dn_seq *dm2dn_seq ();
+static struct dn_seq *dm2dn_seq_aux ();
 Filter	make_filter ();
 
 /*  */

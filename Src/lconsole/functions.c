@@ -15,6 +15,8 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/lconsole/RCS/functions.
 
 #include "lconsole.h"
 #include "qmgr.h"
+#include "Qmgr-ops.h"
+#include "Qmgr-types.h"
 #include "qmgr-int.h"
 #include <isode/cmd_srch.h>
 #ifdef  BSD42
@@ -23,6 +25,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/lconsole/RCS/functions.
 
 #define plural(n,s)	((n) == 1 ? "" : (s))
 
+extern FILE *fp_in = NULL;
 
 extern int	chan_update ();
 extern int	mta_update ();
@@ -154,7 +157,7 @@ char **vec;
 	free_chanlist ();
 
 	if (*++vec == NULLCP) {
-		if (getline ("host: ", buffer) == NOTOK ||
+		if (_getline ("host: ", buffer) == NOTOK ||
 		    str2vec (buffer, vec) < 1)
 			return OK;
 	}
@@ -166,7 +169,7 @@ char **vec;
 		if (user == NULLCP)
 			user = strdup ("");
 		(void) sprintf (prompt, "user (%s:%s): ", host, user);
-		if (getline (prompt, buffer) == NOTOK)
+		if (_getline (prompt, buffer) == NOTOK)
 			return OK;
 
 		if (str2vec (buffer, vec) < 1) {
@@ -665,7 +668,7 @@ char *str, *cstr;
 	    case DE_CHANNEL:
 		if (*++vec == NULLCP) {
 			(void) sprintf (prompt, "%s channel: ", str);
-			if (getline (prompt, buffer) == NOTOK ||
+			if (_getline (prompt, buffer) == NOTOK ||
 			    str2vec(buffer, vec) < 1)
 				return OK;
 		}
@@ -689,7 +692,7 @@ char *str, *cstr;
 	    case DE_MTA:
 		if (*++vec == NULLCP) {
 			(void) sprintf (prompt, "channel containing MTA: ");
-			if (getline (prompt, buffer) == NOTOK ||
+			if (_getline (prompt, buffer) == NOTOK ||
 			    str2vec(buffer, vec) < 1)
 				return OK;
 		}
@@ -699,7 +702,7 @@ char *str, *cstr;
 			(void) sprintf (prompt,
 					"%s (on channel %s) MTA: ", str,
 					vec[0]); 
-			if (getline (prompt, buffer2) == NOTOK ||
+			if (_getline (prompt, buffer2) == NOTOK ||
 			    str2vec(buffer2, &vec[1]) < 1)
 				return OK;
 		}
@@ -722,7 +725,7 @@ char *str, *cstr;
 	    case DE_MESSAGE:
 		if (*++vec == NULLCP) {
 			(void) sprintf (prompt, "%s message qid: ", str);
-			if (getline (prompt, buffer) == NOTOK ||
+			if (_getline (prompt, buffer) == NOTOK ||
 			    str2vec(buffer, av) < 1)
 				return OK;
 			vec[1] = NULLCP;
@@ -732,7 +735,7 @@ char *str, *cstr;
 		av[2] = cstr;
 		
 		if (*++vec == NULLCP) {
-			if (getline ("list of user numbers: ", buffer2) == NOTOK ||
+			if (_getline ("list of user numbers: ", buffer2) == NOTOK ||
 			    str2vec (buffer2, &av[3]) < 1)
 				return OK;
 		}
@@ -821,7 +824,7 @@ char **vec;
 	    case DE_CHANNEL:
 		if (*++vec == NULLCP) {
 			(void) sprintf (prompt, "%s channel: ", str);
-			if (getline (prompt, buffer) == NOTOK ||
+			if (_getline (prompt, buffer) == NOTOK ||
 			    str2vec(buffer, vec) < 1)
 				return OK;
 		}
@@ -830,7 +833,7 @@ char **vec;
 		av[1] = CTRL_CACHEADD;
 		if (*++vec == NULLCP) {
 			(void) sprintf (prompt, "%s channel by: ", str);
-			if (getline (prompt, buffer2) == NOTOK ||
+			if (_getline (prompt, buffer2) == NOTOK ||
 			    str2vec(buffer, vec) < 1)
 				return OK;
 		}
@@ -852,7 +855,7 @@ char **vec;
 	    case DE_MTA:
 		if (*++vec == NULLCP) {
 			(void) sprintf (prompt, "channel containing MTA: ");
-			if (getline (prompt, buffer) == NOTOK ||
+			if (_getline (prompt, buffer) == NOTOK ||
 			    str2vec(buffer, vec) < 1)
 				return OK;
 		}
@@ -863,7 +866,7 @@ char **vec;
 			(void) sprintf (prompt,
 					"%s (on channel %s) MTA: ", str,
 					vec[0]); 
-			if (getline (prompt, buffer2) == NOTOK ||
+			if (_getline (prompt, buffer2) == NOTOK ||
 			    str2vec(buffer2, &vec[1]) < 1)
 				return OK;
 		}
@@ -871,7 +874,7 @@ char **vec;
 		vec[2] = CTRL_CACHEADD;
 		if (*++vec == NULLCP) {
 			(void) sprintf (prompt, "%s channel by: ", str);
-			if (getline (prompt, buffer2) == NOTOK ||
+			if (_getline (prompt, buffer2) == NOTOK ||
 			    str2vec(buffer, vec) < 1)
 				return OK;
 		}
@@ -893,7 +896,7 @@ char **vec;
 	    case DE_MESSAGE:
 		if (*++vec == NULLCP) {
 			(void) sprintf (prompt, "%s message qid: ", str);
-			if (getline (prompt, buffer) == NOTOK ||
+			if (_getline (prompt, buffer) == NOTOK ||
 			    str2vec(buffer, av) < 1)
 				return OK;
 			vec[1] = NULLCP;
@@ -901,14 +904,14 @@ char **vec;
 		else av[0] = *vec;
 		if (*++vec == NULLCP) {
 			(void) sprintf (prompt, "%s channel by: ", str);
-			if (getline (prompt, buffer2) == NOTOK ||
+			if (_getline (prompt, buffer2) == NOTOK ||
 			    str2vec(buffer, vec) < 1)
 				return OK;
 		}
 		av[1] = *vec;
 		av[2] = CTRL_CACHEADD;
 		if (*++vec == NULLCP) {
-			if (getline ("list of user numbers: ", buffer2) == NOTOK ||
+			if (_getline ("list of user numbers: ", buffer2) == NOTOK ||
 			    str2vec (buffer2, &av[3]) < 1)
 				return OK;
 		}
@@ -943,7 +946,7 @@ char **vec;
 	char buffer[BUFSIZ];
 
 	if (*++vec == NULLCP) {
-		if (getline ("file: ", buffer) == NOTOK ||
+		if (_getline ("file: ", buffer) == NOTOK ||
 		    str2vec (buffer, vec) < 1)
 			return OK;
 	}

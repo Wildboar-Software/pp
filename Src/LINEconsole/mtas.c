@@ -13,6 +13,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/LINEconsole/RCS/mtas.c,
  *
  */
 
+#include	"Qmgr-types.h"
 #include	"console.h"
 
 char	*mta_match = NULLCP;

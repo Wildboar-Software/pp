@@ -19,6 +19,8 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/qmgr/RCS/qmgr.c,v 6.0 1
 #include <sys/signal.h>
 #include "ryresponder.h"                /* for generic idempotent responders */
 #include "qmgr.h"                   /* operation definitions */
+#include "Qmgr-ops.h"
+#include "Qmgr-types.h"
 #include "types.h"
 
 static char *myservice = "pp qmgr";

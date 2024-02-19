@@ -36,7 +36,6 @@ static struct client_dispatch {
 } Client_dispatch;
 
 
-void			adios(), advise();
 void			acs_adios(), acs_advise();
 void			ros_adios(), ros_advise();
 int			ryinitiator();

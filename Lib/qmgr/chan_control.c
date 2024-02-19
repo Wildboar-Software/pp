@@ -20,6 +20,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/qmgr/RCS/chan_control.c
 #include <setjmp.h>
 #include <stdarg.h>
 #include "qmgr.h"
+#include "Qmgr-ops.h"
 #include "retcode.h"
 #include <isode/tsap.h>
 #include "ll_log.h"
@@ -381,7 +382,7 @@ static void adios (char *what, char* fmt, ...)
 {
     va_list ap;
     va_start (ap, fmt);
-    _ll_log (pp_log_oper, LLOG_FATAL, ap);
+    _ll_log (pp_log_oper, LLOG_FATAL, what, fmt, ap);
     va_end (ap);
     _exit (1);
 }

@@ -44,7 +44,7 @@ OPTIONALFILTERS =
 
 # This is the external libraries required by all programs. 
 # Should include isode at the least. dbm maybe also.
-LIBSYS          = -ldsap -lisode -ldbm
+LIBSYS          = -ldsap -lisode -lgdbm_compat -lm -lcrypt
 # For SYS5 also need -lsocket -lnsl -lgen
 
 # Compilation things.
@@ -102,7 +102,7 @@ APPDEFAULTS     = /usr/lib/X11/app-defaults
 LIBRESOLV	=
 
 # Photo support
-LIBPHOTO	=	/usr/local/etc/g3fax/libphoto.a
+LIBPHOTO	=
 
 # These commands have a habit of moving around
 CHOWN		= chown
@@ -140,13 +140,13 @@ FORMDIR         = $(CMDDIR)/format
 TOOLDIR		= $(CMDDIR)/tools
 
 # ISODE dependencies
-PEPY            = pepy
+PEPY            = /usr/local/bin/pepy
 PYFLAGS         =
-ROSY		= rosy
+ROSY		= /usr/local/bin/rosy
 RYFLAGS		=
-POSY		= posy
+POSY		= /usr/local/bin/posy
 POFLAGS		=
-PEPSY		= pepsy
+PEPSY		= /usr/local/bin/pepsy
 PEPSYHDRS	= /usr/local/include/isode/pepsy
 # Other Libraries and programs
 

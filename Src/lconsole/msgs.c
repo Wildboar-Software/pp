@@ -16,6 +16,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/lconsole/RCS/msgs.c,v 6
 #include "lconsole.h"
 #include "qmgr.h"
 #include "qmgr-int.h"
+#include "Qmgr-ops.h"
 #include <isode/cmd_srch.h>
 #ifdef  BSD42
 #include <sys/ioctl.h>
@@ -166,7 +167,7 @@ char **vec;
 	char *av[NVARGS];
 
 	if (*++vec == NULLCP) {
-		if (getline ("Channel: ", buffer) == NOTOK ||
+		if (_getline ("Channel: ", buffer) == NOTOK ||
 		    str2vec (buffer, vec) < 1)
 			return OK;
 	}
@@ -175,7 +176,7 @@ char **vec;
 		return OK;
 
 	if (*++vec == NULLCP) {
-		if (getline ("Mta: ", buffer2) == NOTOK ||
+		if (_getline ("Mta: ", buffer2) == NOTOK ||
 		    str2vec(buffer2, vec) < 1)
 			return OK;
 	}

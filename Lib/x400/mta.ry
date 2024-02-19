@@ -305,7 +305,7 @@ WaitingMessages ::= BIT STRING {
 DeliveryControls ::= Controls
 
 Controls ::= SET {
-	restrict [0] BOOLEAN DEFAULT TRUE,
+	restricted [0] BOOLEAN DEFAULT TRUE,
 	-- update 'TRUE', remove 'FALSE'
 	permissible-operations [1] Operations OPTIONAL,
 	permissible-maximum-content-length [2] ContentLength OPTIONAL,

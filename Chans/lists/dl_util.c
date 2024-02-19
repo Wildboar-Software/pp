@@ -435,7 +435,7 @@ ADDR * dn2ADDR();
 ADDR 	*ret = NULLADDR;
 ADDR    *next;
 int num = 1;
-int dn_print ();
+void dn_print ();
 
 	if ((tmp = as_find_type(as,at_Owner)) == NULLATTR)
 		return get_postmaster();

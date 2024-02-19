@@ -1,5 +1,6 @@
 /* c-P2toRfc.c: rfc987(P2toRFC) filter channel */
 
+#include <stdarg.h>
 # ifndef lint
 static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Format/rfc1148/RCS/c-P2toRFC.c,v 6.0 1991/12/18 20:20:34 jpo Rel $";
 # endif
@@ -28,6 +29,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Format/rfc1148/RCS/c-P2toRF
 #include "sys.file.h"
 #include <isode/usr.dirent.h>
 #include "tb_bpt88.h"
+#include "Qmgr-types.h"
 
 extern char	*quedfldir;
 extern char 	*chndfldir;
@@ -386,7 +388,7 @@ char	*dir;
 	int	num;
 	struct dirent	**namelist;
 
-	num = _scandir(dir, &namelist, is_xtra_822hdrs, NULL);
+	num = scandir(dir, &namelist, is_xtra_822hdrs, NULL);
 	if (num == 0) {
 		dir_flags[dirlevel] = FALSE;
 		return NULLCP;
@@ -606,7 +608,7 @@ struct dirent	*entry;
 			return 0;
 		}
 
-		num = _scandir(olddir,&namelist, do_link, NULL);
+		num = scandir(olddir,&namelist, do_link, NULL);
 		/* rewind newdir and olddir */
 		ix = rindex(olddir,'/');
 		*ix = '\0';
@@ -632,7 +634,7 @@ char	**ep;
 	int num;
 	struct dirent	**namelist;
 
-	num = _scandir(orig,&namelist, do_link, NULL);
+	num = scandir(orig,&namelist, do_link, NULL);
 	if (linkerror != NULLCP) {
 		if (*ep == NULLCP) 
 			*ep = linkerror;
@@ -657,24 +659,12 @@ int		num;
 	return ix;
 }
 
-void    advise (what, fmt, a, b, c, d, e, f, g, h, i, j)
-char   *what,
-       *fmt,
-       *a,
-       *b,
-       *c,
-       *d,
-       *e,
-       *f,
-       *g,
-       *h,
-       *i,
-       *j;
+void    _advise (char *what, char *fmt, va_list ap)
 {
     (void) fflush (stdout);
 
     fprintf (stderr, "RFCtoP2 test");
-    fprintf (stderr, fmt, a, b, c, d, e, f, g, h, i, j);
+    vfprintf (stderr, fmt, ap);
     if (what)
 	(void) fputc (' ', stderr), perror (what);
     else
@@ -683,22 +673,21 @@ char   *what,
     (void) fflush (stderr);
 }
 
+void    advise (char *what, char *fmt, ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	_advise(what, fmt, ap);
+	va_end(ap);
+}
+
 
 /* VARARGS 2 */
-void    adios (what, fmt, a, b, c, d, e, f, g, h, i, j)
-char   *what,
-       *fmt,
-       *a,
-       *b,
-       *c,
-       *d,
-       *e,
-       *f,
-       *g,
-       *h,
-       *i,
-       *j;
+void    adios (char *what, char *fmt, ...)
 {
-    advise (what, fmt, a, b, c, d, e, f, g, h, i, j);
+	va_list ap;
+	va_start(ap, fmt);
+	_advise(what, fmt, ap);
+	va_end(ap);
     _exit (1);
 }
