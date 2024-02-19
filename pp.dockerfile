@@ -18,3 +18,24 @@ RUN adduser pp
 
 RUN ./make
 RUN ./make dirs
+RUN ./make install
+
+# Installs an example configuration just to try to start it up.
+WORKDIR /pp/examples/INTERNET
+RUN ./make install
+
+# This is how you map the transport selector to the MTA.
+# This example was taken directly from _Implementing X.400 and X.500: The PP and Quipu Systems_ by Steven Kille.
+# This is confirmed to be the actual location of the channel.
+RUN echo '"tsap/p1" "591" /usr/lib/pp/cmds/chans/x400in88' >> /etc/isoservices
+
+# JSYK:
+# The ISODE tailoring file is here: /usr/local/etc/isode/isotailor, but it does
+# not seem to apply all the time. It seems like the PP tailoring file overrides
+# your ISODE settings, particularly when it comes to logging.
+WORKDIR /usr/lib/pp
+
+# ISO Transport over TCP (ITOT) is exposed on this port. You should be able to
+# perform X.400 (88) MHS operations by using the transport selector "x400".
+EXPOSE 20001
+CMD /usr/lib/pp/cmds/pptsapd
