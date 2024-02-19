@@ -16,7 +16,6 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/util/RCS/cmdbsrch.c,v 6
 #include "util.h"
 #include <isode/cmd_srch.h>
 
-// TODO: For some reason, changing this to return int makes the tty logging disappear...
 int cmdbsrch (str, cmd, entries)        /* binary version of cmdsrch */
 char *str;			/* test string  */
 CMD_TABLE cmd[];		/* table of known commands */
