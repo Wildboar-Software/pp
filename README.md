@@ -290,6 +290,20 @@ have access to the Janet network, comments may be sent to the mailbox
 "pp-support@cs.ucl.ac.uk". Do not send bug reports to the pp-people discussion
 group. -->
 
+## Future Plans
+
+I do not plan on doing much to improve upon this ancient codebase, however, I
+do plan to:
+
+- Test it to make sure it actually works end-to-end
+  - This is a huge ordeal, since it does not come with any X.400 client software
+    of its own. I will have to write this myself.
+- Create a Debian Package
+- Create a Helm Chart
+
+I might also try to get it building on other Linux distros, such as CentOS,
+Fedora, Arch, and Alpine.
+
 ## Why "PP"?
 
 I will quote an excerpt from _Implementing X.400 and X.500: The PP and Quipu
