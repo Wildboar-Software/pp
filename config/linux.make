@@ -50,9 +50,12 @@ LIBSYS          = -ldsap -lisode -lgdbm_compat -lm -lcrypt
 # Compilation things.
 CC              = gcc
 OLDCC		= $(CC)
-CCOPTIONS       = -O # -g -std=c99 -w
+# -rdynamic was added only to ensure debug symbols remain.
+CCOPTIONS       = -g -Og -rdynamic
+# Uncomment this and comment out the above if you want an optimized (but less debuggable) build.
+# CCOPTIONS       = -O3
 LIBCCOPTIONS	= $(CCOPTIONS)
-LDOPTIONS       = -s # -g -std=c99 -w
+LDOPTIONS       =
 
 
 ############################################################
