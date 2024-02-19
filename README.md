@@ -5,19 +5,25 @@ mostly by Steven Kille. This project was resurrected in 2024 by Jonathan M.
 Wilbur / Wildboar Software to be able to build using modern tooling on Linux in
 a Docker container. A few bugs were fixed as well.
 
+## Background: X.400 Message Handling Systems
+
 X.400 Message Handling Systems were a messaging service similar in purpose to
 email--and, in fact, it competed with email at the time, though it lost--but
-devised by the International Telecommunications Union. It differs significantly
-by being a lot more technically complicated, but much more capable than email
-out-of-the-box, supporting things like binary data, encryption, authentication,
-integrity, read receipts, etc. While it has many benefits, it was designed to
-only utilize the extremely complicated OSI networking stack: it was never
-designed to run over TCP/IP, which was a big problem for its adoption. In
-addition to this, it uses attribute-value pairs for addressing, which makes the
-parsing, presentation, validation, and routing based on these addresses much
-more complicated than email's "user-at-host" addressing, which some have argued
-was a major reason for its downfall. It also has poor support for non-Romance
-language, but this could be said to be true of email as well.
+devised by the International Telecommunications Union (ITU). It gets its name
+from the fact that the ITU's X.400-series of specifications, starting with
+[ITU-T Recommendation X.400](https://www.itu.int/rec/T-REC-X.400/en).
+
+X.400 differs significantly by being a lot more technically complicated, but
+much more capable than email out-of-the-box, supporting things like binary data,
+encryption, authentication, integrity, read receipts, etc. While it has many
+benefits, it was designed to only utilize the extremely complicated OSI
+networking stack: it was never designed to run over TCP/IP, which was a big
+problem for its adoption. In addition to this, it uses attribute-value pairs for
+addressing, which makes the parsing, presentation, validation, and routing based
+on these addresses much more complicated than email's "user-at-host" addressing,
+which some have argued was a major reason for its downfall. It also has poor
+support for non-Romance language, but this could be said to be true of email as
+well.
 
 Still, the X.400 MHS is
 [used in NATO and Western militaries](https://en.wikipedia.org/wiki/Military_Message_Handling_System)
@@ -26,6 +32,59 @@ Still, the X.400 MHS is
 which is used by the aviation industry. I have also heard that it is still in
 use in the shipping / overseas transport industry for EDI, but I haven't
 confirmed this anywhere.
+
+## The PP X.400 MTA
+
+PP is a Message Transfer Agent, intended for high volume message switching,
+protocol conversion, and format conversion. It is targeted for use in an
+operational environment, but is also be useful for investigating message related
+applications. Good management features are a major aspect of this system. PP
+supports the 1984 and 1988 versions of the CCITT X.400 / ISO 10021 services and
+protocols. Many existing [IETF RFC 822](https://www.rfc-editor.org/info/rfc822)
+based protocols are supported, along with RFC 1148bis conversion to X.400. PP is
+an appropriate replacement for MMDF or Sendmail. This is the second public
+release of PP, and includes substantial changes based on feedback from using PP
+on many sites.
+
+- PP is not proprietary and can be used for any purpose. The only restriction is
+  that suing of the authors for any damage the code may cause is not allowed.
+- PP runs on a range of UNIX and UNIX-like operating systems, including SUNOS,
+  Ultrix, and BSD. A full list of platforms on which PP is know to run is
+  included in the distribution.
+- Current modules include:
+  - X.400 (1984) P1 protocol.
+  - X.400 (1988) P1 protocol.
+  - Simple mail transfer protocol (SMTP), conformant to host requirements.
+  - JNT mail (grey book) Protocol.
+  - UUCP mail transfer.
+  - DECNET Mail-11 transfer
+  - Distribution list expansion and maintenance, using either a file based
+    mechanism or an X.500 directory.
+  - RFC 822-based local delivery.
+  - Delivery time processing of messages.
+  - Conversion between X.400 and RFC 822 according to the latest revision of RFC
+    1148, known as RFC 1148bis.
+  - Conversion support for reformatting body parts and headers.
+  - X-Window and line-based management console.
+  - Message Authorisation checking.
+  - Reformatting support for "mail hub" operation.
+  - X.500-based distribution list facility using the QUIPU directory.
+  - FAX interworking
+- No User Agents (UAs) are included with PP. However, procedural access to the
+  MTA is documented, to encourage others to write or to port UAs. Several
+  existing UAs, such as MH, may be used with PP.
+- It is expected that a Message Store to be used in conjunction with PP (PPMS),
+  and an associated X-Windows User Agent (XUA) will be released on beta test in
+  first quarter 92.
+- The core routing of PP 6.0 is table based. DNS is used by the SMTP channel.
+  The next version of PP will support Directory Based routing, which may use
+  X.500 or DNS.
+- PP 6.0 requires ISODE 7.0.
+- X-Windows release X11R4 (or greater) is needed by some of the management
+  tools. PP can be operated without these tools.
+- The primary documentation for this release consists of a three and a half
+  volume User's Manual (approx. 300 pages) and a set of UNIX manual pages. The
+  sources to the User's Manual are in LaTeX format.
 
 ## License
 
@@ -230,6 +289,16 @@ have access to the Janet network, comments may be sent to the mailbox
 "pp-support@cs.ucl.ac.uk". Do not send bug reports to the pp-people discussion
 group. -->
 
+## Why "PP"?
+
+I will quote an excerpt from _Implementing X.400 and X.500: The PP and Quipu
+Systems_ by Stephen E. Kille:
+
+> PP is not an acronym. There is no truth in the rumour that PP stands for
+> "Postman Pat," a famous British postman.
+
+That's all I've got.
+
 ## See Also
 
 - [ISODE](https://github.com/Wildboar-Software/isode) - Which I also resurrected
@@ -240,3 +309,6 @@ group. -->
 - [Wildboar Software](https://github.com/Wildboar-Software) - A business
   pseudonym for Jonathan M. Wilbur, a computer nerd who also happens to sell
   a "Fail2Ban for Kubernetes" called [Kube2Ban](https://kube2ban.com/).
+- [M-Switch](https://www.isode.com/products/m-switch-x400.html) - I believe
+  this is the closed-source and proprietary successor to PP, and I also believe
+  this is maintained by Stephen E. Kille, or those who work for him.
