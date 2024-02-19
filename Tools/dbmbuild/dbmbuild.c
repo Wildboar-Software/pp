@@ -81,7 +81,7 @@ void    adios (char *, char *, ...), advise (char *, char *, ...);
 static int theinit (), theend ();
 static int dbfinit (), dbfclose ();
 static void process ();
-static int install ();
+static void install ();
 static int prdatum ();
 static int check ();
 static int tb_open (), tb_close (), tb_free ();
@@ -480,7 +480,7 @@ Install a datum into the database.
 Fetch entry first to see if we have to append name for building entry.
 */
 
-static install (key, value, tbname)
+static void install (key, value, tbname)
 datum           key,
 		value;
 char            tbname[];
