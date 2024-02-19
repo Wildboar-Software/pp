@@ -160,9 +160,9 @@ chan	x400		prog=x400in88,type=in,show="X400 Channel",adr=x400,key=x400in88
 
 #  **-- Logging for the rest of the prog --**
 #
-authlog level=notice, size=-1
-operlog level=notice, size=400
-normlog level=notice, size=400, sflags=zero
+authlog level=debug, size=-1, sflags=tty
+operlog level=debug, size=400, sflags=tty
+normlog level=debug, size=400, sflags=tty
 
 822flatten	normlog	 file=filter
 %BEGIN(J)%
@@ -190,5 +190,5 @@ submit		normlog	 file=submit
 local		normlog	 file=local
 msg-clean	normlog	 file=msg-clean
 
-pptsapd		normlog	 file=pptsapd,		dlevel=notice
+pptsapd		normlog	 file=pptsapd
 x400		normlog	 file=x400
