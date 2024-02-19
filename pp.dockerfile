@@ -1,5 +1,5 @@
 # FROM ubuntu:latest
-FROM ghcr.io/wildboar-software/quipu:v8.3.10
+FROM ghcr.io/wildboar-software/quipu:v8.3.11
 
 LABEL com.wildboarsoftware.app="pp"
 LABEL com.wildboarsoftware.major_version="6"
