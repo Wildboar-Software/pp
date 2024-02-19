@@ -135,7 +135,8 @@ cp config/linux.make ./Make.defs
 You can configure the build further in these files as well as in
 `./OPTIONS.make`.
 
-> [!WARNING] This version of PP was designed against ISODE 7.0, and the original
+> [!WARNING]
+> This version of PP was designed against ISODE 7.0, and the original
 > documentation says that it requires ISODE 7.0. However, it seems to run fine
 > on ISODE 8.x and higher. Understand that there may be bugs as a result of this
 > version breach. I (Jonathan Wilbur) have created many fixes to ISODE 8.0, so
