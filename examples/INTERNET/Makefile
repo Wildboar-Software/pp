@@ -73,23 +73,13 @@ inst-tables: $(TABLES)
 		cp $$i $(TBLDIR) || exit 1; \
 	done
 
+# This was edited manually to fix some weird bash scripting error.
 inst-warnings: $(WARNINGS)
-	sh -c "if [ -d $(WARNDIR) ];\
-	then echo "$(WARNDIR) does not exit - creating it"; \
-	     mkdir $(WARNDIR);\
-	     $(CHOWN) pp $(WARNDIR);\
-	     $(CHMOD) 755 $(WARNDIR);\
-	fi
-	@for i in $(WARNINGS); \
-	do \
-		if [ -f $(WARNDIR)/$$i ]; \
-		then \
-			echo mv $(WARNDIR)/$$i $(WARNDIR)/$$i.bak; \
-			mv $(WARNDIR)/$$i $(WARNDIR)/$$i.bak || exit 1; \
-		fi; \
-                echo cp $$i $(WARNDIR); \
-                cp $$i $(WARNDIR) || exit 1; \
-        done
+	mkdir -p $(WARNDIR)
+	$(CHOWN) pp $(WARNDIR)
+	$(CHMOD) 755 $(WARNDIR)
+	cp warning.1 $(WARNDIR)
+	cp warning.2 $(WARNDIR)
 
 
 rebuild: clean build
