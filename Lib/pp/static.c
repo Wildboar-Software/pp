@@ -38,7 +38,16 @@ extern char            *postmaster = "***INVALID***";
 extern char		*adminstration_req_alt = NULLCP;
 extern char            *ppdbm = "ppdbm";
 extern char            *pplogin = "pp";   /* -- login user id of pp -- */
-extern char            *pptsapd_addr = "Internet=localhost+20001";
+/* pptsapd_addr used to contain "localhost," but this caused problems in
+previous versions of ISODE. Modern Linux systems often use two aliases of
+"localhost": one for IPv4 and one for IPv6. Even when explicitly requesting only
+IPv4 addresses, the IPv6 address seems to get converted. This means two
+duplicate IP addresses will be returned for this alias. This is not a problem
+when a presentation address is used for connecting to a remote host, but it is
+a nasty problem when listening, because you will get "already listening on
+that port" errors. Despite this being fixed in my latest changes to ISODE, I
+have changed this to 0.0.0.0 to prevent this problem. */
+extern char            *pptsapd_addr = "Internet=0.0.0.0+20001";
 extern char            *delim1 = "\1\1\1\1\n";
 extern char            *delim2 = "\1\1\1\1\n";
 extern char            *mboxname = "ppmailbox";
