@@ -24,6 +24,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Format/rfc934/RCS/rfc934.c,
 #include "dr.h"
 #include <sys/stat.h>
 #include "sys.file.h"
+#include "Qmgr-types.h"
 
 extern char	*quedfldir;
 extern char 	*chndfldir;

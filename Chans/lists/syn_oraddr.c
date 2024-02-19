@@ -18,7 +18,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/lists/RCS/syn_oraddr.
 /* LINTLIBRARY */
 
 #include "util.h"
-#include <varargs.h>
+#include <stdarg.h>
 #include "retcode.h"
 #include "adr.h"
 #include "ap.h"

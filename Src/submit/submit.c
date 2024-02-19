@@ -19,7 +19,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/submit/RCS/submit.c,v 6
 #include "prm.h"
 #include "q.h"
 #include "or.h"
-#include <varargs.h>
+#include <stdarg.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <signal.h>
@@ -95,8 +95,8 @@ extern ADDR *read_recipient ();
 extern int 		server_start ();
 
 /* -- local routines -- */
-void			err_abrt();
-void			pro_reply();
+void			err_abrt(int, char *, ...);
+void			pro_reply(int, char *, ...);
 
 static int		priv_user();
 static void		_pro_reply();
@@ -493,24 +493,18 @@ char *fmt;
 	pro_reply (code, fmt);
 }
 #else
-void pro_reply (va_alist)
-va_dcl
+void pro_reply (int code, char *fmt, ...)
 {
 	va_list ap;
-	int	code;
 
-	va_start(ap);
+	va_start(ap, fmt);
 
-	code = va_arg (ap, int);
-
-	_pro_reply (code, ap);
+	_pro_reply (code, fmt, ap);
 
 	va_end (ap);
 }
 
-static void _pro_reply (code, ap)
-int	code;
-va_list ap;
+static void _pro_reply (int code, char *fmt, va_list ap)
 {
 	char	buffer[4*BUFSIZ];
 	register char  *errchar = NULLCP;
@@ -531,7 +525,7 @@ va_list ap;
 			break;
 		}
 
-	_asprintf (buffer, NULLCP, ap);
+	_asprintf (buffer, NULLCP, fmt, ap);
 
 	if (rp_isbad (code))
 	    PP_SLOG (LLOG_EXCEPTIONS, errchar,
@@ -567,19 +561,15 @@ char	*fmt;
 	pro_reply (code, fmt);
 }
 #else
-void err_abrt (va_alist)   /* terminate the process		 */
-va_dcl
+void err_abrt (int code, char *fmt, ...)   /* terminate the process		 */
 {
 	va_list ap;
-	int	code;
 
-	va_start (ap);
-
-	code = va_arg (ap, int);
+	va_start (ap, fmt);
 
 	PP_TRACE (("err_abrt (%d)", code));
 
-	_pro_reply (code, ap);
+	_pro_reply (code, fmt, ap);
 
 	va_end (ap);
 

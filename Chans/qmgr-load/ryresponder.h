@@ -29,10 +29,10 @@ static struct server_dispatch {
 
 extern int	debug;
 
-void		adios(), advise();
+void		adios(char *, char *, ...), advise(int, char *, char *, ...);
 void		acs_advise();
 void		ros_adios(), ros_advise();
-void		ryr_advise();
+void		ryr_advise(char *, char *, ...);
 int		ryresponder();
 
 #endif

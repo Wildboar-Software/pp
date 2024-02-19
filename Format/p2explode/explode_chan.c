@@ -17,6 +17,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Format/p2explode/RCS/explod
 
 #include "util.h"
 #include "qmgr.h"
+#include "Qmgr-types.h"
 #include "q.h"
 #include "prm.h"
 #include "retcode.h"

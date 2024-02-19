@@ -389,7 +389,7 @@ struct mta_struct	*mta;
 	}
 }
 
-add_tailor_to_msg(chan, msg)
+void add_tailor_to_msg(chan, msg)
 struct chan_struct	*chan;
 struct msg_struct	*msg;
 {

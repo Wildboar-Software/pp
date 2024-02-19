@@ -13,10 +13,12 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/LINEconsole/RCS/msgs.c,
  *
  */
 
+#include "Qmgr-types.h"
 #include "console.h"
 
 static struct msg_struct	**create_msg_list();
 static void			display_msg_list();
+void free_msg_list(), msg_force();
 
 extern struct procStatus	*create_status();
 extern char	*time_t2RFC(), *vol2str(), *time_t2str(), *cmd_argv[],
@@ -93,7 +95,7 @@ msg_list()
 	}
 }
 
-msg_do_refresh ()
+void msg_do_refresh ()
 {
 	char	*args[2];
 	if (!connected)
@@ -584,7 +586,7 @@ clear_msg_level()
 	msg_num_matches = 0;
 }
 
-free_msg_list()
+void free_msg_list()
 {
 	int i = 0;
 	if (global_msg_list == NULL || number_msgs == 0)
@@ -1096,7 +1098,7 @@ msg_clear_above_regex()
 	}
 }
 
-msg_force (msg)
+void msg_force (msg)
 struct msg_struct	*msg;
 {
 	char	**args = NULL;

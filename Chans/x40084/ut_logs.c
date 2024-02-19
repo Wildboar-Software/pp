@@ -17,7 +17,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/x40084/RCS/ut_logs.c,
 
 #include "util.h"
 #include <isode/rtsap.h>
-#include <varargs.h>
+#include <stdarg.h>
 
 
 #define RC_BASE         0x80
@@ -25,7 +25,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/x40084/RCS/ut_logs.c,
 
 
 /* -- externals -- */
-extern char             *sys_errlist[];
+extern char             *strerror(int);
 extern int              sys_nerr;
 
 
@@ -55,12 +55,12 @@ static int reason_err8_cnt = sizeof reason_err8 / sizeof reason_err8[0];
 
 /* -- local routines -- */
 char		*SReportString();
-void		adios();
-void		advise();
+void		adios(char *, char *, ...);
+void		advise(int, char *, char *, ...);
 void		rts_adios();
 void		rts_advise();
 void		rts_exceptions();
-void		do_reason();
+void		do_reason(char *, ...);
 
 
 
@@ -108,14 +108,13 @@ char   *str;
 }
 
 #else
-void do_reason (va_alist)
-va_dcl
+void do_reason (char *str, ...)
 {
 	va_list		ap;
 
 	bzero (reason, BUFSIZ);
-	va_start (ap);
-	_asprintf (reason, NULLCP, ap);
+	va_start (ap, str);
+	_asprintf (reason, NULLCP, str, ap);
 	va_end (ap);
 	PP_OPER (NULLCP, ("%s", reason));
 }
@@ -155,8 +154,6 @@ char                            *event;
 	do_reason ("%s: %s", event, buffer);
 }
 
-
-
 void rts_exceptions (rta, message)     /* -- only updates x400 logs -- */
 register struct RtSAPabort      *rta;
 char                            *message;
@@ -174,58 +171,20 @@ char                            *message;
 	PP_LOG (LLOG_EXCEPTIONS, ("%s, %s", message, buffer));
 }
 
-
-
-#ifndef lint
-void    adios (va_alist)
-va_dcl
+void adios (char *what, char *fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
-    _ll_log (pp_log_oper, LLOG_FATAL, ap);
-    _ll_log (pp_log_norm, LLOG_FATAL, ap);
-
+    va_start (ap, fmt);
+    _ll_log (pp_log_oper, LLOG_FATAL, what, fmt, ap);
+    _ll_log (pp_log_norm, LLOG_FATAL, what, fmt, ap);
     va_end (ap);
-
     _exit (1);
 }
-#else
-/* VARARGS2 */
 
-void    adios (what, fmt)
-char   *what,
-       *fmt;
+void advise (int code, char *what, char *fmt, ...)
 {
-    adios (what, fmt);
-}
-#endif
-
-
-#ifndef lint
-void    advise (va_alist)
-va_dcl
-{
-    int     code;
     va_list ap;
-
-    va_start (ap);
-
-    code = va_arg (ap, int);
-
-    _ll_log (pp_log_norm, code, ap);
-
+    va_start (ap, fmt);
+    _ll_log (pp_log_norm, code, what, fmt, ap);
     va_end (ap);
 }
-#else
-/* VARARGS3 */
-
-void    advise (code, what, fmt)
-char   *what,
-       *fmt;
-int     code;
-{
-    advise (code, what, fmt);
-}
-#endif

@@ -22,6 +22,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/x40084/RCS/x400out84.
 #include "prm.h"
 #include "q.h"
 #include "qmgr.h"
+#include "Qmgr-types.h"
 #include "dr.h"
 #include "Rts84-types.h"
 #include "rtsparams.h"

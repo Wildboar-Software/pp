@@ -153,11 +153,16 @@ chan	822tous		prog=fcontrol,type=shaper,hdrin=822,
 			hdrout=822-us,
 			out-info="rfc822norm -822 -littleend"
 
+# The key below was defined as such purely because that's what it appeared to
+# need to be for a transport using the T-selector "x400" to actually use this
+# channel. It could be changed. IDK how that value gets set.
+chan	x400		prog=x400in88,type=in,show="X400 Channel",adr=x400,key=x400in88
+
 #  **-- Logging for the rest of the prog --**
 #
-authlog level=notice, size=-1
-operlog level=notice, size=400
-normlog level=notice, size=400, sflags=zero
+authlog level=debug, size=-1, sflags=tty
+operlog level=debug, size=400, sflags=tty
+normlog level=debug, size=400, sflags=tty
 
 822flatten	normlog	 file=filter
 %BEGIN(J)%
@@ -185,4 +190,5 @@ submit		normlog	 file=submit
 local		normlog	 file=local
 msg-clean	normlog	 file=msg-clean
 
-pptsapd		normlog	 file=pptsapd,		dlevel=notice
+pptsapd		normlog	 file=pptsapd
+x400		normlog	 file=x400

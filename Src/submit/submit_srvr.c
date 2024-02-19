@@ -29,8 +29,12 @@ extern int  errno;
 static SFD	reaper (sig)
 int sig;
 {
+#ifdef UNIONWAIT
 	union wait status;
-	
+#else
+	int status;
+#endif
+
 	while (wait3 (&status, WNOHANG, (struct rusage *)0) > 0)
 		continue;
 }

@@ -13,6 +13,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/LINEconsole/RCS/channel
  *
  */
 
+#include	"Qmgr-types.h"
 #include	"console.h"
 
 struct chan_struct	**globallist = NULL, **chan_matches = NULL, 

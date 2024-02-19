@@ -16,7 +16,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/submit/RCS/ad_mgt.c,v 6
 
 
 #include "util.h"
-#include <varargs.h>
+#include <stdarg.h>
 #include "retcode.h"
 #include <isode/cmd_srch.h>
 #include "q.h"
@@ -34,7 +34,7 @@ static int		ad_extend;
 
 
 /* -- local routines -- */
-int		rplose ();
+int		rplose (RP_Buf *, int, char *, ...);
 int		validate_sender ();
 void		ad_init ();
 int		validate_recip ();
@@ -783,32 +783,13 @@ ADDR	       *ad;
 	ad_log_print (ad -> ad_next);
 }
 
-
-
-#ifdef lint
-/* VARARGS3 */
-int rplose (rp, val, str)
-RP_Buf	*rp;
-int	val;
-char	*str;
-{
-	return rplose (rp, val, str);
-}
-#else
-int rplose (va_alist)
-va_dcl
+int rplose (RP_Buf *rp, int val, char *str, ...)
 {
 	va_list ap;
-	RP_Buf	*rp;
-	int	val;
 	char	buf[BUFSIZ];
 
-	va_start (ap);
-
-	rp = va_arg (ap, RP_Buf *);
-	val = va_arg (ap, int);
-
-	_asprintf (buf, NULLCP, ap);
+	va_start (ap, str);
+	_asprintf (buf, NULLCP, str, ap);
 
 	if (rp_isbad (val))
 		PP_LOG (LLOG_EXCEPTIONS, ("rplose (%s, '%s')",
@@ -821,4 +802,3 @@ va_dcl
 
 	return val;
 }
-#endif

@@ -14,15 +14,16 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Tools/ppls/RCS/ppls.c,v 6.0
  */
 
 #include "util.h"
-#include <varargs.h>
+#include <stdarg.h>
 #include <sys/stat.h>
 #include <isode/usr.dirent.h>
 
 
 char	*myname;
 static int	selection ();
-static void adios (), advise ();
+static void adios (char *, char *, ...), advise (char *, char *, ...);
 extern int alphasort ();
+void dols();
 
 main (argc, argv)
 int	argc;
@@ -50,7 +51,7 @@ char	**argv;
 	exit (0);
 }
 
-dols (directory)
+void dols (directory)
 char	*directory;
 {
 	struct stat st;
@@ -63,7 +64,7 @@ char	*directory;
 	if ((st.st_mode & S_IFMT) != S_IFDIR)
 		printf ("%s\n", directory);
 
-	num = _scandir (directory, &namelist, selection, alphasort);
+	num = scandir (directory, &namelist, selection, alphasort);
 	
 	if (num == 0)
 		return;
@@ -81,55 +82,30 @@ struct dirent *dp;
 	return 1;
 }
 
-#ifndef	lint
-static void	_advise ();
+static void _advise (char *what, char* fmt, va_list ap);
 
-
-static void	adios (va_alist)
-va_dcl
+static void adios (char *what, char* fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
-    _advise (ap);
-
+    va_start (ap, fmt);
+    _advise (what, fmt, ap);
     va_end (ap);
-
     _exit (1);
 }
-#else
-/* VARARGS */
 
-static void	adios (what, fmt)
-char   *what,
-       *fmt;
-{
-    adios (what, fmt);
-}
-#endif
-
-
-#ifndef	lint
-static void	advise (va_alist)
-va_dcl
+static void advise (char *what, char *fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
-    _advise (ap);
-
+    va_start (ap, fmt);
+    _advise (what, fmt, ap);
     va_end (ap);
 }
 
-
-static void  _advise (ap)
-va_list	ap;
+static void _advise (char *what, char* fmt, va_list ap)
 {
     char    buffer[BUFSIZ];
 
-    asprintf (buffer, ap);
+    _asprintf (buffer, what, fmt, ap);
 
     (void) fflush (stdout);
 
@@ -139,13 +115,3 @@ va_list	ap;
 
     (void) fflush (stderr);
 }
-#else
-/* VARARGS */
-
-static void	advise (what, fmt)
-char   *what,
-       *fmt;
-{
-    advise (what, fmt);
-}
-#endif

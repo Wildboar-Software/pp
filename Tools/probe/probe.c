@@ -62,6 +62,7 @@ CMD_TABLE  probe_options[] = { /* probe commandline options */
 
 
 static void		probe_set_rest(), probe_checks(), usage();	
+static int		probe_process(), probe_submit();
 
 
 

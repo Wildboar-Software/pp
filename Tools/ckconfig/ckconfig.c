@@ -25,8 +25,9 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Tools/ckconfig/RCS/ckconfig
 #include	<sys/stat.h>
 #include	<pwd.h>
 #include	<signal.h>
-#include	<varargs.h>
+#include <stdarg.h>
 #include 	<sys/wait.h>
+#include    <isode/isoaddrs.h>
 
 #ifndef WEXITSTATUS
 #define WEXITSTATUS(x) (((union wait *)&(x)) -> w_retcode)
@@ -34,6 +35,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Tools/ckconfig/RCS/ckconfig
 
 extern struct passwd	*getpwnam(), *getpwuid();
 extern void	getfpath(), dsap_init();
+void pnewline();
 
 typedef enum {
 	ok,
@@ -45,26 +47,26 @@ typedef enum {
 	} Retvals;
 
 static Retvals 	check_file();
-static int 	check_main_vars();
-static int	check_dirs();
-static int	check_chans();
-static int	check_channel();
-static int	check_filter();
-static int	check_tables();
-static int	check_table_file();
-static int	check_table();
-static int	check_bps(), check_hdrs();
-static int	check_822address();
+static void 	check_main_vars();
+static void	check_dirs();
+static void	check_chans();
+static void	check_channel();
+static void	check_filter();
+static void	check_tables();
+static void	check_table_file();
+static void	check_table();
+static void	check_bps(), check_hdrs();
+static void	check_822address();
 static int	yesorno();
-static int	check_hardwired();
-static int	makedirectory();
-static int	changemode();
-static int	changeowner();
+static void check_hardwired();
+static void makedirectory();
+static void changemode();
+static void changeowner();
 static void	check_dsap ();
-static void	perrstr ();
-static int	pok();
-static int	ptabss();
-static int	ptabsd();
+static void perrstr(char *fmt, ...);
+static void	pok();
+static void	ptabss();
+static void	ptabsd();
 static void 	ckerror ();
 #define OPEN_MODE	0777
 #define CLOSED_MODE	0700
@@ -81,7 +83,7 @@ int	interactive,
 extern char	*ppversion, *pptailor;
 extern void 	sys_init();
 
-main(argc, argv)
+void main(argc, argv)
 int	argc;
 char	**argv;
 {
@@ -185,7 +187,7 @@ extern int	max_hops, max_loops;
 extern LIST_BPT	*bodies_all, *headers_all;
 int		ppuid = 0, ppgid = 0;
 
-static int check_main_vars()
+static void check_main_vars()
 /* really just print them out */
 {
 	struct passwd	*password = NULL;
@@ -360,7 +362,7 @@ char		*owner;
 	return ok;
 }
 
-static int check_directory(dir)
+static void check_directory(dir)
 struct direntry	*dir;
 {
 	char	prompt[BUFSIZ], owner[MAXPATHLENGTH];
@@ -449,7 +451,7 @@ struct direntry	*dir;
 	pok(dir->name, *(dir->fldirname));
 }
 
-static int check_dirs()
+static void check_dirs()
 {
 	int i = 0;
 	char	*ix;
@@ -487,7 +489,7 @@ static int	warning,
 		time_out;
 
 #define	spec_chan_error	"There is no %s channel.\n"
-static int check_special_channels()
+static void check_special_channels()
 {
 	if (warning == 0) 
 		perrstr(spec_chan_error, "warning");
@@ -501,7 +503,7 @@ static int check_special_channels()
 		perrstr(spec_chan_error, "timeout");
 }
 
-static int check_chans()
+static void check_chans()
 {
 	CHAN	**ix = ch_all;
 	
@@ -562,7 +564,7 @@ CHAN	*chan;
 	return str;
 }
 
-static int check_channel(chan)
+static void check_channel(chan)
 CHAN	*chan;
 {
 	struct stat statbuf;
@@ -711,7 +713,7 @@ CHAN	*chan;
 	}
 }
 
-static int check_filter(chan, info)
+static void check_filter(chan, info)
 char	*chan,
 	*info;
 {
@@ -751,7 +753,7 @@ char	*chan,
 /*  */
 /* check the tables */
 
-static int check_tables()
+static void check_tables()
 {
 	Table	**ix = tb_all;
 
@@ -763,7 +765,7 @@ static int check_tables()
 	}
 }
 
-static int check_table_file(tbl, maxmode, minmode)
+static void check_table_file(tbl, maxmode, minmode)
 Table		*tbl;
 int		maxmode, minmode;
 {
@@ -847,7 +849,7 @@ int		maxmode, minmode;
 	}
 }
 	
-static int check_table(tbl)
+static void check_table(tbl)
 Table	*tbl;
 {
 	char	fullname[MAXPATHLENGTH], owner[MAXPATHLENGTH], prompt[BUFSIZ];
@@ -936,7 +938,7 @@ Table	*tbl;
 	}
 }
 
-static int check_bps(channame, list)
+static void check_bps(channame, list)
 char		*channame;
 LIST_BPT	*list;
 {
@@ -955,7 +957,7 @@ LIST_BPT	*list;
 	}
 }
 
-static int check_hdrs(channame, list)
+static void check_hdrs(channame, list)
 char		*channame;
 LIST_BPT	*list;
 {
@@ -974,7 +976,6 @@ LIST_BPT	*list;
 	}
 }
 	       
-/*  */
 static int yesorno(prompt)
 char	*prompt;
 {
@@ -1019,11 +1020,9 @@ char	*prompt;
 	}
 }
 
-/*  */
-
 static int doneMsg;
 
-static int check_htable(name)
+static void check_htable(name)
 char	*name;
 {
 	/* check table with hardwired name 'name' exists */
@@ -1039,7 +1038,7 @@ char	*name;
 		
 }
 
-static int check_hprog(name, defaultdir)
+static void check_hprog(name, defaultdir)
 char	*name;
 char	*defaultdir;
 {
@@ -1067,7 +1066,7 @@ char	*defaultdir;
 }
 
 	
-static int check_hchan(name)
+static void check_hchan(name)
 char	*name;
 {
 	
@@ -1082,7 +1081,7 @@ char	*name;
 		pok("Hardwired channel", name);
 }
 
-static int check_hbp(name)
+static void check_hbp(name)
 char	*name;
 {
 	LIST_BPT	*ix = bodies_all;
@@ -1101,7 +1100,7 @@ char	*name;
 		pok("Hardwired body part", name);
 }		
 
-static int check_hhdr(name)
+static void check_hhdr(name)
 char	*name;
 {
 	LIST_BPT	*ix = headers_all;
@@ -1120,7 +1119,7 @@ char	*name;
 		pok("Hardwired header", name);
 }		
 
-static int check_hardwired()
+static void check_hardwired()
 {
 	extern char	*submit_prog, *uucpin_chan, *local_822_chan, 
 			*alias_tbl, *channel_tbl, 
@@ -1157,8 +1156,7 @@ static int check_hardwired()
 	check_htable(qmgr_auth_tbl);
 }
 
-/*  */
-static int  makedirectory(name, mode)
+static void makedirectory(name, mode)
 char		*name;
 int	mode;
 {
@@ -1203,7 +1201,7 @@ int	mode;
 		printf("---> Made directory %s\n",name);*/
 }
 
-static int changeowner(file, uid, gid)
+static void changeowner(file, uid, gid)
 char		*file;
 int		uid, gid;
 {
@@ -1215,7 +1213,7 @@ int		uid, gid;
 		       file, uid);
 }
 
-static int changemode(file, mode)
+static void changemode(file, mode)
 char		*file;
 int		mode;
 {
@@ -1227,38 +1225,24 @@ int		mode;
 		       file,mode);
 }
 
-/*  */
-/* output routines */
-
-pnewline()
+void pnewline()
 {
 	if (verbose == TRUE)
 		printf("\n");
 }
 
-#ifdef lint
-/*VARARGS1*/
-static void perrstr(str)
-char *str;
-{
-	perrstr(str);
-}
-#else
-static void perrstr(va_alist)
-va_dcl
+static void perrstr(char *fmt, ...)
 {
 	char buf[BUFSIZ];
 	va_list ap;
-
-	va_start (ap);
-	_asprintf (buf, NULLCP, ap);
+	va_start (ap, fmt);
+	_asprintf (buf, NULLCP, fmt, ap);
 	fputs (buf, stdout);
 	va_end (ap);
 }
-#endif
 
 #define tab	20
-static int pok(one,two)
+static void pok(one,two)
 char	*one,
 	*two;
 {
@@ -1268,7 +1252,7 @@ char	*one,
 	}
 }
 
-static int ptabss(one,two)
+static void ptabss(one,two)
 char	*one,
 	*two;
 {
@@ -1276,7 +1260,7 @@ char	*one,
 		printf("%-*s: %s\n",tab, one, two);
 }
 
-static int ptabsd(one,two)
+static void ptabsd(one,two)
 char	*one;
 int	two;
 {
@@ -1284,7 +1268,7 @@ int	two;
 		printf("%-*s: %d\n",tab,one,two);
 }
 
-static int check_822address(str)
+static void check_822address(str)
 char	*str;
 {
 	ADDR	*ad;
@@ -1312,15 +1296,15 @@ static void check_dsap ()
 		_exit (0);
 	}
 	else {
-#ifdef SYSV
+// #ifdef SYSV
 		int w;
 		while ((cpid = wait (&w)) != pid && cpid != NOTOK)
 			continue;
-#else
-		union wait w;
-		while ((cpid = wait (&w.w_status)) != pid && cpid != NOTOK)
-			continue;
-#endif
+// #else
+// 		union wait w;
+// 		while ((cpid = wait (&w.w_status)) != pid && cpid != NOTOK)
+// 			continue;
+// #endif
 		if (!WIFSIGNALED(w) && WEXITSTATUS(w) == 0) {
 			dsap_init((char ***)NULL, (int *) NULL);
 			return;

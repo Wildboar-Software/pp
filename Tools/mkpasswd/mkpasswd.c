@@ -29,7 +29,7 @@ char	*myname;
 
 static void findpass ();
 
-main (argc, argv)
+void main (argc, argv)
 int	argc;
 char	**argv;
 {

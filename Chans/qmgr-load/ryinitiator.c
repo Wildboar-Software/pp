@@ -27,20 +27,21 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/qmgr-load/RCS/ryiniti
 
 
 #include <stdio.h>
-#include <varargs.h>
+#include <stdarg.h>
 #include "Qmgr-types.h"
 #include "ryinitiator.h"
 #include "qmgr.h"
 
-/*    DATA */
+/* DATA */
 
 static char *myname = "ryinitiator";
 
 static int invoke();
+static void adios(char *, char *, ...), advise(char *, char *, ...);
 
 extern char *isodeversion;
 
-/*    INITIATOR */
+/* INITIATOR */
 
 /* ARGSUSED */
 ryinitiator (myname, host, argc, argv, myservice, ops, dispatches, quit)
@@ -125,8 +126,6 @@ IFP	quit;
     (*quit) (sd, (struct client_dispatch *) NULL, (char **) NULL, (caddr_t *) NULL);
 }
 
-/*  */
-
 static	int invoke (sd, ops, ds, args)
 int	sd;
 struct RyOperation ops[];
@@ -184,9 +183,7 @@ while (*args != NULLCP) {
 }
 }
 
-/*  */
-
-static int  getline (buffer)
+static int  _getline (buffer)
 char   *buffer;
 {
     register int    i;
@@ -278,57 +275,30 @@ char   *event;
 		aca -> aca_source);
 }
 
-/*  */
+static void _advise (char *, char*, va_list);
 
-#ifndef	lint
-void	_advise ();
-
-
-void	adios (va_alist)
-va_dcl
+static void adios (char *what, char* fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
-    _advise (ap);
-
+    va_start (ap, fmt);
+	_advise (what, fmt, ap);
     va_end (ap);
-
     _exit (1);
 }
-#else
-/* VARARGS */
 
-void	adios (what, fmt)
-char   *what,
-       *fmt;
-{
-    adios (what, fmt);
-}
-#endif
-
-
-#ifndef	lint
-void	advise (va_alist)
-va_dcl
+void advise (char *what, char *fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
-    _advise (ap);
-
+    va_start (ap, fmt);
+    _advise (what, fmt, ap);
     va_end (ap);
 }
 
-
-void  _advise (ap)
-va_list	ap;
+static void _advise (char *what, char* fmt, va_list ap)
 {
     char    buffer[BUFSIZ];
 
-    asprintf (buffer, ap);
+    _asprintf (buffer, what, fmt, ap);
 
     (void) fflush (stdout);
 
@@ -338,38 +308,11 @@ va_list	ap;
 
     (void) fflush (stderr);
 }
-#else
-/* VARARGS */
 
-void	advise (what, fmt)
-char   *what,
-       *fmt;
+void ryr_advise (char *what, char *fmt, ...)
 {
-    advise (what, fmt);
-}
-#endif
-
-
-#ifndef	lint
-void	ryr_advise (va_alist)
-va_dcl
-{
-    char   *what;
     va_list ap;
-
-    va_start (ap);
-
-    _advise (ap);
-
+    va_start (ap, fmt);
+    _advise (what, fmt, ap);
     va_end (ap);
 }
-#else
-/* VARARGS */
-
-void	ryr_advise (what, fmt)
-char   *what,
-       *fmt;
-{
-    ryr_advise (what, fmt);
-}
-#endif

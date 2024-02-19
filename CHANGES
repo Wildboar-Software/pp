@@ -1,462 +1,337 @@
+# Changes from PP version 5.2 to 6.0
+
+## Overview
+
+This short document is a description of the more user/administrator visible
+changes that have taken place in PP between the last interim version (5.2) and
+the beta ver- sion (6.0). This document is not exhaustive or complete but is a
+guide to what to look out for. In general the following may be assumed.
+
+- The Queue files are compatible between 5.2 and 6.0. Note however that the
+  Queue structure has changed. Old channels will have to be recompiled to
+  recognise the new format, but new channels will read old queue files.
+- The `qmgr` protocol is compatible between 5.2 and 6.0
+- The syntax of some of the table files has changed. Where appropriate
+  conversion scripts are provided.
+- Some procedure calls have been changed or have dif- ferent parameters.
+- The `libdsap.a` library is now required for compilation.
+
+In summary, you should be careful when upgrading to the 6.0 release. It will not
+work by just replacing the 5.2 binaries with 6.0. For definite the domain table
+will HAVE to be changed.
+
+## Detailed Changes
+
+This list is in no particular order of preference or importance.
+
+### Domain Table
+
+The domain table syntax has been changed to be more explicit and has been
+brought into line with the OR table syntax. We feel this is clearer and more
+logical. Tools that process the domain table have been taught the new format and
+there are scripts in `Tools/tables/compat` to convert between the old and new
+formats. There is NO backwards compatibility here. Old format tables will just
+plain not work.
+
+### Aliases Table
+
+The aliases table syntax has changed to a main choice of synonym or alias with
+further qualifiers specifying the address type of the synonym or alias. The
+changes are
 
+```
+x:alias y         x:alias y
+x:synonym y       x:synonym y
+x:822-synonym y   x:synonym y 822
+x:x400-synonym y  x:synonym y x400
+x:822 y           x:alias y 822
+x:x400 y          x:alias y x400
+```
 
+where any white space in y must be quoted using a backslash There is also a
+"external" qualifier. This disables further lookups of synonyms and aliases and
+can be used for a main site mail hub mapping from site_wide_name@localsite to
+local_machine_name@localmachine and vice versa. The use of external stops the
+looping alias problem which would otherwise occur.
 
+### Return of Contents
 
+Return of contents is now supported. This is a side effect and part of the work
+on routing of delivery reports.
 
+### Use of pepsy
 
+Use of the PEPSY ASN.1 compiler rather than PEPY/POSY is now used in many
+places. This makes for smaller binaries and much quicker compilation.
 
+### ISODE 7.0
 
+PP 6.0 is aligned to ISODE 7.0. It will not work under ISODE 6.0. If you are
+using the 6.0 release you should be using ISODE 7.0. It should however work
+under ISODE 6.8.
 
-             Changes from PP version 5.2 to 6.0
+### Tailor File
 
+There have been many changes to the tailor file. The introduction of several new
+variables and the splitting up of header and body part types. These are:
 
+- `dap_user`: Directory username for DS lookups
+- `dap_passwd`: Directory Passwd for same
+- `fsync`: disable use of `fsync(2)`
+- `headertype`: list of headers c.f. bodypart
+- `queuestruct`: use hierarchical queue structure
+- `submit_addr`: call submit over network
+- `diskuse`: limit the disk space consumed by PP
 
+Channel tailoring also has a number of new variables:
 
+- `drchan`: replaces old outchan
+- `hdrin`: headers inbound
+- `hdrout`: headers outbound
+- `ininfo`: inbound channel info
+- `inadr`: inbound channel addr type
+- `insubadr`: inbound channel sub address type
+- `intable`: inbound channel table
+- `key`: give alternative names to channel
+- `mtatable`: list of known mtas for channel binding
+- `outinfo`: outbound channel info
+- `outsubadr`: outbound channel sub address
+- `outtable`: outbound channel table
+- `solo-proc`: channel requires address one at a time
+- `bad-sender-policy`: set the policy for unroutable senders
+- `check`: set the checking mode of the channel
 
-_1.  _O_v_e_r_v_i_e_w
+### Channel pairing
 
-This  short  document  is  a   description   of   the   more
-user/administrator  visible changes that have taken place in
-PP between the last interim version (5.2) and the beta  ver-
-sion  (6.0). This document is not exhaustive or complete but
-is a guide to what to look out for. In general the following
-may be assumed.
+Channels may now be explicitly paired together. This allows one definition to
+specify both an inbound and an outbound channel. It also allows several logical
+chan- nels for one inbound protocol by selecting a channel per MTA.
 
-o+    The Queue files are compatible  between  5.2  and  6.0.
-     Note  however that the Queue structure has changed. Old
-     channels will have to be recompiled  to  recognise  the
-     new format, but new channels will read old queue files.
+### Timezones
 
-o+    The qmgr protocol is compatible between 5.2 and 6.0
+Many more lettered timezones are recognised. This list is ambiguous at best and
+numeric forms should really be used except at user interfaces.
 
-o+    The syntax of some of  the  table  files  has  changed.
-     Where appropriate conversion scripts are provided.
+### Delivery Reports
 
-o+    Some procedure calls have been  changed  or  have  dif-
-     ferent parameters.
+Delivery reports are now routed back to their originator. In 5.2 they were
+returned directly down the channel they arrived on. This allows for one way
+links in general makes things easier. It also allows protocol conversion so
+that, for instance, a delivery report on an X.400 message may go back via an
+RFC-822 if that is the only option. A side effect of this is the channel
+variable outchan has been renamed drchan and has different semantics attached to
+it (see the manual).
 
-o+    the libdsap.a library is now required for compilation.
+### Header Parts
 
-In summary, you should be careful when upgrading to the  6.0
-release.   It  will  not  work  by  just  replacing  the 5.2
-binaries with 6.0. For definite the domain table  will  HAVE
-to be changed.
+Separation of headers and bodyparts for each channel. This is mainly a syntactic
+change but will allow more flexibility later. The upshot is you may need both
+bptin/bptout and hdrin/hdrout types in channel defini- tions.
 
-_2.  _D_e_t_a_i_l_e_d _c_h_a_n_g_e_s
+### Local Delivery
 
-This list is in no particular order of preference or  impor-
-tance.
+The local channel table (ch.local) has had a change  of
+syntax.  The  old format should still work, but the new
+format (which is  key=value)  based  allows  much  more
+flexibility and setting of options for mail managers.
 
-Domain Table
-     The domain table syntax has been  changed  to  be  more
-     explicit  and  has  been  brought into line with the OR
-     table syntax. We feel this is clearer and more logical.
-     Tools  that  process  the domain table have been taught
-     the   new   format   and   there   are    scripts    in
-     Tools/tables/compat  to convert between the old and new
-     formats.  There is NO backwards compatibility here. Old
-     format tables will just plain not work.
+### MTA Console
 
-Aliases Table
+The MTA Console has been changed to show more statistics and has a new
+heuristics for showing just channel and MTA summary information. This is useful
+for very large queues.
 
+### Line Console
 
+Two line based console programs have been provided. These give some of the
+functionality of the MTA console for dumb terminals.
 
-                     December 18, 1991
+### Directory Lists
 
+The directory list program has been improved more. It now has several associated
+tools to convert file based lists into directory based lists. There is also a
+checkup tool.
 
+### Performance
 
+Some work has been done on general performance. In general the system should
+run slightly faster and have less problems with large queues.
 
+### X.400(88) OIDs
 
-                           - 2 -
+One of the X.400(1988) object identifiers was incorrect. Originally the code
+used the object identifier designated in the Blue Book. It now uses the one
+given in the implementors guide.
 
+### Mail 11
 
-     The aliases table syntax has changed to a  main  choice
-     of  synonym or alias with further qualifiers specifying
-     the address type of the synonym or alias.  The  changes
-     are
+Our thanks must go to Nigel Titley of British Telecom for the donation of a
+Decnet Mail-11 channel. This allows interworking with DECNET and PP.
 
-          x:alias y         x:alias y
-          x:synonym y       x:synonym y
-          x:822-synonym y   x:synonym y 822
-          x:x400-synonym y  x:synonym y x400
-          x:822 y           x:alias y 822
-          x:x400 y          x:alias y x400
-     where any white space in  y  must  be  quoted  using  a
-     backslash  There  is also a "external" qualifier.  This
-     disables further lookups of synonyms  and  aliases  and
-     can  be  used  for  a  main  site mail hub mapping from
-     site_wide_name@localsite                             to
-     local_machine_name@localmachine  and  vice  versa.  The
-     use of external stops the looping alias  problem  which
-     would otherwise occur.
+### G3Fax channel
 
-Return of Contents
-     Return of contents is now supported.  This  is  a  side
-     effect  and  part  of  the  work on routing of delivery
-     reports.
+A skeleton outbound G3 Fax channel is included. There are currently two drivers
+written using this skeleton, one for the Fujitsu dexNet200 modem and one for the
+Panasonic SystemFax 250 machine. These channels enable PP to send appropriately
+encoded messages via fax. There are a couple of reformatter filters which
+convert an hdr.822 to a fax coverpage and an ia5 bodypart to a g3fax bodypart.
+These reformatters produce X.400 g3fax bodyparts and so are general use and are
+not dependent on any fax machine.
 
-Use of pepsy
-     Use of the PEPSY ASN.1 compiler rather  than  PEPY/POSY
-     is  now  used  in  many  places. This makes for smaller
-     binaries and much quicker compilation.
+### Splitter Channel
 
-ISODE 7.0
-     PP 6.0 is aligned to ISODE 7.0. It will not work  under
-     ISODE 6.0.  If you are using the 6.0 release you should
-     be using ISODE 7.0. It should however work under  ISODE
-     6.8.
+A Splitter channel is included. This channel together with the presence of
+`solo-proc=yes` in channel entries in the tailor file enables exclusive
+processing for specified recipients. This was introduced for the fax reformatter
+channels.
 
-Tailor file
-     There have been many changes to the  tailor  file.  The
-     introduction of several new variables and the splitting
-     up of header and body part types. These are
+### Address Parsing
 
-          dap_user     Directory username for DS lookups
-          dap_passwd   Directory Passwd for same
-          fsync        disable use of fsync(2)
-          headertype   list of headers c.f. bodypart
-          queuestruct  use hierarchical queue structure
-          submit_addr  call submit over network
-          diskuse      limit the disk space consumed by PP
+The address parsing code has been restructured extensively. This should be more
+efficient in many cases.
 
-     Channel tailoring also has a number of new variables
+### X.400 Extensions
 
-          drchan       replaces old outchan
-          hdrin        headers inbound
-          hdrout       headers outbound
+X.400(88) address extensions are now recognised.
 
+### X.400 Addresses
 
+Address parsing recognises `A` as `ADMD` and `P` as `PRMD` in
+[IETF RFC 1148](https://datatracker.ietf.org/doc/html/rfc1148#section-4.1)
+encoded X.400 addresses. These are converted to the form given in
+[IETF RFC 1148](https://datatracker.ietf.org/doc/html/rfc1148#section-4.1).
 
-                     December 18, 1991
+### Multi-Level Queue
 
+For very large system (queues in excess of about 4000 messages) a multi-level
+queue can be used. if this is in effect messages are placed at random in
+subdirec- tories of the main queue to reduce the time required by the system to
+locate files.
 
+### Authorisation Warnings
 
+Authorisation warnings are now implemented. If a message fails authorisation,
+a warning can be optionally sent to the originator and/or the recipient.
 
+### Delayed Delivery Warning
 
-                           - 3 -
+Warnings of delays in delivery are now sent to the originator of the message
+if the message cannot be delivered in a timely fashion.
 
+### Submit Daemon
 
-          ininfo       inbound channel info
-          inadr        inbound channel addr type
-          insubadr     inbound channel sub address type
-          intable      inbound channel table
-          key          give alternative names to channel
-          mtatable     list of known mtas for channel binding
-          outinfo      outbound channel info
-          outsubadr    outbound channel sub address
-          outtable     outbound channel table
-          solo-proc    channel requires address one at a time
-          bad-sender-policyset the policy for unroutable senders
-          check        set the checking mode of the channel
+Submit can be run as a daemon in addition to its normal directly executed form.
+This may give performance improvements for inbound messages.
 
-Channel pairing
-     Channels may now be explicitly  paired  together.  This
-     allows one definition to specify both an inbound and an
-     outbound channel.  It also allows several logical chan-
-     nels  for  one  inbound protocol by selecting a channel
-     per MTA.
+### Administrator-assigned Alternate Recipient
 
-Timezones
-     Many more lettered timezones are recognised. This  list
-     is ambiguous at best and numeric forms should really be
-     used except at user interfaces.
+The system manager can direct bad address to a default mailbox, where numerous
+actions may be attempted (such as returning helpful messages about approximate
+match- ings etc.)
 
-Delivery Reports
-     Delivery reports are now routed back to their  origina-
-     tor.  In 5.2 they were returned directly down the chan-
-     nel they arrived on. This allows for one way  links  in
-     general  makes  things  easier. It also allows protocol
-     conversion so that, for instance, a delivery report  on
-     an  X.400 message may go back via an RFC-822 if that is
-     the only option.  A side effect of this is the  channel
-     variable  outchan  has been renamed drchan and has dif-
-     ferent semantics attached to it (see the manual).
+### X.400(88) Downgrading
 
-Header parts
-     Separation of headers and bodyparts for  each  channel.
-     This  is  mainly a syntactic change but will allow more
-     flexibility later. The upshot  is  you  may  need  both
-     bptin/bptout  and hdrin/hdrout types in channel defini-
-     tions.
+A filter to downgrade X.400(88) P2 headers to X.400(84) P2 headers has been
+provided. Similarly downgrading of P1 is done in the appropriate channels. This
+new filter may also be used to normalise OR addresses in these headers.
 
-Local delivery
-     The local channel table (ch.local) has had a change  of
-     syntax.  The  old format should still work, but the new
-     format (which is  key=value)  based  allows  much  more
-     flexibility and setting of options for mail managers.
+### Body part support
 
-MTA Console
-     The MTA Console has been changed to show  more  statis-
-     tics  and has a new heuristics for showing just channel
-     and MTA summary information. This is  useful  for  very
-     large queues.
+Support of a number of different body types, including ISO-6937, ISO-8859, and
+T.61 character sets.
 
+### New queue format
 
+A new queue format has been introduced. We believe this will give greater
+reliability and flexibility. There are now no special subdirectories of the
+queue, everything is directly under the queue directory. There is a utility to
+convert the old format into the new format (`Tools/tables/compat/que_o2n`). New
+format for the internal structure of the message queue has also been added in a
+backwards compatible way.
 
-                     December 18, 1991
+### `ckadr`
 
+`ckadr` no longer guesses which format of addressing an address is (x400 or
+rfc822). Explicit choice should be made via the -x and -r flags (-r is default)
+It also no longer checks for UK domain ordering by default i.e. will only
+identify US domain ordering. Checking for UK ordering can be done via the -b
+flag.
 
+### Disk checking
 
+Submit can be tailored to check the amount of free space available on disk and
+not submit messages if this is below some threshold. This is not supported on
+all systems.
 
+### Control of header type
 
-                           - 4 -
+The specification of a nondefault header type in the inbound channel will
+override the default header types such as `hdr.822` and `hdr.p2`. This will
+enable a site to minimise the header manipulation / normalisation done.
 
+### Bad Senders
 
-Line Console
-     Two line based console  programs  have  been  provided.
-     These give some of the functionality of the MTA console
-     for dumb terminals.
+The system manager can control the policy for dealing with bad senders on an
+inbound channel basis.
 
-Directory lists
-     The directory list program has been improved  more.  It
-     now  has several associated tools to convert file based
-     lists into directory  based  lists.  There  is  also  a
-     checkup tool.
+### X.400(88) Extensions
 
-Performance
-     Some work has been done on general performance. In gen-
-     eral  the  system  should  run slightly faster and have
-     less problems with large queues.
+X.400(88) O/R Address extensions have been implemented and are useable for
+routing.
 
-X.400(88) OIDs
-     One  of  the   X.400(1988)   object   identifiers   was
-     incorrect. Originally the code used the object identif-
-     ier designated in the Blue Book. It now  uses  the  one
-     given in the implementors guide.
+### loc_dom_mta, loc_dom_site
 
-Mail 11
-     Our thanks must go to Nigel Titley of  British  Telecom
-     for  the  donation  of  a  Decnet Mail-11 channel. This
-     allows interworking with DECNET and PP.
+Previously these two values were magically recognised as local when normalising
+and routing RFC 822 addresses. This magic has been removed and now you need
+explicit entries for these in the domain table
 
-G3Fax channel
-     A skeleton outbound G3 Fax channel is  included.  There
-     are  currently two drivers written using this skeleton,
-     one for the Fujitsu dexNet200 modem  and  one  for  the
-     Panasonic SystemFax 250 machine.  These channels enable
-     PP to send  appropriately  encoded  messages  via  fax.
-     There are a couple of reformatter filters which convert
-     an hdr.822 to a fax coverpage and an ia5 bodypart to  a
-     g3fax bodypart.  These reformatters produce X.400 g3fax
-     bodyparts and so are general use and are not  dependent
-     on any fax machine.
+### Redirection History
 
-Splitter Channel
-     A Splitter channel is included.  This channel  together
-     with  the  presence of solo-proc=yes in channel entries
-     in the tailor file  enables  exclusive  processing  for
-     specified  recipients.  This was introduced for the fax
-     reformatter channels.
+X.400 redirection history is now supported. This shows up a bug in PP 5.* which
+may cause PP 5.* MTA to break when interworking over x400 with a PP 6.0 MTA.
+Note that aliases are implemented as redirects.
 
-Address Parsing
-     The address parsing code has been  restructured  exten-
-     sively. This should be more efficient in many cases.
+### Table Overrides
 
-X.400 Extensions
-     X.400(88) address extensions are now recognised.
+Tables may been overriden by explicit key/value pairs given in the tailor file.
 
-X.400 addresses
+## Upgrade Path
 
+This is the basics of how to upgrade from PP 5.2 to 6.0.
 
+### Domain Table
 
-                     December 18, 1991
+Convert the domain table into the new format. There are some tools under
+`Tools/tables/compat` to aid in this, but you may want to rethink how you
+generate these a little. This is the major change in this version. Also check
+that the relevant entries for `loc_dom_site` and `loc_dom_mta` are present in
+the domain table as they are no longer magically recognised.
 
+### Alias Table
 
+This should be altered into the new format. The conversion routine in
+`Tools/tables/compat` may help again.
 
+### Local Table
 
+This should be backwards compatible, but you may want to change to the new
+format anyway.
 
-                           - 5 -
+### Queue
 
+Any files in the queue should be converted to the new format. This can be done
+by the following:
 
-     Address parsing recognises A as ADMD and P as  PRMD  in
-     RFC1148 encoded X.400 addresses. These are converted to
-     the form given in RFC1148.
+(There seems to be text that was lost here.)
 
-Multi level queue
-     For very large system (queues in excess of  about  4000
-     messages)  a  multi-level queue can be used. if this is
-     in effect messages are placed at  random  in  subdirec-
-     tories of the main queue to reduce the time required by
-     the system to locate files.
+### Tailoring
 
-Authorisation Warnings
-     Authorisation warnings are now implemented. If  a  mes-
-     sage  fails  authorisation, a warning can be optionally
-     sent to the originator and/or the recipient.
+Change the tailor file to use the new keys and values.
 
-Delayed delivery warning
-     Warnings of delays in delivery are now sent to the ori-
-     ginator  of  the  message  if  the  message  cannot  be
-     delivered in a timely fashion.
+### Checkup
 
-Submit daemon
-     Submit can be run as a daemon in addition to its normal
-     directly  executed  form.  This  may  give  performance
-     improvements for inbound messages.
+Run `ckconfig` and see that everything is sensible.
 
-administrator assigned alternate recipient
-     The system manager can direct bad address to a  default
-     mailbox,  where numerous actions may be attempted (such
-     as returning helpful messages about approximate  match-
-     ings etc.)
+### Restart
 
-X.400(88) downgrading
-     A filter to downgrade X.400(88) P2 headers to X.400(84)
-     P2 headers has been provided.  Similarly downgrading of
-     P1 is done  in  the  appropriate  channels.   This  new
-     filter  may  also  be used to normalise OR addresses in
-     these headers.
-
-Body part support
-     Support of a number of different body types,  including
-     ISO-6937, ISO-8859, and T.61 character sets.
-
-New queue format
-     A new queue format has been introduced. We believe this
-     will  give  greater  reliability and flexibility. There
-     are now no special subdirectories of the queue,  every-
-     thing is directly under the queue directory. There is a
-     utility to convert the old format into the  new  format
-     (Tools/tables/compat/que_o2n).    New  format  for  the
-     internal structure of the message queue has  also  been
-     added in a backwards compatible way.
-
-ckadr
-
-
-
-                     December 18, 1991
-
-
-
-
-
-                           - 6 -
-
-
-     ckadr no longer guesses which format of  addressing  an
-     address is (x400 or rfc822).  Explicit choice should be
-     made via the -x and -r flags (-r is default) It also no
-     longer  checks  for  UK domain ordering by default i.e.
-     will only identify US domain ordering).   Checking  for
-     UK ordering can be done via the -b flag.
-
-Disk checking
-     Submit can be tailored to  check  the  amount  of  free
-     space available on disk and not submit messages if this
-     is below some threshold. This is not supported  on  all
-     systems.
-
-Control of header type
-     The specification of a nondefault header  type  in  the
-     inbound  channel will override the default header types
-     such as hdr.822 and hdr.p2.  This will enable a site to
-     minimise the header manipulation/normalisation done.
-
-Bad senders
-     The system manager can control the policy  for  dealing
-     with bad senders on an inbound channel basis.
-
-X.400(88) Extensions
-     X.400(88) O/R Address extensions have been  implemented
-     and are useable for routing.
-
-loc_dom_mta, loc_dom_site
-     Previously these two values were  magically  recognised
-     as   local   when   normalising  and  routing  RFC  822
-     addresses.  This magic has been  removed  and  now  you
-     need explicit entries for these in the domain table
-
-redirection history
-     X.400 redirection history is now supported.  This shows
-     up  a bug in PP 5.* which may cause PP 5.* MTA to break
-     when interworking over x400 with a PP  6.0  MTA.   Note
-     that aliases are implemented as redirects.
-
-table overrides
-     Tables may been overriden by explicit  key/value  pairs
-     given in the tailor file.
-
-_3.  _U_p_g_r_a_d_e _p_a_t_h
-
-     This is the basics of how to upgrade  from  PP  5.2  to
-6.0.
-
-Compile
-     Compile pp-6.0 and install.
-
-domain table
-     Convert the domain table into the new format. There are
-     some  tools  under  Tools/tables/compat to aid in this,
-
-
-
-                     December 18, 1991
-
-
-
-
-
-                           - 7 -
-
-
-     but you may want to rethink how you  generate  these  a
-     little. This is the major change in this version.  Also
-     check that the relevant entries  for  loc_dom_site  and
-     loc_dom_mta are present in the domain table as they are
-     no longer magically recognised.
-
-alias table
-     This should be altered into the new format. The conver-
-     sion routine in Tools/tables/compat may help again.
-
-local table
-     This should be backwards compatible, but you  may  want
-     to change to the new format anyway.
-
-Queue
-     Any files in the queue should be converted to  the  new
-     format. This can be done by the following:
-
-
-
-Tailoring
-     Change the tailor file to use the new keys and values.
-
-Checkup
-     Run ckconfig and see that everything is sensible.
-
-restart
-     Rebuild the database and restart.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                     December 18, 1991
-
-
+Rebuild the database and restart.

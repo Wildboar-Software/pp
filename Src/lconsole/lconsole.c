@@ -15,7 +15,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/lconsole/RCS/lconsole.c
 
 #include "lconsole.h"
 #include "qmgr-int.h"
-#include <varargs.h>
+#include <stdarg.h>
 
 static char	*myname;
 
@@ -30,10 +30,9 @@ char *realhost = NULLCP;
 char *remoteversion = NULLCP;
 char *user = NULLCP;
 char *passwd = NULLCP;
-FILE	*fp_in = stdin;
 int	batch = 0;
 
-main (argc, argv)
+void main (argc, argv)
 int	argc;
 char	**argv;
 {
@@ -124,7 +123,7 @@ int interactive ()
 	int i;
 
 	for (;;) {
-		if (getline ("%s> ", buffer) == NOTOK)
+		if (get_line ("%s> ", buffer) == NOTOK)
 			break;
 		if (buffer[0] == NULL || buffer[0] == '#')
 			continue;
@@ -191,7 +190,7 @@ int retval;
 }
 
 
-int getline (prompt, buffer)
+int get_line (prompt, buffer)
 char *prompt, *buffer;
 {
 	int c;
@@ -202,11 +201,11 @@ char *prompt, *buffer;
 		(void) fflush (stdout);
 	}
 
-	for (ep = (cp = buffer) + BUFSIZ - 1; (c = getc (fp_in)) != '\n';) {
+	for (ep = (cp = buffer) + BUFSIZ - 1; (c = getc (stdin)) != '\n';) {
 		if (c == EOF) {
 			if (!batch)
 				putchar ('\n');
-			clearerr(fp_in);
+			clearerr(stdin);
 			return NOTOK;
 		}
 		if (cp < ep)
@@ -216,74 +215,37 @@ char *prompt, *buffer;
 	*cp = NULL;
 	return OK;
 }
-#ifndef lint
-void    _advise ();
 
 
-void    adios (va_alist)
-va_dcl
+static void _advise (char *, char *, va_list ap);
+
+void adios (char *what, char* fmt, ...)
 {
 	va_list ap;
-
-	va_start (ap);
-
-	_advise (ap);
-
+	va_start (ap, fmt);
+	_advise (what, fmt, ap);
 	va_end (ap);
-
 	_exit (1);
 }
-#else
-/* VARARGS */
 
-void    adios (what, fmt)
-char   *what,
-       *fmt;
-{
-	adios (what, fmt);
-}
-#endif
-
-
-#ifndef lint
-void    advise (va_alist)
-va_dcl
+void advise (char *what, char *fmt, ...)
 {
 	va_list ap;
-
-	va_start (ap);
-
-	_advise (ap);
-
+	va_start (ap, fmt);
+	_advise (what, fmt, ap);
 	va_end (ap);
 }
 
-
-static void  _advise (ap)
-va_list ap;
+static void _advise (char *what, char *fmt, va_list ap)
 {
 	char    buffer[BUFSIZ];
-
-	asprintf (buffer, ap);
-
+	_asprintf (buffer, what, fmt, ap);
 	(void) fflush (stdout);
-
 	fprintf (stderr, "%s: ", myname);
 	(void) fputs (buffer, stderr);
 	(void) fputc ('\n', stderr);
-
 	(void) fflush (stderr);
 }
-#else
-/* VARARGS */
-
-void    advise (what, fmt)
-char   *what,
-       *fmt;
-{
-	advise (what, fmt);
-}
-#endif
 
 char *datasize (n, units)
 int n;

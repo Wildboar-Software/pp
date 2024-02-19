@@ -70,24 +70,12 @@ int     argc;
 
 
 
-void    advise (what, fmt, a, b, c, d, e, f, g, h, i, j)
-char   *what,
-       *fmt,
-       *a,
-       *b,
-       *c,
-       *d,
-       *e,
-       *f,
-       *g,
-       *h,
-       *i,
-       *j;
+void    _advise (char *what, char *fmt, va_list ap)
 {
     (void) fflush (stdout);
 
     fprintf (stderr, "RFCtoP2 test");
-    fprintf (stderr, fmt, a, b, c, d, e, f, g, h, i, j);
+    vfprintf (stderr, fmt, ap);
     if (what)
 	(void) fputc (' ', stderr), perror (what);
     else
@@ -96,22 +84,20 @@ char   *what,
     (void) fflush (stderr);
 }
 
+void    advise (char *what, char *fmt, ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	_advise(what, fmt, ap);
+	va_end(ap);
+}
 
 /* VARARGS 2 */
-void    adios (what, fmt, a, b, c, d, e, f, g, h, i, j)
-char   *what,
-       *fmt,
-       *a,
-       *b,
-       *c,
-       *d,
-       *e,
-       *f,
-       *g,
-       *h,
-       *i,
-       *j;
+void    adios (char *what, char *fmt, ...)
 {
-    advise (what, fmt, a, b, c, d, e, f, g, h, i, j);
+	va_list ap;
+	va_start(ap, fmt);
+	_advise(what, fmt, ap);
+	va_end(ap);
     _exit (1);
 }

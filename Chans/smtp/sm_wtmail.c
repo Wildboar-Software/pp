@@ -73,6 +73,8 @@ struct in_addr in;
 extern char	*inet_ntoa ();
 #endif
 
+void sm_nclose();
+
 sm_wfrom (sender)
 char	*sender;
 {
@@ -452,6 +454,8 @@ char	*errstr;
 	return  s;
 }
 
+static char	*official ();
+
 sm_nopen(hostnam, errstr)
 char	*hostnam;
 char	*errstr;
@@ -459,7 +463,7 @@ char	*errstr;
 	int	fds[2], skt;
 	short	retval;
 	char	linebuf[LINESIZE];
-	static char *us, *official();
+	static char *us;
 	extern int smtpport;
 	struct hostent *hp, *gethostbyname ();
 	struct sockaddr_in s_in;
@@ -557,7 +561,7 @@ char	*errstr;
 
 }
 
-sm_nclose (type)		/* end current connection */
+void sm_nclose (type)		/* end current connection */
 short	  type;			/* clean or dirty ending */
 {
 	if (type == OK && sm_wfp)

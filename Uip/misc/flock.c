@@ -25,14 +25,16 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Uip/misc/RCS/flock.c,v 6.0 
 #define WTERMSIG(x) (((union wait *)&(x)) -> w_termsig)
 #endif
 
-main (argc, argv)
+void uip_init (char *pname);
+
+void main (argc, argv)
 int	argc;
 char	**argv;
 {
 	FILE	*fp;
 	extern int errno;
 	int	pid, cpid;
-#ifdef SYS5
+#ifndef UNIONWAIT
 	int     status;
 #else
 	union wait status;
@@ -63,7 +65,7 @@ char	**argv;
 		_exit (1);
 	}
 
-#ifdef SYS5
+#ifndef UNIONWAIT
 	while ((cpid = wait( &status)) != pid && cpid != NOTOK)
 #else
 	while ((cpid = wait( &status.w_status)) != pid && cpid != NOTOK)

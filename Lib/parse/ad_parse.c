@@ -15,12 +15,13 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/parse/RCS/ad_parse.c,v 
 
 #include "head.h"
 #include "adr.h"
-#include <varargs.h>
+#include <stdarg.h>
 
 static void ad_copy_addresses(), 
 	ad_copy_errors();
 
 static int rfc822thenx40090, x400thenrfc822(), parselose_exception();
+static int rfc822thenx400 ();
 
 int ad_fullparse (ad, rp, order_pref)
 register ADDR	*ad;
@@ -459,31 +460,14 @@ char    *str;
 	return val;
 }
 
-	
-#ifdef lint
-/* VARARGS3 */
-int parselose (rp, val, str)
-RP_Buf  *rp;
-int     val;
-char    *str;
-{
-	return parselose (rp, val, str);
-}
-#else
-int parselose (va_alist)
-va_dcl
+int parselose (RP_Buf *rp, int val, char *str, ...)
 {
 	va_list ap;
-	RP_Buf  *rp;
-	int     val;
 	char    buf[BUFSIZ];
 
-	va_start (ap);
+	va_start (ap, str);
 
-	rp = va_arg (ap, RP_Buf *);
-	val = va_arg (ap, int);
-
-	_asprintf (buf, NULLCP, ap);
+	_asprintf (buf, NULLCP, str, ap);
 
 	PP_LOG (LLOG_TRACE, 
 		("parselose (%s, '%s')", rp_valstr (val), buf));
@@ -495,5 +479,3 @@ va_dcl
 
 	return val;
 }
-#endif
-

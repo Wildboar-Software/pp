@@ -31,17 +31,21 @@
 
 /* -- declarations that should have been in the system files -- */
 
-#ifdef SVR4
+// #ifdef SVR4
 
 #include <stdlib.h>
 #include <string.h>
 
-#else
-#include <strings.h>
+// #else
+// #include <strings.h>
+// #endif
+
+#ifdef LINUX
+#include <unistd.h>
 #endif
 
-extern char *multcat ();
-extern char *multcpy ();
+extern char *multcat (char *, ...);
+extern char *multcpy (char *, ...);
 extern char *smalloc ();
 
 /* -- some common logical values -- */
@@ -186,5 +190,7 @@ extern int	flckclose ();
 #define HAS_FSYNC
 #endif
 #endif
+
+int prefix(register char *str1, register char *str2);
 
 #endif

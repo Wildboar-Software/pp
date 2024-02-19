@@ -15,8 +15,8 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/charset/RCS/gc.c,v 6.0 
  */
 
 
-
 #include	<stdio.h>
+#include    <string.h>
 #include	<ctype.h>
 #include	"charset.h"
 
@@ -35,7 +35,7 @@ CHAR8U		s[LSIZE], c[AMAX], ref[C256], cmd[LSIZE];
 INT16S		v[AMAX], l[AMAX], codetable[C256];
 int		i,mx,a,cv,val,cod,dupl,ecma,line,group,plane,row,cell,num;
 
-gwrite() {
+void gwrite() {
 	if (g) {
 		for (i= 0; i < C256; i++)
 			if (c[codetable[i]] == NULL)
@@ -59,7 +59,7 @@ char *file, *mode;
 	return f;
 }
 
-main (argc,argv) int argc; char **argv; {
+void main (argc,argv) int argc; char **argv; {
 	CHAR8U	defname[LSIZE], linkname[LSIZE], *p;
 
 	mx= 0; line= 0;

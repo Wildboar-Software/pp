@@ -26,7 +26,7 @@ extern char	*FastInChanList();
 
 
 
-FreeChanInfo (list)
+void FreeChanInfo (list)
 register CHAN	*list;
 {
 	register CHAN	*startlist = list,
@@ -45,7 +45,7 @@ register CHAN	*list;
 
 
 
-RejectHost (host)
+void RejectHost (host)
 register HOST	*host;
 {
 	register CHAN	*c1;
@@ -74,7 +74,7 @@ register HOST	*host;
 }
 
 
-StartChanList (str)
+void StartChanList (str)
 char	*str;
 {
 	if (ChanList != NULL) {
@@ -96,7 +96,7 @@ char	*str;
 }
 
 
-AddToChanList (str)
+void AddToChanList (str)
 char	*str;
 {
 	register CHAN	*chan;
@@ -116,7 +116,7 @@ char	*str;
 }
 
 
-StartHostList (str)
+void StartHostList (str)
 char	*str;
 {
 	if (HostList != NULL) {
@@ -139,7 +139,7 @@ char	*str;
 }
 
 
-AddToHostList (str)
+void AddToHostList (str)
 char	*str;
 {
 	register HOST	*host;

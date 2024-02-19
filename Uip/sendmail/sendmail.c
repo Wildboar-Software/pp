@@ -23,7 +23,8 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Uip/sendmail/RCS/sendmail.c
 #include "adr.h"
 #include "retcode.h"
 #include "ap.h"
-#include <varargs.h>
+#include "io.h"
+#include <stdarg.h>
 
 extern  char	*loc_dom_site;
 extern	char	*chndfldir;
@@ -54,15 +55,24 @@ static Q_struct qs;
 static RP_Buf rps;
 static RP_Buf *rp = &rps;
 
-static SFD	die();
-static void adios ();
+static SFD	die(int sig);
+static void adios (char *what, char* fmt, ...);
 
 static char	tbuf[BUFSIZ];
 
+int getqbchar();
+void read_header();
+void send_address(char *addr);
+void doheader(char **oobto);
+int isheader(char *line);
+void dofrom();
+int dobody();
+void smtp();
+
+void uip_init (char *pname);
+
 /*ARGSUSED*/
-main(argc, argv)
-int argc;
-char **argv;
+int main(int argc, char** argv)
 {
 	struct passwd  *pwdptr;
 	register char *p;
@@ -262,7 +272,7 @@ int getqbchar ()
 	return getqbchar ();
 }
 
-read_header ()
+void read_header ()
 {
 	struct qbuf *qp;
 	char buffer[BUFSIZ];
@@ -312,7 +322,7 @@ read_header ()
 }
 
 
-send_address (addr)
+void send_address (addr)
 char    *addr;
 {
 	int     retval;
@@ -367,7 +377,7 @@ char    *addr;
 	(void) fflush (stdout);
 }
 
-doheader(oobto)
+void doheader(oobto)
 char **oobto;
 {
 	int	gotfrom, gotsender, gotdate, gotrecipient;
@@ -438,7 +448,7 @@ char **oobto;
 /*
  * Could this be an RFC822 header line?
  */
-isheader(line)
+int isheader(line)
 char *line;
 {
 	register char *cp = line;
@@ -448,7 +458,7 @@ char *line;
 	return *cp == '\n' ? 0 : 1;
 }
 
-dofrom()
+void dofrom()
 {
 	char	line[128];
 
@@ -459,7 +469,7 @@ dofrom()
 	io_tdata (line, strlen(line));
 }
 
-dobody()
+int dobody()
 {
 	char    buffer[BUFSIZ];
 	register int    i;
@@ -478,7 +488,7 @@ dobody()
 	return(0);	/* eventually the program exit value */
 }
 
-smtp()
+void smtp()
 {
 	char	*smtpd = dupfpath(chndfldir, SMTPSRVR);
 
@@ -487,33 +497,16 @@ smtp()
 	adios ("failed", "execl of %s", smtpd);
 }
 
-#ifndef lint
-static void    adios (va_alist)
-va_dcl
+static void adios (char *what, char* fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
-    _ll_log (pp_log_norm, LLOG_FATAL, ap);
-    
+    va_start (ap, fmt);
+	_ll_log (pp_log_norm, LLOG_FATAL, what, fmt, ap);
     va_end (ap);
-
     _exit (1);
 }
-#else
-/* VARARGS2 */
 
-static void    adios (what, fmt)
-char   *what,
-       *fmt;
-{
-    adios (what, fmt);
-}
-#endif
-
-static SFD die(sig)
-int sig;
+static SFD die(int sig)
 {
 	io_end(NOTOK);
 	adios (NULLCP, "sendmail: dying from signal %d", sig);

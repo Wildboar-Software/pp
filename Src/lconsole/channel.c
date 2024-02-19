@@ -16,6 +16,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/lconsole/RCS/channel.c,
 #include "lconsole.h"
 #include "qmgr.h"
 #include "qmgr-int.h"
+#include "Qmgr-ops.h"
 #include <isode/cmd_srch.h>
 #ifdef  BSD42
 #include <sys/ioctl.h>

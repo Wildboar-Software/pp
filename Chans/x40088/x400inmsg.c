@@ -24,7 +24,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/x40088/RCS/x400inmsg.
 #include "dr.h"
 #include "retcode.h"
 #include <isode/rtsap.h>
-#include <varargs.h>
+#include <stdarg.h>
 
 #define bit_ison(x,y)	(bit_test(x,y) == 1)
 
@@ -42,20 +42,18 @@ extern int submit_running;
 extern int canabort;
 extern int rts_sd;
 
-static int splatfnx (va_alist)
-va_dcl
+void resetforpostie();
+
+static int splatfnx (caddr_t junk, char *str, ...)
 {
 	char	buffer[BUFSIZ];
-	caddr_t	junk;
 	RP_Buf rps;
 
 	va_list ap;
 
-	va_start (ap);
+	va_start (ap, str);
 
-	junk = va_arg (ap, caddr_t);
-
-	_asprintf (buffer, NULLCP, ap);
+	_asprintf (buffer, NULLCP, str, ap);
 
 	if (pps_txt (buffer, &rps) == NOTOK)
 		adios (NULLCP, "Write fails: %s", rps.rp_line);
@@ -306,7 +304,7 @@ int	type;
 	return OK;
 }
 
-resetforpostie (st, pe, type, str)
+void resetforpostie (st, pe, type, str)
 enum errstate st;
 PE	pe;
 int	type;

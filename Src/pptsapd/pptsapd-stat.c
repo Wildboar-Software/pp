@@ -19,7 +19,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/pptsapd/RCS/pptsapd-sta
 #include <signal.h>
 #include "util.h"
 #include "chan.h"
-#include <varargs.h>
+#include <stdarg.h>
 #include <isode/manifest.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
@@ -60,8 +60,8 @@ static char myhost[BUFSIZ];
 
 static struct TSAPaddr *tz;
 
-
-static void    adios (), advise ();
+static void adios (char *what, char* fmt, ...);
+static void advise (int, char *what, char *fmt, ...);
 
 static char *getchanpgm ();
 static void tsapd ();
@@ -105,11 +105,13 @@ char  **argv,
 			    sel2str (na -> na_pid, na -> na_pidlen, 1));
 		    break;
 
+#ifdef NA_BRG
 		case NA_BRG:
 		    advise (LLOG_NOTICE, NULLCP,
 			    "listening on X.25 (BRIDGE) %s %s", na2str (na),
 			    sel2str (na -> na_pid, na -> na_pidlen, 1));
 		    break;
+#endif
 
 		case NA_NSAP:
 		    advise (LLOG_NOTICE, NULLCP, "listening on NS %s",
@@ -361,67 +363,29 @@ static void envinit () {
     advise (LLOG_NOTICE, NULLCP, "starting");
 }
 
-/*    ERRORS */
-
-#ifndef lint
-static void    adios (va_alist)
-va_dcl
+static void adios (char *what, char* fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
-    _ll_log (pp_log_norm, LLOG_FATAL, ap);
-
+    va_start (ap, fmt);
+    _ll_log (pp_log_norm, LLOG_FATAL, what, fmt, ap);
     va_end (ap);
-
     _exit (1);
 }
-#else
-/* VARARGS */
 
-static void    adios (what, fmt)
-char   *what,
-       *fmt;
+void advise (int code, char *what, char *fmt, ...)
 {
-    adios (what, fmt);
-}
-#endif
-
-
-#ifndef lint
-static void    advise (va_alist)
-va_dcl
-{
-    int     code;
     va_list ap;
-
-    va_start (ap);
-
-    code = va_arg (ap, int);
-
-    _ll_log (pp_log_norm, code, ap);
-
+    va_start (ap, fmt);
+    _ll_log (pp_log_norm, code, what, fmt, ap);
     va_end (ap);
 }
-#else
-/* VARARGS */
-
-static void    advise (code, what, fmt)
-char   *what,
-       *fmt;
-int     code;
-{
-    advise (code, what, fmt);
-}
-#endif
 
 static SFD childserver (sig, code, sc)
 int	sig;
 long	code;
 struct sigcontext *sc;
 {
-	union wait status;
+	int status;
 	struct rusage rusage;
 	int	pid;
 

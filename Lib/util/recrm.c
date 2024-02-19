@@ -63,7 +63,7 @@ char    *dir;
 	(void) strcpy (currentdir, dir); /* for rmFiles use */
 	cdp = buf + strlen(buf);
 
-	noOfSubdirs = _scandir(buf, &namelist, rmFiles, NULLIFP);
+	noOfSubdirs = scandir(buf, &namelist, rmFiles, NULLIFP);
 
 	for (i = 0, ix = namelist; i++ < noOfSubdirs && *ix; ix++) {
 		*cdp ++ = '/';

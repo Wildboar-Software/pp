@@ -15,8 +15,8 @@
 #ifndef _H_QMGR_DEFS
 #define _H_QMGR_DEFS
 
-#include "Qmgr-types.h"
-#include "Qmgr-ops.h"
+// #include "Qmgr-types.h"
+// #include "Qmgr-ops.h"
 
 extern struct type_Qmgr_DeliveryStatus *deliverystate;
 

@@ -16,8 +16,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/util/RCS/cmdbsrch.c,v 6
 #include "util.h"
 #include <isode/cmd_srch.h>
 
-
-cmdbsrch (str, cmd, entries)        /* binary version of cmdsrch */
+int cmdbsrch (str, cmd, entries)        /* binary version of cmdsrch */
 char *str;			/* test string  */
 CMD_TABLE cmd[];		/* table of known commands */
 int entries;			/* size of cmd table */

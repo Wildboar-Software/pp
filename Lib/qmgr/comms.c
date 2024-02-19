@@ -18,12 +18,12 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/qmgr/RCS/comms.c,v 6.0 
 #include "Qmgr-types.h"
 #include "Qmgr-ops.h"
 #include "qmgr.h"
-#include <varargs.h>
+#include <stdarg.h>
 #include "consblk.h"
 
 #define PP_SERVICE	"pp qmgr"
 
-static void	advise(), ros_advise(), acs_advise();
+static void	advise(char *, char *, ...), ros_advise(), acs_advise();
 
 static int	general_error();
 
@@ -600,16 +600,14 @@ char   *event;
 }
 
 #ifndef lint
-static void advise (va_alist)
-va_dcl
+static void advise (char *buf, char *fmt, ...)
 {
-	char	*buf;
 	va_list	ap;
 
-	va_start (ap);
+	va_start (ap, fmt);
 
 	buf = va_arg(ap, char *);
-	_asprintf(buf, NULLCP, ap);
+	_asprintf(buf, NULLCP, fmt, ap);
 	va_end(ap);
 }
 #else

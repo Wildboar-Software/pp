@@ -64,7 +64,7 @@ static char sccsid[] = "@(#)rmail.c	1.4 (UKNET Altered by pb/pc) 7/23/91";
 #include <pwd.h>
 #include <signal.h>
 #include <sys/stat.h>
-#include <varargs.h>
+#include <stdarg.h>
 
 #define VERSION "3.0"
 #define NAMESZ  256		/* Limit on component name size.
@@ -85,10 +85,12 @@ extern char *rindex ();
 extern char *getenv ();		/* get the Accounting system from
 				 * the environment */
 extern char *strdup ();
-extern char *malloc ();
+extern void *malloc ();
 extern char *compress ();
 
 static char * canon_name();
+static void hadr_munge(), domain_cross();
+void bomb (char *, ...), fromcvt();
 
 FILE   *rm_msgf;		/* temporary out for message text */
 CHAN   *chanptr;
@@ -591,7 +593,7 @@ nextchar ()
  * Try and get the ap_* (MMDF) routines to do as much as possible for
  * us.
  */
-hadr_munge (list)
+void hadr_munge (list)
 char   *list;
 {
 	AP_ptr  the_addr;	/* ---> THE ADDRESS <--- */
@@ -1047,15 +1049,14 @@ char   *fmt;
 }
 
 #else
-bomb (va_alist)
-va_dcl
+void bomb (char *fmt, ...)
 {
 	va_list ap;
 	char    buf[BUFSIZ];
 
-	va_start (ap);
+	va_start (ap, fmt);
 
-	_asprintf (buf, NULLCP, ap);
+	_asprintf (buf, NULLCP, fmt, ap);
 	PP_LOG (LLOG_EXCEPTIONS, ("uucp bombing: %s", buf));
 	va_end (ap);
 
@@ -1067,7 +1068,7 @@ va_dcl
  *      fromcvt()  --  trys to convert the UUCP style path into
  *                      an ARPA style name.
  */
-fromcvt (from, newfrom)
+void fromcvt (from, newfrom)
 char   *from, *newfrom;
 {
 	register char *cp;
@@ -1174,7 +1175,7 @@ char   *nxt;
  *	site.uucp!site.??.uk!something
  *	if so replace by the single official name
  */
-domain_cross (route)
+void domain_cross (route)
 char   *route;
 {
 	char   *second;

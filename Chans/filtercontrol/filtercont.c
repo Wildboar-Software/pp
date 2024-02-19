@@ -19,6 +19,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/filtercontrol/RCS/fil
 #include "retcode.h"
 #include "expand.h"
 #include "qmgr.h"
+#include "Qmgr-types.h"
 #include "q.h"
 #include "prm.h"
 #include	<sys/stat.h>
@@ -612,11 +613,11 @@ char	*orig,	/* original message directory */
 		error = strdup("Tryfork tailed");
 		result = NOTOK;
 	} else {
-#ifdef SVR4
+// #ifdef SVR4
 		int wst;
-#else
-		union wait wst;
-#endif
+// #else
+// 		union wait wst;
+// #endif
 
 		while ((pgmresult = wait(&wst)) != pid && pgmresult != -1)
 			PP_TRACE(("process %d returned", pgmresult));

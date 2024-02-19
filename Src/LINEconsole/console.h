@@ -15,7 +15,7 @@
 #include	"head.h"
 #include	"sys.file.h"
 #include	"qmgr.h"
-#include	<varargs.h>
+#include <stdarg.h>
 #include	<isode/cmd_srch.h>
 
 typedef enum {

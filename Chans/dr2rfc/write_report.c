@@ -1650,7 +1650,7 @@ ADDR	*recip;
 	recip->ad_rcnt = 0;
 	while (gothdr == FALSE && recip->ad_rcnt <= rcnt) { 
 		if (qid2dir(msg_id, recip, TRUE, &dir) == OK) {
-			if (_scandir(dir, &namelist, isHdr, NULLIFP) > 0)
+			if (scandir(dir, &namelist, isHdr, NULLIFP) > 0)
 				gothdr = TRUE;
 		}
 		recip->ad_rcnt++;

@@ -13,17 +13,12 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Tools/bin2hex/RCS/bin2hex.c
  *
  */
 
-
-
 #include <stdio.h>
-
-
-
+#include <stdlib.h>
 
 /* ---------------------  Begin  Routines  -------------------------------- */
 
-
-main(argc, argv)
+void main(argc, argv)
 int argc;
 char **argv;
 {
@@ -45,7 +40,7 @@ char **argv;
 
 }
 
-bin2hex (fp)
+void bin2hex (fp)
 FILE *fp;
 {
 	int zone, fold;

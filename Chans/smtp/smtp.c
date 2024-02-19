@@ -21,6 +21,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/smtp/RCS/smtp.c,v 6.0
 #include "q.h"
 #include "dr.h"
 #include "qmgr.h"
+#include "Qmgr-types.h"
 #include <pwd.h>
 #include "sys.file.h"
 #include <signal.h>
@@ -58,7 +59,7 @@ static int chaninit();
 static int endproc ();
 static int dotext ();
 static int copy ();
-
+void deliver();
 
 /* ---------------------  Begin  Routines  -------------------------------- */
 
@@ -224,7 +225,7 @@ static void dirinit()       /* Change into pp queue space */
 						quedfldir);
 }
 
-deliver (ad_list, qp)
+void deliver (ad_list, qp)
 ADDR    *ad_list;
 Q_struct *qp;
 {

@@ -40,7 +40,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Tools/dbmbuild/RCS/dbmbuild
 #include        "chan.h"
 #include        "dbase.h"
 #include 	"sys.file.h"
-#include        <varargs.h>
+#include <stdarg.h>
 
 extern int      errno;
 extern char     *tbldfldir,
@@ -76,12 +76,12 @@ char            dbfile [128],
 
 static char *myname;
 static short    tb_nopen;   /* -- no of opened file descriptors -- */
-void    adios (), advise ();
+void    adios (char *, char *, ...), advise (char *, char *, ...);
 
 static int theinit (), theend ();
 static int dbfinit (), dbfclose ();
-static int process ();
-static int install ();
+static void process ();
+static void install ();
 static int prdatum ();
 static int check ();
 static int tb_open (), tb_close (), tb_free ();
@@ -393,7 +393,7 @@ Process a sequential file and insert items into the database
 Opens argument assumes database is initialized.
 */
 
-static process (tp)
+static void process (tp)
 Table           *tp;
 {
     datum       key,
@@ -480,7 +480,7 @@ Install a datum into the database.
 Fetch entry first to see if we have to append name for building entry.
 */
 
-static install (key, value, tbname)
+static void install (key, value, tbname)
 datum           key,
 		value;
 char            tbname[];
@@ -676,14 +676,13 @@ static tb_free()   /* -- create a free file descriptor -- */
 static void    _advise ();
 
 
-void    adios (va_alist)
-va_dcl
+void    adios (char *what, char* fmt, ...)
 {
 	va_list ap;
 
-	va_start (ap);
+	va_start (ap, fmt);
 
-	_advise (ap);
+	_advise (what, fmt, ap);
 
 	va_end (ap);
 
@@ -703,24 +702,22 @@ char   *what,
 
 #ifndef lint
 
-void    advise (va_alist)
-va_dcl
+void    advise (char* what, char *fmt, ...)
 {
 	va_list ap;
 
-	va_start (ap);
+	va_start (ap, fmt);
 
-	_advise (ap);
+	_advise (what, fmt, ap);
 
 	va_end (ap);
 }
 
-static void  _advise (ap)
-va_list ap;
+static void  _advise (char *what, char *fmt, va_list ap)
 {
 	char    buffer[BUFSIZ];
 
-	asprintf (buffer, ap);
+	_asprintf (buffer, what, fmt, ap);
 
 	(void) fflush (stdout);
 

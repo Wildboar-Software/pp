@@ -44,7 +44,7 @@ static char SCCSID[] = "@(#) miscfuncs.c 2.1 89/07/26 19:16:50";
 
 extern int errno;
 
-extern char *sys_errlist[];
+extern char *strerror(int);
 
 
 /*
@@ -198,7 +198,7 @@ struct entry_descrip *e;
      * Display the message.
      */
     if ( mssg_list[sel] != NULL )
-	(void) printf(mssg_list[sel], e->name, sys_errlist[errno]);
+	(void) printf(mssg_list[sel], e->name, strerror(errno));
 
     ofile = ( sel == MSSG_BANNER ? e->name : NULL );
 }

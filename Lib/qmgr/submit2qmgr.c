@@ -16,9 +16,15 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/qmgr/RCS/submit2qmgr.c,
 
 
 #include "head.h"
-#include <varargs.h>
+#include <stdarg.h>
 
 #include "qmgr.h"
+#include "Qmgr-ops.h"
+#include "Qmgr-types.h"
+#include <isode/isoaddrs.h>
+#include <isode/acsap.h>
+#include <isode/rosap.h>
+#include <isode/ssap.h>
 
 /* Sumbit types */
 #include "q.h"

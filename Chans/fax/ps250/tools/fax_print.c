@@ -18,7 +18,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/fax/ps250/tools/RCS/f
 #include <stdio.h>
 #include "../../faxgeneric.h"
 #include "../ps250.h"
-#include <varargs.h>
+#include <stdarg.h>
 #include <isode/cmd_srch.h>
 #include "retcode.h"
 #include "IOB-types.h"
@@ -48,18 +48,16 @@ int	isP2 = TRUE;
 char	*file = NULLCP;
 int	res;
 
+static int fax_bitstrings(), do_decode_fax();
+
 #ifndef lint
-void    advise (va_alist)
-va_dcl
+void    advise (int code, char *what, char *fmt, ...)
 {
-        int     code;
         va_list ap;
 
-        va_start (ap);
+        va_start (ap, fmt);
 
-        code = va_arg (ap, int);
-
-        _ll_log (pp_log_norm, code, ap);
+        _ll_log (pp_log_norm, code, what, fmt, ap);
 
         va_end (ap);
 }
@@ -419,7 +417,7 @@ struct type_IOB_G3FacsimileBodyPart	**pfax;
 	return OK;
 }
 
-/* 
+/*
  * various isode-like routines
  */
 
@@ -452,29 +450,11 @@ char           *msg;
         return NOTOK;
 }
 
-#ifndef lint
-void    adios (va_alist)
-va_dcl
+void adios (char *what, char* fmt, ...)
 {
-        va_list ap;
-
-        va_start (ap);
-
-        _ll_log (pp_log_norm, LLOG_FATAL, ap);
-
-        va_end (ap);
-
-        _exit (1);
+    va_list ap;
+    va_start (ap, fmt);
+	_ll_log (pp_log_norm, LLOG_FATAL, what, fmt, ap);
+    va_end (ap);
+    _exit (1);
 }
-#else
-/* VARARGS2 */
-
-void    adios (what, fmt)
-char   *what,
-       *fmt;
-{
-        adios (what, fmt);
-}
-#endif
-
-

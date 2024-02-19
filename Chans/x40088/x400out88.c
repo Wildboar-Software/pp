@@ -25,6 +25,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/x40088/RCS/x400out88.
 #include "sys.file.h"
 #include <isode/rtsap.h>
 #include <isode/isoservent.h>
+#include "Qmgr-types.h"
 
 
 static enum { st_init, st_hdr, st_bodyinit, st_body, st_end } trans_state;
@@ -57,7 +58,7 @@ static char		*connected_to_site = NULLCP;
 static char		*current_mta = NULLCP;
 static char		*dumpp1 = NULLCP;
 static char		*fix_orig;
-static char		*myname;
+static char		*my_name;
 static char		*p1_ptr;
 static char		*p1_string;
 static char		*this_msgid = NULLCP;
@@ -118,14 +119,14 @@ main (argc, argv)
 int	argc;
 char	**argv;
 {
-	if (myname = rindex (argv[0], '/'))
-		myname++;
-	if (myname == NULL || *myname == NULL)
-		myname = argv[0];
+	if (my_name = rindex (argv[0], '/'))
+		my_name++;
+	if (my_name == NULL || *my_name == NULL)
+		my_name = argv[0];
 
 
 	/* -- initialise -- */
-	chan_init (myname);
+	chan_init (my_name);
 
 
 	/* -- rts88 ping required ? -- */

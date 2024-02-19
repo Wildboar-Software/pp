@@ -20,89 +20,98 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Lib/pp/RCS/static.c,v 6.0 1
 #include "list_bpt.h"
 
 
-CHAN            **ch_all;
-Table           **tb_all;
-LIST_BPT        *bodies_all = NULLIST_BPT;
-LIST_BPT        *headers_all = NULLIST_BPT;
+extern CHAN            **ch_all = NULL;
+extern Table           **tb_all = NULL;
+extern LIST_BPT        *bodies_all = NULLIST_BPT;
+extern LIST_BPT        *headers_all = NULLIST_BPT;
 
 
 
-char		*aquefile = "addr";
-char            *bquedir = "base";
-char            *chndfldir = "chans";
-char            *formdfldir = "format";
-char            *loc_dom_mta = "bogus";
-char            *loc_dom_site = "bogus";
-char            *loc_or = "";
-char            *postmaster = "***INVALID***";
-char		*adminstration_req_alt = NULLCP;
-char            *ppdbm = "ppdbm";
-char            *pplogin = "pp";   /* -- login user id of pp -- */
-char            *pptsapd_addr = "Internet=localhost+20001";
-char            *delim1 = "\1\1\1\1\n";
-char            *delim2 = "\1\1\1\1\n";
-char            *mboxname = "ppmailbox";
-char            *qmgr_hostname = "localhost";
-char            *authchannel = "block";
-char            *authloglevel = "low";
-char            *wrndfldir = "warnings"; /* relative to tbldfldir */
-char		*wrnfile = "warning"; 	 /* basename of files containing template warnings */
+extern char		*aquefile = "addr";
+extern char            *bquedir = "base";
+extern char            *chndfldir = "chans";
+extern char            *formdfldir = "format";
+extern char            *loc_dom_mta = "bogus";
+extern char            *loc_dom_site = "bogus";
+extern char            *loc_or = "";
+extern char            *postmaster = "***INVALID***";
+extern char		*adminstration_req_alt = NULLCP;
+extern char            *ppdbm = "ppdbm";
+extern char            *pplogin = "pp";   /* -- login user id of pp -- */
+/* pptsapd_addr used to contain "localhost," but this caused problems in
+previous versions of ISODE. Modern Linux systems often use two aliases of
+"localhost": one for IPv4 and one for IPv6. Even when explicitly requesting only
+IPv4 addresses, the IPv6 address seems to get converted. This means two
+duplicate IP addresses will be returned for this alias. This is not a problem
+when a presentation address is used for connecting to a remote host, but it is
+a nasty problem when listening, because you will get "already listening on
+that port" errors. Despite this being fixed in my latest changes to ISODE, I
+have changed this to 0.0.0.0 to prevent this problem. */
+extern char            *pptsapd_addr = "Internet=0.0.0.0+20001";
+extern char            *delim1 = "\1\1\1\1\n";
+extern char            *delim2 = "\1\1\1\1\n";
+extern char            *mboxname = "ppmailbox";
+extern char            *qmgr_hostname = "localhost";
+extern char            *authchannel = "block";
+extern char            *authloglevel = "low";
+extern char            *wrndfldir = "warnings"; /* relative to tbldfldir */
+extern char		*wrnfile = "warning"; 	 /* basename of files containing template warnings */
 
-char		*x400_mta = NULLCP;
+extern char		*x400_mta = NULLCP;
 
-int		return_interval_norm = 24 * 3;	/* return after 3 days */
-int		return_interval_high = 24 * 1; /* return time 1 day */
-int		return_interval_low = 24 * 7; /* return time 7 days */
-int		warn_interval = 24 * 1;		/* warn after 1 */
-int		warn_number = 2;		/* 2 warnings */
-int		max_hops = 25;	/* max number of trace fields */
-int		max_loops = 5; /* max times through our MTA */
-int		queue_fanout = 0; /* how many sub directories at each level */
-int		queue_depth = 0; /* how many depths of sub directory */
-int		use_fsync = 1; /* use fsync if available */
-int		disk_percent = NOTOK;	/* free block percentage */
-int		disk_blocks = NOTOK;	/* free block count */
+extern int		return_interval_norm = 24 * 3;	/* return after 3 days */
+extern int		return_interval_high = 24 * 1; /* return time 1 day */
+extern int		return_interval_low = 24 * 7; /* return time 7 days */
+extern int		warn_interval = 24 * 1;		/* warn after 1 */
+extern int		warn_number = 2;		/* 2 warnings */
+extern int		max_hops = 25;	/* max number of trace fields */
+extern int		max_loops = 5; /* max times through our MTA */
+extern int		queue_fanout = 0; /* how many sub directories at each level */
+extern int		queue_depth = 0; /* how many depths of sub directory */
+extern int		use_fsync = 1; /* use fsync if available */
+extern int		disk_percent = NOTOK;	/* free block percentage */
+extern int		disk_blocks = NOTOK;	/* free block count */
 
 /* hardwired in names */
-char		*submit_prog = "submit";
-char            *dr_file = "report.";
-char            *uucpin_chan = "uucp-in";
-char            *local_822_chan = "822-local";
-char            *alias_tbl = "aliases";
-char            *channel_tbl = "channel";
-char            *list_tbl = "list";
-char            *user_tbl = "users";
-char            *or_tbl = "or";
-char            *or2rfc_tbl = "or2rfc";
-char            *rfc2or_tbl = "rfc2or";
-char		*rfc1148gateway_tbl = "rfc1148gate";
-char            *chan_auth_tbl = "auth.channel";
-char            *mta_auth_tbl = "auth.mta";
-char            *user_auth_tbl = "auth.user";
-char		*hdr_prefix = "hdr.";
-char            *hdr_822_bp = "hdr.822";
-char		*hdr_p2_bp = "hdr.p2";
-char		*hdr_p22_bp = "hdr.p22";
-char		*hdr_ipn_bp = "hdr.ipn";
-char            *ia5_bp = "ia5";
-char		*qmgr_auth_tbl = "auth.qmgr";
-char		*cont_822 = "822";
-char		*cont_p2 = "p2";
-char		*cont_p22 = "p22";
-char		*mailfilter = ".mailfilter";
-char		*sysmailfilter = "/usr/local/lib/mailfilter";
-char		*submit_addr = NULLCP;
-char		*dap_user = NULLCP;
-char		*dap_passwd = NULLCP;
+extern char		*submit_prog = "submit";
+extern char            *dr_file = "report.";
+extern char            *uucpin_chan = "uucp-in";
+extern char            *local_822_chan = "822-local";
+extern char            *alias_tbl = "aliases";
+extern char            *channel_tbl = "channel";
+extern char            *list_tbl = "list";
+extern char            *user_tbl = "users";
+extern char            *or_tbl = "or";
+extern char            *or2rfc_tbl = "or2rfc";
+extern char            *rfc2or_tbl = "rfc2or";
+extern char		*rfc1148gateway_tbl = "rfc1148gate";
+extern char            *chan_auth_tbl = "auth.channel";
+extern char            *mta_auth_tbl = "auth.mta";
+extern char            *user_auth_tbl = "auth.user";
+extern char		*hdr_prefix = "hdr.";
+extern char            *hdr_822_bp = "hdr.822";
+extern char		*hdr_p2_bp = "hdr.p2";
+extern char		*hdr_p22_bp = "hdr.p22";
+extern char		*hdr_ipn_bp = "hdr.ipn";
+extern char            *ia5_bp = "ia5";
+extern char		*qmgr_auth_tbl = "auth.qmgr";
+extern char		*cont_822 = "822";
+extern char		*cont_p2 = "p2";
+extern char		*cont_p22 = "p22";
+extern char		*mailfilter = ".mailfilter";
+extern char		*sysmailfilter = "/usr/local/lib/mailfilter";
+extern char		*submit_addr = NULLCP;
+extern char		*dap_user = NULLCP;
+extern char		*dap_passwd = NULLCP;
 
 /* used in distribution list stuff */
-char		*loc_dist_prefix = "dist-";
-char		*list_tbl_comment = "Comment:";
+extern char		*loc_dist_prefix = "dist-";
+extern char		*list_tbl_comment = "Comment:";
 
 /* used in locking */
-char	*lockdir = "/tmp";
-int	lockstyle = LOCK_FLOCK;
-int	lock_break_time = 30 * 60; /* 30 mins grace time */
+extern char	*lockdir = "/tmp";
+extern int	lockstyle = LOCK_FLOCK;
+extern int	lock_break_time = 30 * 60; /* 30 mins grace time */
 
 /* -- Logging info -- */
 
@@ -124,6 +133,6 @@ static LLog norm_log = {
 	LLOGCRT, NOTOK
 };
 
-LLog    *pp_log_norm = &norm_log;
-LLog    *pp_log_oper = &oper_log;
-LLog    *pp_log_stat = &stat_log;
+extern LLog    *pp_log_norm = &norm_log;
+extern LLog    *pp_log_oper = &oper_log;
+extern LLog    *pp_log_stat = &stat_log;

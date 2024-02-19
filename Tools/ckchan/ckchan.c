@@ -85,7 +85,7 @@ int                     all,
 			summary;
 struct my_chan_struct     *chan_list = NULL;
 
-main (argc, argv)
+void main (argc, argv)
 int     argc;
 char    **argv;
 {

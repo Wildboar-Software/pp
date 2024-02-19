@@ -16,18 +16,20 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Tools/splat/RCS/splat.c,v 6
 
 
 #include "util.h"
-#include <varargs.h>
-void advise();
+#include <stdarg.h>
+void advise (char *what, char *fmt, ...);
 
 
 
 
 /* ---------------------  Begin  Routines  -------------------------------- */
 char	*myname;
-int	process1 (), process2 ();
+int	process2 ();
+static int process1 ();
+void hexdump ();
 
 
-main (argc, argv, envp)
+void main (argc, argv, envp)
 int     argc;
 char  **argv,
       **envp;
@@ -209,9 +211,7 @@ int	depth;
 	
 }
 
-hexdump (s, n, depth)
-char	*s;
-int n;
+void hexdump (char *s, int n, int depth)
 {
     int		i;
     char	*hexstr = "0123456789ABCDEF";
@@ -229,55 +229,30 @@ int n;
     putchar ('\n');
 }
 
-#ifndef	lint
-void	_advise ();
+static void _advise (char *what, char* fmt, va_list ap);
 
-
-void	adios (va_alist)
-va_dcl
+void adios (char *what, char* fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
-    _advise (ap);
-
+    va_start (ap, fmt);
+    _advise (what, fmt, ap);
     va_end (ap);
-
     _exit (1);
 }
-#else
-/* VARARGS */
 
-void	adios (what, fmt)
-char   *what,
-       *fmt;
-{
-    adios (what, fmt);
-}
-#endif
-
-
-#ifndef	lint
-void	advise (va_alist)
-va_dcl
+void advise (char *what, char *fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
-    _advise (ap);
-
+    va_start (ap, fmt);
+    _advise (what, fmt, ap);
     va_end (ap);
 }
 
-
-static void  _advise (ap)
-va_list	ap;
+static void _advise (char *what, char* fmt, va_list ap)
 {
     char    buffer[BUFSIZ];
 
-    asprintf (buffer, ap);
+    _asprintf (buffer, what, fmt, ap);
 
     (void) fflush (stdout);
 
@@ -287,14 +262,4 @@ va_list	ap;
 
     (void) fflush (stderr);
 }
-#else
-/* VARARGS */
-
-void	advise (what, fmt)
-char   *what,
-       *fmt;
-{
-    advise (what, fmt);
-}
-#endif
 

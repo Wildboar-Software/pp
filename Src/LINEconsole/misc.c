@@ -12,6 +12,8 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/LINEconsole/RCS/misc.c,
  * Release 6.0
  *
  */
+#include "Qmgr-types.h"
+#include <isode/acsap.h>
 #include "console.h"
 #include	<pwd.h>
 #include 	<sys/time.h>

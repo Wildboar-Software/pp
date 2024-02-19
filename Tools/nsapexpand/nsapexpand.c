@@ -21,7 +21,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Tools/nsapexpand/RCS/nsapex
 static char	*myname;
 int	abortonerror = 0;
 
-main (argc, argv)
+void main (argc, argv)
 int	argc;
 char	**argv;
 {
@@ -65,7 +65,7 @@ char	**argv;
 	exit (0);
 }
 
-process (fp, name)
+void process (fp, name)
 FILE	*fp;
 char	*name;
 {

@@ -1,0 +1,4 @@
+*.dockerfile
+.vscode/*
+*.o
+*.a

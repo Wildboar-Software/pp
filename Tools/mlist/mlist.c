@@ -44,7 +44,7 @@ static int inList();
 static int addUser();
 static int isPP();
 static int removeUser();
-static int findUser();
+static void findUser();
 static void openpager();
 static void closepager();
 static void changeAdrType();
@@ -1472,7 +1472,7 @@ char	**plistname;
 extern char *re_comp();
 extern int re_exec();
 
-static int findUser  (name, list)
+static void findUser  (name, list)
 char	*name;
 dl	*list;
 {

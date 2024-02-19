@@ -7,6 +7,7 @@
 #undef input
 #endif
 # define input() (((yytchar=yysptr>yysbuf?U(*--yysptr):bwgetc(yyin))==10?(yylineno++,yytchar):yytchar)==EOF?0:yytchar)
+#define YY_NO_INPUT
 
 #define         HEAP            30      /*  cleans the heap after a YACC err */
 #define         NULL             0

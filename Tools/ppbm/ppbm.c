@@ -52,19 +52,18 @@ int mypid, childno;
 char * base_dir  = ".";		/* where to create the test messages */
 char buf[60000];
 
+void create_message(), rm_tree();
+
 /* serror */
 serror (routine, what)
 char *routine, *what;
 {
 	extern int errno;
-	extern int sys_nerr;
-	extern char *sys_errlist[];
+	extern char *strerror(int);
 	char sbuf[BUFSIZ];
 	char *p;
 
-	if (errno > 0 && errno < sys_nerr)
-		p = sys_errlist[errno];
-	else	p = "Unknown error";
+	p = strerror(errno);
 	(void) sprintf (sbuf, "%s %s %s\n", routine, what ? what : "", p);
 	(void) write (2, sbuf, strlen(sbuf));
 }
@@ -91,7 +90,7 @@ int cno;
 }
 
 /* create a message with address file + 1 header + 1 body part */
-create_message(i)
+void create_message(i)
 int i;
 {
 	char msg[MAXPATHLENGTH];
@@ -187,7 +186,7 @@ int i;
     rm_tree(msg);
 }
 
-rm_tree(dir)
+void rm_tree(dir)
 char * dir;
 {
 	char file[MAXPATHLENGTH];
@@ -259,7 +258,11 @@ char *argv[];
 #else
 	time_t startt, endt;
 #endif
+#ifndef UNIONWAIT
+	int wt;
+#else
 	union wait wt;
+#endif
 
 	while ((c = getopt(argc, argv, "c:d:fFn:m:s:S:v")) != EOF) {
 		switch (c) {
@@ -328,7 +331,13 @@ char *argv[];
 		}
 	}
 #ifndef SYS5
-	while (wait3(&wt.w_status, 0, &rus) != -1) {
+	while (wait3(
+#ifdef UNIONWAIT
+		&wt.w_status,
+#else
+		&wt,
+#endif
+		 0, &rus) != -1) {
 		gettimeofday (&endt, (struct timezone *)0);
 		add_ru (&rus);
 	}

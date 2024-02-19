@@ -26,6 +26,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/822-local/RCS/loc_par
 #include "q.h"
 #include "dr.h"
 #include "qmgr.h"
+#include "Qmgr-types.h"
 #include <isode/logger.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -47,7 +48,7 @@ CHAN             *mychan;
 static char             *this_msg;
 
 static int              initproc ();
-static int		douser ();
+static void		douser ();
 static int 		deliver ();
 static void             dirinit ();
 static struct           type_Qmgr_DeliveryStatus *process ();
@@ -181,7 +182,7 @@ static void dirinit ()
  * process one extension-id for this message
  */
 
-static int douser (rno, ad_recip)
+static void douser (rno, ad_recip)
 int     rno;
 ADDR    *ad_recip;
 {

@@ -695,7 +695,7 @@ int	num_params;
 		
 char				*msginfo_args[3];
 extern struct mta_disp_struct	*mta_array;
-int				actual_nmtas_present;
+extern int				actual_nmtas_present;
 
 MtaNext()
 {

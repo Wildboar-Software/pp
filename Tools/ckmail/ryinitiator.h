@@ -33,10 +33,11 @@ struct client_dispatch {
 	IFP		ds_error;
 
 	char		*ds_help;
-} Client_dispatch;
+};
 
 
-void			adios(), advise();
+void advise (char *what, char *fmt, ...);
+void adios (char *what, char* fmt, ...);
 void			acs_adios(), acs_advise();
 void			ros_adios(), ros_advise();
 int			ryinitiator();

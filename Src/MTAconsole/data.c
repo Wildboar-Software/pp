@@ -34,7 +34,7 @@ struct monitor_item	**display_list = NULL;
 struct chan_struct	**globallist = NULL,
 			**ordered_list = NULL,
 			*currentchan = NULL;
-int			num_channels,
+extern int	num_channels = 0,
 			read_currentchan = 0;
 int			firstChanRead;
 int			total_number_messages,

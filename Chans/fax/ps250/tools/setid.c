@@ -19,9 +19,9 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/fax/ps250/tools/RCS/s
 #include "../../faxgeneric.h"
 #include "../ps250.h"
 #include <time.h>
-#include <varargs.h>
+#include <stdarg.h>
 
-void	adios (), advise ();
+static void	adios (char *, char *, ...), advise (char *, char *, ...);
 
 char	*myname;
 static char *localid = 0;
@@ -114,56 +114,31 @@ FaxCtlr	*faxctl;
 
 }
 		
+static void _advise (char *, char *, va_list ap);
 
-#ifndef	lint
-void	_advise ();
-
-
-void	adios (va_alist)
-va_dcl
+static void adios (char *what, char* fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
-    _advise (ap);
-
+    va_start (ap, fmt);
+	_advise (what, fmt, ap);
     va_end (ap);
-
     _exit (1);
 }
-#else
-/* VARARGS */
-
-void	adios (what, fmt)
-char   *what,
-       *fmt;
-{
-    adios (what, fmt);
-}
-#endif
 
 
-#ifndef	lint
-void	advise (va_alist)
-va_dcl
+void advise (char *what, char *fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
-    _advise (ap);
-
+    va_start (ap, fmt);
+    _advise (what, fmt, ap);
     va_end (ap);
 }
 
-
-static void  _advise (ap)
-va_list	ap;
+static void _advise (char *what, char *fmt, va_list ap)
 {
     char    buffer[BUFSIZ];
 
-    asprintf (buffer, ap);
+    _asprintf (buffer, what, fmt, ap);
 
     (void) fflush (stdout);
 
@@ -173,13 +148,3 @@ va_list	ap;
 
     (void) fflush (stderr);
 }
-#else
-/* VARARGS */
-
-void	advise (what, fmt)
-char   *what,
-       *fmt;
-{
-    advise (what, fmt);
-}
-#endif

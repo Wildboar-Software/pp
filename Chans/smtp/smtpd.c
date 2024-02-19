@@ -205,7 +205,7 @@ int sig;
 		numconnections --;
 	alarm (0);
 #else
-#ifdef SYS5
+#ifndef UNIONWAIT
 	int status;
 #else
 	union wait status;

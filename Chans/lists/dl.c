@@ -20,7 +20,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/lists/RCS/dl.c,v 6.0 
 #include <isode/quipu/ds_search.h>
 #include <isode/quipu/connection.h>	/* ds_search uses di_block - include this for lint !!! */
 #include <isode/quipu/dua.h>
-#include <varargs.h>
+#include <stdarg.h>
 #include <isode/tailor.h>
 #include "dl.h"
 
@@ -1891,17 +1891,13 @@ retry_policy:;
 
 #ifndef lint
 
-void    advise (va_alist)
-va_dcl
+void    advise (int code, char *what, char *fmt, ...)
 {
-    int     code;
     va_list ap;
 
-    va_start (ap);
+    va_start (ap, fmt);
 
-    code = va_arg (ap, int);
-
-    (void) _ll_log (log_dsap, code, ap);
+    (void) _ll_log (log_dsap, code, what, fmt, ap);
 
     va_end (ap);
 }

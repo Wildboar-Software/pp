@@ -190,7 +190,7 @@ static int tidy_up();
 #endif
 static getitm(), out_adr();
 
-char		*myname;
+static char		*myname;
 int		nadrs;
 int		pcol;
 int		nonempty;
@@ -916,8 +916,7 @@ int 	*result;
 	return OK;
 }
 
-static int isblank(ch)
-char	ch;
+static int is_blank(char ch)
 {
 	return (ch == ' ' || ch == '\t');
 }
@@ -940,12 +939,12 @@ static int	getach()
 			/* last char in buffer */
 			noInput = read(0, buf, MAXPATHLENGTH);
 			bufp = buf;
-			if (isblank(*bufp)) {
+			if (is_blank(*bufp)) {
 				noInput--;
 				return *bufp++;
 			} else
 				return 0;
-		} else if (isblank(*(bufp+1))) {
+		} else if (is_blank(*(bufp+1))) {
 			/* skip newline */
 			bufp++;
 			noInput--;

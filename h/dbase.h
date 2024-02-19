@@ -30,11 +30,12 @@
 #else
 #ifdef NDBM
 
+// I don't get why this stupid thing is necessary, but it will not build if you remove this.
 #ifndef GCC_DBM_OK
 #ifdef	      __GNUC__
-#define		dbm_fetch	*dbm_fetch
-#define		dbm_firstkey	*dbm_firstkey
-#define		dbm_nextkey	*dbm_nextkey
+#define		dbm_fetch	dbm_fetch
+#define		dbm_firstkey	dbm_firstkey
+#define		dbm_nextkey	dbm_nextkey
 #endif	      /* __GNUC__ */
 #endif	      /* !GCC_DBM_OK */
 

@@ -24,7 +24,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/x40084/RCS/x400topp.c
 #include "dr.h"
 #include "retcode.h"
 #include <isode/rtsap.h>
-#include <varargs.h>
+#include <stdarg.h>
 
 extern char		*remote_site;
 extern char		*postmaster;
@@ -49,7 +49,7 @@ int			bodyproc();
 int			hdrproc();
 int			msgfinished();
 static int		do_extra_encodedtypes();
-static int		splatfnx();
+static int		splatfnx(caddr_t, char *, ...);
 static int		rebuild_eits(), rebuild_dreits();
 static void		resetforpostie();
 
@@ -377,20 +377,16 @@ int msgfinished ()
 
 
 
-static int splatfnx (va_alist)
-va_dcl
+static int splatfnx (caddr_t junk, char *fmt, ...)
 {
 	char	buffer[BUFSIZ];
-	caddr_t	junk;
 	RP_Buf rps;
 
 	va_list ap;
 
-	va_start (ap);
+	va_start (ap, fmt);
 
-	junk = va_arg (ap, caddr_t);
-
-	_asprintf (buffer, NULLCP, ap);
+	_asprintf (buffer, NULLCP, fmt, ap);
 
 	PP_TRACE (("splatfnx '%s'", buffer));
 

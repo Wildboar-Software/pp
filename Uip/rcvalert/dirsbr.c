@@ -19,15 +19,16 @@ static char *Rcsid = "$Header: /xtel/pp/pp-beta/Uip/rcvalert/RCS/dirsbr.c,v 6.0 
 
 #include <ctype.h>
 #include <stdio.h>
-#include <varargs.h>
+#include <stdarg.h>
+#include <string.h>
 #include <isode/logger.h>
 #include <isode/psap.h>
 #include <isode/quipu/bind.h>
 #include <isode/quipu/ds_search.h>
 #include <isode/quipu/entry.h>
 #include "image.h"
+#include "ll_log.h"
 
-#ifndef NOPHOTOS
 /* GENERAL */
 #if ISODE < 69
 #define s_filter filter
@@ -42,7 +43,7 @@ static LLog _pgm_log = {
     LLOG_FATAL, -1, LLOGCLS | LLOGCRT | LLOGZER | LLOGTTY, NOTOK
 };
 LLog *pgm_log = &_pgm_log;
-void adios ();
+static void adios (char *what, char* fmt, ...);
 
 #define DEF_TIMELIMIT 20
 /*    IMAGE */
@@ -81,8 +82,13 @@ struct dn_seq *dn_seq_push ();
 int	dn_seq_print ();
 PE	grab_pe ();
 
+static int do_search (), do_bind ();
+static void _advise ();
+void dec_photo ();
+void quipurc ();
+
 #ifdef TESTVERSION
-main (argc, argv)
+void main (argc, argv)
 int argc;
 char **argv;
 {
@@ -152,7 +158,7 @@ int	stayopen;
 	do_bind (username, password);
 }
 
-quipurc (username, password)
+void quipurc (username, password)
 char	**username, **password;
 {
 	char *home;
@@ -281,8 +287,7 @@ static AttributeType adomain_t;
 
 struct dn_seq *dm2dn_seq_aux ();
 
-
-static struct dn_seq *dm2dn_seq (dm)
+struct dn_seq *dm2dn_seq (dm)
 char   *dm;
 {
 	register char *dp;
@@ -322,7 +327,7 @@ char *av[];
 
 	if ((ps = ps_alloc (str_open)) == NULLPS
 	    || str_setup (ps, buffer, sizeof buffer, 1) == NOTOK)
-		adios ("can't set up PS stream");
+		adios ("can't set up PS stream", NULLCP);
 
 	for (; atv; atv = atv -> avseq_next) {
 		AttrV_print (ps, &atv -> avseq_av, EDBOUT);
@@ -334,7 +339,7 @@ char *av[];
 					break;
 				}
 		if (str_setup (ps, buffer, sizeof buffer, 1) == NOTOK)
-			adios ("can't reset PS stream");
+			adios ("can't reset PS stream", NULLCP);
 	}
 	ps_free (ps);
 	if (best > maxdmn)
@@ -342,7 +347,7 @@ char *av[];
 	return maxdmn - best;
 }
 
-static struct dn_seq *dm2dn_seq_aux (dm, maxdmn, ndmn, av, dn, dlist)
+struct dn_seq *dm2dn_seq_aux (dm, maxdmn, ndmn, av, dn, dlist)
 char   *dm;
 DN	dn;
 int maxdmn, ndmn;
@@ -515,7 +520,7 @@ struct image *imp;
 		LLOG (pgm_log, LLOG_NOTICE, ("searching for %s %s",
 					     ak -> ak_domain, ak -> ak_local));
 		pslog (pgm_log, LLOG_NOTICE, "  using baseobjects ",
-		       dn_seq_print, (caddr_t) ak -> ak_bases);
+		       dn_seq_print, (void *) ak -> ak_bases);
 	}
 
 	sk[0].type = MAILBOX;
@@ -641,7 +646,7 @@ static Attr_Sequence get_select ()
 	return as;
 }
 
-decode_result (imp, eptr)
+void decode_result (imp, eptr)
 struct image *imp;
 Attr_Sequence eptr;
 {
@@ -674,7 +679,7 @@ struct image *imp;
 	register struct ds_search_result *sr = &search_result;
 	struct DSError error;
 	register struct DSError *se = &error;
-	extern int dn_print();
+	extern void dn_print();
 	extern char *dn2ufn ();
 	SearchKeys *skp;
 	s_filter *fi;
@@ -723,9 +728,9 @@ struct image *imp;
 		extern int fi_print ();
 
 		pslog (pgm_log, LLOG_NOTICE, "Searching for ",
-		       fi_print, (caddr_t)fi);
+		       fi_print, (void *)fi);
 		pslog (pgm_log, LLOG_NOTICE, " from  ",
-		       dn_print, (caddr_t) dn);
+		       dn_print, (void *) dn);
 	}
 	if (ds_search (sa, se, sr) != DS_OK) {
 		if (debug)
@@ -765,7 +770,7 @@ struct image *imp;
 		if (debug)
 			pslog (pgm_log, LLOG_NOTICE,
 			       "search: hit too many targets at ",
-			       dn_print, (caddr_t)dn);
+			       dn_print, (void *)dn);
 		break; /* carry on anyway */
 	}
 		
@@ -773,7 +778,7 @@ struct image *imp;
 		if (debug)
 			pslog (pgm_log, LLOG_NOTICE,
 			       "search failed at baseobject ",
-			       dn_print, (caddr_t) dn);
+			       dn_print, (void *) dn);
 		filter_free (sa -> sra_filter);
 		return DONE;
 	}
@@ -782,13 +787,13 @@ struct image *imp;
 		if (debug)
 			pslog (pgm_log, LLOG_NOTICE,
 			       "search succeeded (but no attribute) at ",
-			       dn_print, (caddr_t) dn);
+			       dn_print, (void *) dn);
 	}
 	else {
 		if (debug)
 			pslog (pgm_log, LLOG_NOTICE,
 			       "search succeeded at ",
-			       dn_print, (caddr_t) dn);
+			       dn_print, (void *) dn);
 		decode_result (imp, sr -> CSR_entries -> ent_attr);
 	}
 
@@ -910,7 +915,7 @@ char   *local,
 }
 
 
-dec_photo (imp)
+void dec_photo (imp)
 struct image *imp;
 {
 	PS ps;
@@ -961,7 +966,7 @@ struct image *imp;
 
 /* ARGSUSED */
 
-photo_start (name)
+int photo_start (name)
 char   *name;
 {
     if (passno == 1)
@@ -974,7 +979,7 @@ char   *name;
 
 /* ARGSUSED */
 
-photo_end (name)
+int photo_end (name)
 char   *name;
 {
 	int	    len;
@@ -1014,7 +1019,7 @@ char   *name;
 }
 
 
-photo_black (length)
+int photo_black (length)
 int	length;
 {
     if (passno == 2) {
@@ -1039,7 +1044,7 @@ int	length;
 }
 
 
-photo_white (length)
+int photo_white (length)
 int	length;
 {
     x += length;
@@ -1050,8 +1055,8 @@ int	length;
 
 /* ARGSUSED */
 
-photo_line_end (line)
-caddr_t line;
+int photo_line_end (line)
+void * line;
 {
     if (passno == 1 && x > maxx)
 	maxx = x;
@@ -1060,57 +1065,30 @@ caddr_t line;
     return OK;
 }
 
-/*    ERRORS */
+void advise (char *what, char *fmt, ...);
 
-#ifndef	lint
-void	_advise ();
-
-
-void	adios (va_alist)
-va_dcl
+static void adios (char *what, char* fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
-    _advise (ap);
-
+    va_start (ap, fmt);
+	_ll_log (pp_log_norm, LLOG_FATAL, what, fmt, ap);
     va_end (ap);
-
     _exit (1);
 }
-#else
-/* VARARGS */
 
-void	adios (what, fmt)
-char   *what,
-       *fmt;
-{
-    adios (what, fmt);
-}
-#endif
-
-
-#ifndef	lint
-void	advise (va_alist)
-va_dcl
+void advise (char *what, char *fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
-    _advise (ap);
-
+    va_start (ap, fmt);
+    _advise (what, fmt, ap);
     va_end (ap);
 }
 
-
-static void  _advise (ap)
-va_list	ap;
+static void _advise (char *what, char *fmt, va_list ap)
 {
     char    buffer[BUFSIZ];
 
-    asprintf (buffer, ap);
+    _asprintf (buffer, what, fmt, ap);
 
     (void) fflush (stdout);
 
@@ -1122,15 +1100,3 @@ va_list	ap;
 	(void) fflush (stderr);
     }    
 }
-#else
-/* VARARGS */
-
-void	advise (what, fmt)
-char   *what,
-       *fmt;
-{
-    advise (what, fmt);
-}
-#endif
-
-#endif

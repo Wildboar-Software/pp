@@ -987,7 +987,7 @@ int		newautoRefresh,
 		newauth;
 Heuristic	newheur;
 extern Heuristic heuristic;
-unsigned long	newTimes;
+extern unsigned long	newTimes;
 
 XtActionsRec	actionTable[] = {
 {"previousField",	previousField},

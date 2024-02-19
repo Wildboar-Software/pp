@@ -16,7 +16,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Tools/ckmail/RCS/ryinitiato
 
 
 #include <stdio.h>
-#include <varargs.h>
+#include <stdarg.h>
 #include "util.h"
 #include "qmgr.h"
 #include "ryinitiator.h"
@@ -234,57 +234,30 @@ char   *event;
 		aca -> aca_source);
 }
 
-/*  */
-
-#ifndef	lint
 static void	_advise ();
 
-
-void	adios (va_alist)
-va_dcl
+void adios (char *what, char *fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
-    _advise (ap);
-
+    va_start (ap, fmt);
+    _advise (what, fmt, ap);
     va_end (ap);
-
     _exit (1);
 }
-#else
-/* VARARGS */
 
-void	adios (what, fmt)
-char   *what,
-       *fmt;
-{
-    adios (what, fmt);
-}
-#endif
-
-
-#ifndef	lint
-void	advise (va_alist)
-va_dcl
+void advise (char *what, char *fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
-    _advise (ap);
-
+    va_start (ap, fmt);
+    _advise (what, fmt, ap);
     va_end (ap);
 }
 
-
-static void  _advise (ap)
-va_list	ap;
+static void _advise (char *what, char *fmt, va_list ap)
 {
     char    buffer[BUFSIZ];
 
-    asprintf (buffer, ap);
+    _asprintf (buffer, what, fmt, ap);
 
     (void) fflush (stdout);
 
@@ -294,37 +267,11 @@ va_list	ap;
 
     (void) fflush (stderr);
 }
-#else
-/* VARARGS */
 
-void	advise (what, fmt)
-char   *what,
-       *fmt;
-{
-    advise (what, fmt);
-}
-#endif
-
-
-#ifndef	lint
-void	ryr_advise (va_alist)
-va_dcl
+void ryr_advise (char *what, char *fmt, ...)
 {
     va_list ap;
-
-    va_start (ap);
-
-    _advise (ap);
-
+    va_start (ap, fmt);
+    _advise (what, fmt, ap);
     va_end (ap);
 }
-#else
-/* VARARGS */
-
-void	ryr_advise (what, fmt)
-char   *what,
-       *fmt;
-{
-    ryr_advise (what, fmt);
-}
-#endif

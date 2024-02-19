@@ -192,7 +192,7 @@ static CMD_TABLE chtbl_check[] = {
 
 /* ---------------------  Begin	 Routines  -------------------------------- */
 
-chan_tai (argc, argv)
+int chan_tai (argc, argv)
 int	argc;
 char	**argv;
 {
@@ -238,6 +238,7 @@ char	**argv;
 	cp -> ch_domain_norm	= CH_DOMAIN_NORM_PARTIAL;
 	cp -> ch_conversion	= CH_CONV_NONE;
 	cp -> ch_badSenderPolicy = CH_BADSENDER_STRICT;
+	cp -> ch_progname = NULLCP;
 
 	argc -= 2;
 	argv++;

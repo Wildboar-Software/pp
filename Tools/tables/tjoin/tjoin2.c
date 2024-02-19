@@ -15,8 +15,10 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Tools/tables/tjoin/RCS/tjoi
 
 
 
-#include        <stdio.h>
-#include	"tjoin.h"
+#include <stdio.h>
+#include "tjoin.h"
+#include <string.h>
+#include <stdlib.h>
 
 extern	char	*av0;
 extern	int	Debug, PrintRoute, DirectFirst, ComplexOutput;
@@ -32,13 +34,13 @@ static  void	DoDomainOutput(), PrintOutList(), PrintThing(),
 		FreePrintList();
 static	int	HighestCost(), CountAts();
 
-PRINT		*DoChanOrder(), *InsertPrint(), *DeleteItem();
+static PRINT		*DoChanOrder(), *InsertPrint(), *DeleteItem();
 
 
 /* ------------------------  Begin  Routines  ------------------------------- */
 
 
-WalkTree (tree, func)
+void WalkTree (tree, func)
 register MTA	*tree;
 int		(*func)();
 {
@@ -54,7 +56,7 @@ int		(*func)();
 }
 
 
-DebugTree (tree, indent)
+void DebugTree (tree, indent)
 register MTA	*tree;
 int		indent;
 {
@@ -76,7 +78,7 @@ int		indent;
 
 
 
-PrintNode (node)
+void PrintNode (node)
 register MTA	*node;
 {
 	register PRINT	*print, *list2, *p2, *p3;
@@ -320,7 +322,7 @@ MTA *GetMta()
 
 
 
-FreeStringStore (str)
+void FreeStringStore (str)
 register SBUFF	*str;
 {
 	register SBUFF	*startstr = str,

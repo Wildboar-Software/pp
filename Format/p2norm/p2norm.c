@@ -18,7 +18,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Format/p2norm/RCS/p2norm.c,
 #include "IOB-types.h"
 #include "or.h"
 #include "adr.h"
-#include <varargs.h>
+#include <stdarg.h>
 #include <isode/cmd_srch.h>
 
 extern char	*dn2ufn();
@@ -26,6 +26,7 @@ extern char	*local_dit;
 extern struct type_IOB_ORName	*orn2orname();
 
 static void parse_cmdline();
+void convert_ORDescriptor(), convert_ORName();
 
 main(argc, argv)
 int	argc;
@@ -264,7 +265,7 @@ struct type_IOB_IPMIdentifier	*ipmid;
 	}
 }
 
-convert_ORName (pname, pdn)
+void convert_ORName (pname, pdn)
 struct type_IOB_ORName	**pname;
 char **pdn;
 {
@@ -308,7 +309,7 @@ char **pdn;
 	*pname = orn2orname(orn);
 }
 
-convert_ORDescriptor (desc)
+void convert_ORDescriptor (desc)
 struct type_IOB_ORDescriptor	*desc;
 {
 	char	*dn;
@@ -413,17 +414,13 @@ error_exit()
 
 #ifndef lint
 
-void    advise (va_alist)
-va_dcl
+void    advise (int code, char *what, char *fmt, ...)
 {
-    int     code;
     va_list ap;
 
-    va_start (ap);
+    va_start (ap, fmt);
 
-    code = va_arg (ap, int);
-
-    (void) _ll_log (pp_log_norm, code, ap);
+    (void) _ll_log (pp_log_norm, code, what, fmt, ap);
 
     va_end (ap);
 }

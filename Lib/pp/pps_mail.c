@@ -60,17 +60,17 @@ static struct prm_vars	pv;
 static UTC start_time;
 
 /* -- local routines -- */
-int			pps_1adr();
-int			pps_adr();
-int			pps_aend();
-int			pps_cc();
-int			pps_end();
-int			pps_file();
-int			pps_hdr();
-int			pps_init();
-int			pps_tinit();
-int			pps_to();
-int			pps_txt();
+int pps_init (char *subj, RP_Buf *rp);
+int pps_adr (char *adr, RP_Buf *rp);
+int pps_aend(RP_Buf *rp);
+int pps_tinit(RP_Buf *rp);
+int pps_txt (char *str, RP_Buf *rp);
+int pps_file (FILE *fp, RP_Buf *rp);
+int pps_end (int type, RP_Buf *rp);
+int pps_to(RP_Buf *rp);
+int pps_cc(RP_Buf *rp);
+int pps_hdr (char *name, char *contents, RP_Buf *rp);
+int pps_1adr (char *subj, char *addr, RP_Buf *rp);
 static int		pps_adrhdr();
 static void		pps_set();
 
@@ -82,9 +82,7 @@ static void		pps_set();
 
 
 
-int pps_init (subj, rp)
-char	*subj;		/* the subject field - or not */
-RP_Buf *rp;
+int pps_init (char *subj, RP_Buf *rp)
 {
 	struct passwd	*pwd;
 	LIST_BPT	*new;

@@ -35,7 +35,7 @@ static void hdr_date ();
 static void hdr_msgid ();
 static void hdr_remcomm ();
 static void do_correlators ();
-static int getline ();
+static int _getline ();
 static int got_x400_mts_id = FALSE;
 static int ua_id_set_by_x400 = FALSE;
 static void 	hdr_x400_content_id(),
@@ -188,7 +188,7 @@ char			*file;
 			"Unable to open '%s'", file);
 
 
-	while (getline (&bp, hdr_fp) == OK) {
+	while (_getline (&bp, hdr_fp) == OK) {
 		hdr_prefix = FALSE;
 
 		switch (retval = hdr_parse (bp, &name, &contents)) {
@@ -924,7 +924,7 @@ char	*contents;
 		
 
 
-static int getline (bp, fp)
+static int _getline (bp, fp)
 char	**bp;
 FILE	*fp;
 {

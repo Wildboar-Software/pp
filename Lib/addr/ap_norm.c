@@ -35,12 +35,12 @@ Normalize a parse tree, to fill-in host references, etc.
 
 int	all_domain_norm = FALSE;
 
-ap_norm_all_domains()
+void ap_norm_all_domains()
 {
 	all_domain_norm = TRUE;
 }
 
-ap_norm_first_domain()
+void ap_norm_first_domain()
 {
 	all_domain_norm = FALSE;
 }
@@ -319,7 +319,7 @@ static void  ap_ptinit (base_prefptr, person_ptr, r822_prefptr, mbx_prefptr,
 /* ---------------------  Not JNTMAIL   ----------------------------------- */
 
 
-ap_locnormalize (obase_ptr, or822_prefptr, ombx_prefptr, odom_prefptr)
+void ap_locnormalize (obase_ptr, or822_prefptr, ombx_prefptr, odom_prefptr)
 AP_ptr                          obase_ptr,
 				*or822_prefptr,
 				*ombx_prefptr,

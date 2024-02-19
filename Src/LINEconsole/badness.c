@@ -15,6 +15,7 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Src/LINEconsole/RCS/badness
 
 
 
+#include	"Qmgr-types.h"
 #include	"console.h"
 
 #define	DEFAULT_TOTAL_NUMBER	10000.0
@@ -383,7 +384,7 @@ struct mta_struct	*mta;
 	}
 }
 
-add_tailor_to_msg(chan, msg)
+void add_tailor_to_msg(chan, msg)
 struct chan_struct	*chan;
 struct msg_struct	*msg;
 {

@@ -51,22 +51,23 @@ static enum {
 #define check_proto(x)	if (is_state != (x)) \
 	return io_lose (rp, RP_MECH, "Protocol state mismatch")
 
-static int io_init_remote ();
-static int io_init_local ();
-static int io_lose ();
 static void set_protocol_mode ();
 static void unset_protocol_mode ();
-static int io_rrply ();
-static int io_wrec ();
-static int io_rrec ();
-static int io_tdata_aux ();
-static char *io_data_vis ();
 SFP	sigpipe;
 
 extern void getfpath ();
+static  char *io_data_vis ();
+
+static int io_init_local ();
+static int io_init_remote ();
+static int io_tdata_aux ();
+static int io_rrply ();
+static int io_wrec ();
+
 /* ---------------------  Begin  Routines  -------------------------------- */
 
-
+// Source: https://man7.org/linux/man-pages/man3/gethostbyname.3.html ("Historical")
+#define h_addr h_addr_list[0]
 
 
 /*
@@ -451,11 +452,11 @@ int     type;
 {
 	register int   status = OK;
 	int pid;
-#ifdef SVR4
+// #ifdef SVR4
 	int w;
-#else
-	union wait w;
-#endif
+// #else
+// 	union wait w;
+// #endif
 
 	PP_DBG (("io_end (%d)", type));
 
@@ -465,11 +466,11 @@ int     type;
 	io_wfp = NULLFILE;
 
 	if (!remote_submit)
-#ifdef SVR4
+// #ifdef SVR4
 		while ((pid = wait(&w)) != mm_cid && pid != -1)
-#else
-		while ((pid = wait(&w.w_status)) != mm_cid && pid != -1)
-#endif
+// #else
+// 		while ((pid = wait(&w.w_status)) != mm_cid && pid != -1)
+// #endif
 			continue;
 
 	mm_cid = 0;
@@ -568,7 +569,7 @@ char	*submit_host;
 char	*submit_port_name;
 {
 	struct servent          *sp;
-	u_short                 port;
+	unsigned short          port;
 	struct hostent          *host;
 	struct sockaddr_in      s_in;
 	int                     sd;
@@ -576,11 +577,11 @@ char	*submit_port_name;
 	PP_DBG (("<socket> io_init()"));
 
 	if (isdigit (*submit_port_name))
-	    port = htons ((u_short)atoi(submit_port_name));
+	    port = htons ((unsigned short)atoi(submit_port_name));
 	else if ((sp = getservbyname (submit_port_name, "tcp")) != NULL)
 	    port = sp -> s_port;
 	else
-	    port = htons ((u_short)atoi(submit_port));
+	    port = htons ((unsigned short)atoi(submit_port));
 
 	sd = socket (AF_INET, SOCK_STREAM, 0);
 	if (sd < 0)
@@ -631,7 +632,7 @@ char            *buf;
 int             len;
 int             flag;
 {
-	long    datalen = htonl ((u_long)len);
+	long datalen = htonl ((uint32_t)len);
 
 	if (flag && len == 0)
 		return (RP_MECH);
@@ -699,7 +700,6 @@ static int io_wrec (linebuf, len)   /* write a record/packet */
 register char   *linebuf;       /* chars to write */
 register int    len;            /* number of chars to write */
 {
-	static char *io_data_vis ();
 	PP_LOG (LLOG_PDUS, ("io_wrec ('%s', %d)",
 			    io_data_vis (linebuf, len), len));
 
@@ -716,7 +716,7 @@ register int    len;            /* number of chars to write */
 
 
 
-static int io_lose (rp, state, str)
+int io_lose (rp, state, str)
 RP_Buf          *rp;
 int             state;
 char            *str;

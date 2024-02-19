@@ -106,7 +106,22 @@ char   *error_txt[] = {
 	"message straight away.\n\nCheers,\n\tThe Mail System\n", 0
 };
 
-main (argc, argv)
+void init (int argc, char **argv);
+void parsemsg ();
+void doreplies ();
+void replyto (AP_ptr aptr);
+int hdr_fil (FILE *msg);
+char hdr_parse (register char *src, char *name, char *contents);
+void find_user (char *str);
+void parse_addr (char *str, AP_ptr *aptr);
+int noteuser (char *addr, int mode);
+int checkuser (char *addr);
+char *find_sig ();
+void getaddress (char *source, char *dest);
+void report (int mode, int rc, char *fmt, ...);
+static int exit_rc(int num);
+
+int main (argc, argv)
 int     argc;
 char  **argv;
 {
@@ -114,16 +129,18 @@ char  **argv;
 	parsemsg ();
 	doreplies ();
 #ifdef  PP_DEBUG
-	report (TRACE, 0, "exit with %d -> %d", exit_code, exit_rc(exit_code));
+	report (TRACE, 0, "exit with %d -> %d", exit_code, exit_rc(exit_code), NULLCP, NULLCP);
 #endif
 	exit (exit_rc(exit_code));
 }
+
+void uip_init (char *pname);
 
 /*
  *	Initialisation - get user, setup flags etc.
  */
 
-init (argc, argv)
+void init (argc, argv)
 int     argc;
 char  **argv;
 {
@@ -166,19 +183,19 @@ char  **argv;
 	{
 #ifdef  PP_DEBUG
 		report (TRACE, 0, "argc=%d, *argv=%x=`%s'",
-			argc, *argv, *argv);
+			argc, *argv, *argv, NULLCP);
 #endif
 		if (*argv) parse_addr (*argv, &sndr_adr);
-		else report (TRACE, 0, "*argv was null !");
+		else report (TRACE, 0, "*argv was null !", NULLCP, NULLCP, NULLCP, NULLCP);
 #ifdef  PP_DEBUG
-		report (TRACE, 0, "*argv parsed");
+		report (TRACE, 0, "*argv parsed", NULLCP, NULLCP, NULLCP, NULLCP);
 #endif
 	}
 
 	if (username)
 		;
 	else if ((pwdptr = getpwuid (getuid ())) == (struct passwd *) 0)
-		report (FATAL, EX_ERR, "Can't Identify user");
+		report (FATAL, EX_ERR, "Can't Identify user", NULLCP, NULLCP, NULLCP, NULLCP);
 	else
 		strcpy (username = _username, pwdptr->pw_name);
 
@@ -190,17 +207,17 @@ char  **argv;
 #else
 	if (rp_isbad (ad_parse (user_adr, &rp, CH_USA_PREF)))
 #endif
-		report (FATAL, EX_PARSE_ERR, "Can't parse you as a mail user");
+		report (FATAL, EX_PARSE_ERR, "Can't parse you as a mail user", NULLCP, NULLCP, NULLCP, NULLCP);
 }
 
 /*
  *	parse message - just a front end to the real parser
  */
 
-parsemsg ()
+void parsemsg ()
 {
 	if (rp_isbad (hdr_fil (stdin)))
-		report (FATAL, EX_PARSE_ERR, "parse of message failed");
+		report (FATAL, EX_PARSE_ERR, "parse of message failed", NULLCP, NULLCP, NULLCP, NULLCP);
 }
 
 /*************** Routines to despatch messages ***************/
@@ -210,13 +227,13 @@ parsemsg ()
  *		from and sender address.
  */
 
-doreplies ()
+void doreplies ()
 {
 	if (found_1 != TRUE)
-		report (FATAL, EX_NOT_DIR, "Not sent directly to %s", username);
+		report (FATAL, EX_NOT_DIR, "Not sent directly to %s", username, NULLCP, NULLCP, NULLCP);
 
 	if (repl_adr == NULLAP && from_adr == NULLAP && sndr_adr == NULLAP)
-		report (FATAL, EX_PARSE_ERR, "No parsable from or sender lines");
+		report (FATAL, EX_PARSE_ERR, "No parsable from or sender lines", NULLCP, NULLCP, NULLCP, NULLCP);
 
 /*
  *	If there were any reply-to lines, use those in preference.
@@ -233,7 +250,7 @@ doreplies ()
  *	Actually do the work of sending the reply.
  */
 
-replyto (aptr)
+void replyto (aptr)
 AP_ptr  aptr;
 {
 	register char *cp;
@@ -248,7 +265,7 @@ AP_ptr  aptr;
 	RP_Buf	rps, *rp = &rps;
 
 #ifdef	PP_DEBUG
-	report (TRACE, 0, "replyto()");
+	report (TRACE, 0, "replyto()", NULLCP, NULLCP, NULLCP, NULLCP);
 #endif
 
 #ifdef UKORDER
@@ -260,7 +277,7 @@ AP_ptr  aptr;
 	ref = ap_p2s_nc (NULLAP, NULLAP, local, domain, NULLAP);
 
 #ifdef	PP_DEBUG
-	report (TRACE, 0, "normed addr = '%s'", ref);
+	report (TRACE, 0, "normed addr = '%s'", ref, NULLCP, NULLCP, NULLCP);
 #endif
 
 	if (user != NULLAP)
@@ -271,7 +288,7 @@ AP_ptr  aptr;
 	if (checkuser (ref)) {
 
 #ifdef	PP_DEBUG
-		report (TRACE, 0, "Seen %s before", ref);
+		report (TRACE, 0, "Seen %s before", ref, NULLCP, NULLCP, NULLCP);
 #endif
 
 		noteuser (ref, UNSENT);
@@ -279,7 +296,7 @@ AP_ptr  aptr;
 		return;
 	}
 	if (ap_t2s (norm, &addr) == (AP_ptr) NOTOK) {
-		report (NONFATAL, 0, "Parse error for %s", addr);
+		report (NONFATAL, 0, "Parse error for %s", addr, NULLCP, NULLCP, NULLCP);
 		noteuser (ref, UNSENT);
 		free (ref);
 		return;
@@ -291,8 +308,7 @@ AP_ptr  aptr;
 	strcat (buffer, subj_field);
 
 #ifdef	PP_DEBUG
-	report (TRACE, 0, "pps_1adr ('%s' %s)",
-		buffer, addr);
+	report (TRACE, 0, "pps_1adr ('%s' %s)", buffer, addr, NULLCP, NULLCP);
 #endif
 
 	pps_1adr (buffer, addr, rp);
@@ -302,14 +318,14 @@ AP_ptr  aptr;
 		sprintf (buffer, "\nDear %s,\n", person);
 
 #ifdef	PP_DEBUG
-		report (TRACE, 0, "1st line %s", buffer);
+		report (TRACE, 0, "1st line %s", buffer, NULLCP, NULLCP, NULLCP);
 #endif
 
 		pps_txt (buffer, rp);
 	}
 
 #ifdef	PP_DEBUG
-	report (TRACE, 0, "start builtin message");
+	report (TRACE, 0, "start builtin message", NULLCP, NULLCP, NULLCP, NULLCP);
 #endif
 
 	for (cpp = text_message; *cpp != NULLCP; cpp++)
@@ -327,7 +343,7 @@ AP_ptr  aptr;
 	if ((fp = fopen (msg_note, "r")) != (FILE *) 0) {
 
 #ifdef	PP_DEBUG
-		report (TRACE, 0, "processing file %s", msg_note);
+		report (TRACE, 0, "processing file %s", msg_note, NULLCP, NULLCP, NULLCP);
 #endif
 
 		pps_file (fp, rp);
@@ -336,7 +352,7 @@ AP_ptr  aptr;
 	else {
 
 #ifdef	PP_DEBUG
-		report (TRACE, 0, "Sending built in error message");
+		report (TRACE, 0, "Sending built in error message", NULLCP, NULLCP, NULLCP, NULLCP);
 #endif
 
 		for (cpp = error_txt; *cpp != NULLCP; cpp++)
@@ -344,7 +360,7 @@ AP_ptr  aptr;
 	}
 
 #ifdef	PP_DEBUG
-	report (TRACE, 0, "ml_end(OK)");
+	report (TRACE, 0, "ml_end(OK)", NULLCP, NULLCP, NULLCP, NULLCP);
 #endif
 
 	if (pps_end (OK, rp) == OK)
@@ -361,7 +377,7 @@ AP_ptr  aptr;
  *	The actual picking out of headers
  */
 
-hdr_fil (msg)
+int hdr_fil (msg)
 FILE   *msg;			/* The message file			 */
 {
 	char    line[LINESIZE];	/* temp buffer			 */
@@ -369,11 +385,11 @@ FILE   *msg;			/* The message file			 */
 	char    contents[LINESIZE];	/* Contents of header field	 */
 
 #ifdef	PP_DEBUG
-	report (TRACE, 0, "hdr_fil()");
+	report (TRACE, 0, "hdr_fil()", NULLCP, NULLCP, NULLCP, NULLCP);
 #endif
 
 	if (msg == (FILE *) NULL) {
-		report (FATAL, EX_PARSE_ERR, "NULL file pointer");
+		report (FATAL, EX_PARSE_ERR, "NULL file pointer", NULLCP, NULLCP, NULLCP, NULLCP);
 		return (RP_NO);	/* not much point doing anything
 				 * else */
 	}
@@ -381,7 +397,7 @@ FILE   *msg;			/* The message file			 */
 
 	for (;;) {
 		if (fgets (line, sizeof line, msg) == NULL) {
-			report (NONFATAL, 0, "read error on message");
+			report (NONFATAL, 0, "read error on message", NULLCP, NULLCP, NULLCP, NULLCP);
 			return (RP_NO);	/* skip and go home */
 		}
 
@@ -436,7 +452,7 @@ FILE   *msg;			/* The message file			 */
  *	The real parser
  */
 
-hdr_parse (src, name, contents)	/* parse one header line		 */
+char hdr_parse (src, name, contents)	/* parse one header line		 */
 register char *src;		/* a line of header text		 */
 char   *name,			/* where to put field's name		 */
        *contents;		/* where to put field's contents	 */
@@ -446,13 +462,13 @@ char   *name,			/* where to put field's name		 */
 	register char *dest;
 
 #ifdef	PP_DEBUG
-	report (TRACE, 0, "hdr_parse('%*.*s')", strlen(src)-1, strlen(src)-1, src);
+	report (TRACE, 0, "hdr_parse('%*.*s')", strlen(src)-1, strlen(src)-1, src, NULLCP);
 #endif
 
 	if (isspace (*src)) {	/* continuation text			 */
 
 #ifdef	PP_DEBUG
-		report (TRACE, 0, "hrd_parse -> cmpnt more");
+		report (TRACE, 0, "hrd_parse -> cmpnt more", NULLCP, NULLCP, NULLCP, NULLCP);
 #endif
 
 		if (*src == '\n')
@@ -475,7 +491,7 @@ line		 */
 					 * spaces	 */
 
 #ifdef	PP_DEBUG
-		report (TRACE, 0, "hdr_parse -> cmpnt name '%s'", name);
+		report (TRACE, 0, "hdr_parse -> cmpnt name '%s'", name, NULLCP, NULLCP, NULLCP);
 #endif
 	}
 
@@ -504,7 +520,7 @@ line		 */
  *		compare mbox's.
  */
 
-find_user (str)
+void find_user (str)
 char   *str;
 {
 	AP_ptr  tree, local, domain;
@@ -513,13 +529,13 @@ char   *str;
 	char   *p;
 
 #ifdef	PP_DEBUG
-	report (TRACE, 0, "find_user('%s')", str);
+	report (TRACE, 0, "find_user('%s')", str, NULLCP, NULLCP, NULLCP);
 #endif
 
 	if (found_1 == TRUE) {
 
 #ifdef	PP_DEBUG
-		report (TRACE, 0, "find_user() name already found\n");
+		report (TRACE, 0, "find_user() name already found\n", NULLCP, NULLCP, NULLCP, NULLCP);
 #endif
 
 		return;
@@ -546,7 +562,7 @@ char   *str;
 			lexequ (p, username) == 0);
 #ifdef	PP_DEBUG
 		report (TRACE, 0, "find_user() -> found mbox %s (%s) ->%d",
-			p, user_adr -> ad_r822adr, found_1);
+			p, user_adr -> ad_r822adr, found_1, NULLCP);
 #endif
 		free (p);
 		if (found_1 == TRUE)
@@ -558,19 +574,19 @@ char   *str;
  *	Attempt to parse a field into an address tree for later use.
  */
 
-parse_addr (str, aptr)
+void parse_addr (str, aptr)
 char   *str;
 AP_ptr *aptr;
 {
 
 #ifdef	PP_DEBUG
-	report (TRACE, 0, "parse_addr('%s')", str);
+	report (TRACE, 0, "parse_addr('%s')", str, NULLCP, NULLCP, NULLCP);
 #endif
 
 	if (*aptr != NULLAP) {
 
 #ifdef	PP_DEBUG
-		report (TRACE, 0, "field '%s' rejected, already seen one");
+		report (TRACE, 0, "field '%s' rejected, already seen one", NULLCP, NULLCP, NULLCP, NULLCP);
 #endif
 
 		return;
@@ -578,7 +594,7 @@ AP_ptr *aptr;
 
 	if ((*aptr = ap_s2t (str)) == (AP_ptr) NOTOK)
 	{	*aptr = NULLAP;
-		report (NONFATAL, 0, "Can't parse address '%s'", str);
+		report (NONFATAL, 0, "Can't parse address '%s'", str, NULLCP, NULLCP, NULLCP);
 	}
 }
 
@@ -589,7 +605,7 @@ AP_ptr *aptr;
  *	and include the subject line for good measure.
  */
 
-noteuser (addr, mode)
+int noteuser (addr, mode)
 char   *addr;
 int     mode;
 {
@@ -599,7 +615,7 @@ int     mode;
 	int     result = NOTOK;
 
 #ifdef	PP_DEBUG
-	report (TRACE, 0, "noteuser(%s,%d)", addr, mode);
+	report (TRACE, 0, "noteuser(%s,%d)", addr, mode, NULLCP, NULLCP);
 #endif
 
 	time (&now);
@@ -620,7 +636,7 @@ int     mode;
 /*
  *	Have we replied to this person before?
  */
-checkuser (addr)
+int checkuser (addr)
 char   *addr;
 {
 	FILE   *fp;
@@ -638,7 +654,7 @@ char   *addr;
 		getaddress (buffer, compaddr);
 
 #ifdef	PP_DEBUG
-		report (TRACE, 0, "checkuser, = '%s' & '%s'?", compaddr, addr);
+		report (TRACE, 0, "checkuser, = '%s' & '%s'?", compaddr, addr, NULLCP, NULLCP);
 #endif
 
 		if (lexequ (compaddr, addr) == 0) {
@@ -666,7 +682,7 @@ char   *find_sig ()
 	char   *p;
 
 #ifdef	PP_DEBUG
-	report (TRACE, 0, "find_sig()");
+	report (TRACE, 0, "find_sig()", NULLCP, NULLCP, NULLCP, NULLCP);
 #endif
 
 	if (been_here == TRUE)	/* cuts off at least 1/4
@@ -685,7 +701,7 @@ char   *find_sig ()
 	return buf;
 }
 
-getaddress (source, dest)
+void getaddress (source, dest)
 char   *source, *dest;
 {
 	register char *p;
@@ -713,24 +729,15 @@ char   *source, *dest;
 	*dest = '\0';
 }
 
-/*VARARGS2*/
-report (mode, rc, fmt, a1, a2, a3, a4)
-int     mode;
-int	rc;
-char   *fmt, *a1, *a2, *a3, *a4;
+void report (int mode, int rc, char *fmt, ...)
 {
 	static FILE *log;
-
+	va_list ap;
+	va_start (ap, fmt);
+	va_end (ap);
+	
 	if (debug == FALSE && mode == TRACE)
 		return;
-
-	if (debug == TRUE) {
-		fprintf (stderr, "%s\t", mode == TRACE ? "TRACE" :
-			 (mode == FATAL ? "FATAL" : "!FATAL"));
-		fprintf (stderr, fmt, a1, a2, a3, a4);
-		putc ('\n', stderr);
-		fflush (stderr);
-	}
 
 	if (mode == FATAL)
 		exit (exit_rc(rc));	/* die a horrible death */
