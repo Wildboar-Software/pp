@@ -30,7 +30,7 @@
 
 # List of channels that you may require. Choose from those in the
 # Chans/ directory. Each should be a directory name within Chans.
-OPTIONALCHANS	= shell lists 822-local smtp uucp x40084
+OPTIONALCHANS	= shell lists 822-local smtp uucp x40084 x40088
 # If fax defined - give type
 #FAXDRIVERS = dexNet200 # or ps250 ...
 

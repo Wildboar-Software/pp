@@ -23,6 +23,7 @@
 #define PP_DEBUG_NONE	0
 
 #define PP_DEBUG PP_DEBUG_ALL
+#define DEBUG
 
 /*
  * define the following if  you require user tools to use uk domain ordering 
