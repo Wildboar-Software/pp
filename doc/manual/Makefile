@@ -32,6 +32,6 @@ clean tidy:
 		do (echo "cd $$x; $(MAKE) $@"; cd $$x ; $(MAKE) $@ ); done
 		rm -f core *.old *.BAK
 
-define depend lint install:;
+depend lint install:;
 
 true:
