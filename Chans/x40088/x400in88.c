@@ -25,11 +25,12 @@ static char Rcsid[] = "@(#)$Header: /xtel/pp/pp-beta/Chans/x40088/RCS/x400in88.c
 #include <isode/rtsap.h>
 #include <sys/time.h>
 #include "RTS84-types.h"
+#include "Qmgr-types.h"
 
 extern char *quedfldir;
 extern char *remote_site;
 
-char	*myname;
+char	*my_name;
 CHAN	*mychan;
 int	submit_running;
 int	canabort = 0;
@@ -66,10 +67,10 @@ char	**argv;
 	extern int optind;
 	extern char *optarg;
 
-	if (myname = rindex (argv[0], '/'))
-		myname++;
-	if (myname == NULL || *myname == NULL)
-		myname = argv[0];
+	if (my_name = rindex (argv[0], '/'))
+		my_name++;
+	if (my_name == NULL || *my_name == NULL)
+		my_name = argv[0];
 
 	while ((opt = getopt (argc, argv, "c:now:")) != EOF) {
 		switch (opt) {
@@ -80,7 +81,7 @@ char	**argv;
 			stack = x400_1984;
 			break;
 		    case 'c':
-			myname = optarg;
+			my_name = optarg;
 			break;
 		    case 'w':
 #if PP_DEBUG >= PP_DEBUG_SOME
@@ -97,10 +98,10 @@ char	**argv;
 #endif
 	if (stack == x400_1988)
 		canabort = 1;
-	chan_init (myname);
+	chan_init (my_name);
 
-	if ((mychan = ch_nm2struct (myname)) == NULLCHAN)
-		adios (NULLCP, "No channel %s", myname);
+	if ((mychan = ch_nm2struct (my_name)) == NULLCHAN)
+		adios (NULLCP, "No channel %s", my_name);
 
 	pp_setuserid();
 
