@@ -116,7 +116,30 @@ configuration as this user.
 
 ## Building
 
-First, go to the `config/` directory:
+This requires (inclusively):
+
+- A C compiler
+  - The specific requirements are not known, but recent features are probably
+    not needed, since this was written in the 1980s / 1990s!
+  - [TinyCC](https://repo.or.cz/w/tinycc.git) might suffice
+- GNU Make
+  - ([Minimake](https://github.com/waltje/MiniMake) might suffice)
+- `libgdbm` libraries:
+  - Which are:
+    - `libgdbm-compat-dev`
+    - `libgdbm-compat4`
+    - `libgdbm-dev`
+  - Which provide the `ndbm.h` header which you will be missing otherwise.
+- `libxaw7-dev`
+  - This is only needed if you are building `MTAConsole` and some other targets
+- `libxt-dev`
+  - This is only needed if you are building `MTAConsole` and some other targets
+- `groff`
+  - Needed for the `nroff` command, which is needed to create the tailor file,
+    among other things.
+- Docker, if you want to build the Docker image
+
+Go to the `config/` directory:
 
 ```bash
 cd config
