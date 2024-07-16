@@ -138,6 +138,12 @@ This requires (inclusively):
   - Needed for the `nroff` command, which is needed to create the tailor file,
     among other things.
 - Docker, if you want to build the Docker image
+- `libisode`
+  - Provides OSI Networking
+  - Build using [this repository](https://github.com/Wildboar-Software/isode)
+- `libdsap`
+  - Provides X.500 directory services
+  - Build using [this repository](https://github.com/Wildboar-Software/isode)
 
 Go to the `config/` directory:
 
