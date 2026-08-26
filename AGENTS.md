@@ -103,6 +103,14 @@ This exercises the core engine: RFC822 parse → X.400 O/R address conversion
 `tools/ckadr -r <addr>` is a quick way to exercise the address/routing engine on
 its own.
 
+Line endings: the local submission path (`sendmail`/`submit`) expects **bare LF**
+(Unix), not CRLF. `_getline()` in `Src/submit/rd_rfchdr.c` only treats `\n` as
+end-of-line and leaves any `\r` in the buffer, so a CRLF message's blank
+header/body separator is not recognized and submission fails with
+`Unable to parse '<body> ' as key:field` (nothing gets spooled). CRLF is a
+wire-protocol (SMTP / X.400 P1) concern handled by the channels, not by local
+submission.
+
 ### Lint / tests
 
 There is no modern lint/test harness. The Makefile `lint` target uses the legacy
